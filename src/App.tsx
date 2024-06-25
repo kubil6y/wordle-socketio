@@ -1,50 +1,47 @@
-import { socket } from "@/lib/socket";
-import { useEffect, useState } from "react";
+import { Keyboard } from "@/components/keyboard";
+import { useState } from "react";
+
+const MAX_CHAR_LENGTH = 5;
 
 export function App() {
-    const [isConnected, setIsConnected] = useState<boolean>(false);
-    const [transport, setTransport] = useState<string>("N/A");
-    const [msg, setMsg] = useState<string>("");
+    const [letters, setLetters] = useState<string[]>([]);
 
-    useEffect(() => {
-        if (socket.connected) {
-            onConnect();
+    function onEnter(): void {
+        if (!letters.length) {
+            return;
         }
+        console.log(letters.join(""));
+    }
 
-        function onConnect() {
-            setIsConnected(true);
-            setTransport(socket.io.engine.transport.name || "N/A");
-
-            socket.io.engine.on("upgrade", (transport) => {
-                setTransport(transport.name);
-            });
+    function onBackspace(): void {
+        if (letters.length === 0) {
+            return;
         }
+        const copied = [...letters];
+        copied.pop();
+        setLetters(copied);
+    }
 
-        function onDisconnect() {
-            setIsConnected(false);
-            setTransport("N/A");
+    function onClick(ch: string): void {
+        if (letters.length >= MAX_CHAR_LENGTH) {
+            return;
         }
-
-        function onFoo(msg: string) {
-            setMsg(msg);
-        }
-
-        socket.on("connect", onConnect);
-        socket.on("disconnect", onDisconnect);
-        socket.on("foo", onFoo);
-
-        return () => {
-            socket.off("connect", onConnect);
-            socket.off("disconnect", onDisconnect);
-            socket.off("foo", onFoo);
-        };
-    }, []);
+        const copied = [...letters];
+        copied.push(ch);
+        setLetters(copied);
+    }
 
     return (
-        <div>
-            <p>{msg}</p>
-            <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-            <p>Transport: {transport}</p>
+        <div className="px-1 py-8">
+            <Keyboard
+                language="en"
+                onEnter={onEnter}
+                onBackspace={onBackspace}
+                onClick={onClick}
+                greenLetters={["x", "y", "a"]}
+                yellowLetters={["b", "j", "k", "o"]}
+            />
+            <div className="text-5xl">{letters.join("").toUpperCase()}</div>
         </div>
     );
 }
