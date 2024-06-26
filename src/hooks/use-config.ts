@@ -2,17 +2,15 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface ConfigState {
-    sound: boolean;
-    soundOn: () => void;
-    soundOff: () => void;
+    volume: number;
+    setVolume: (volume: number) => void;
 }
 
 export const useConfig = create<ConfigState>()(
     persist(
         (set, get) => ({
-            sound: true,
-            soundOn: () => set({ sound: true }),
-            soundOff: () => set({ sound: false }),
+            volume: 0.2,
+            setVolume: (volume: number) => set({ volume }),
         }),
         {
             name: "kb_wordle:config", // name of the item in the storage (must be unique)

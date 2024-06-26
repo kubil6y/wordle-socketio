@@ -32,13 +32,13 @@ export const Keyboard = ({
     onClick,
     onBackspace,
 }: KeyboardProps) => {
-    const { sound } = useConfig();
+    const { volume } = useConfig();
     const canType = useCanType();
     const canBackspace = useCanBackspace();
 
-    const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg");
-    const [playkeypressDelete] = useSound("/sounds/keypress_delete.ogg");
-    const [playkeypressReturn] = useSound("/sounds/keypress_return.ogg");
+    const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", { volume });
+    const [playkeypressDelete] = useSound("/sounds/keypress_delete.ogg", {volume});
+    const [playkeypressReturn] = useSound("/sounds/keypress_return.ogg", {volume});
 
     let layout: string[] = resolveLayout(language);
 
@@ -50,9 +50,7 @@ export const Keyboard = ({
                         {i === 2 && (
                             <div
                                 onClick={() => {
-                                    if (sound) {
-                                        playkeypressReturn();
-                                    }
+                                    playkeypressReturn();
                                     onEnter();
                                 }}
                                 className={cn(
@@ -74,7 +72,7 @@ export const Keyboard = ({
                                     key={j}
                                     ch={ch}
                                     onClick={(ch: string) => {
-                                        if (sound && canType) {
+                                        if (canType) {
                                             playKeypressStandard();
                                         }
                                         onClick(ch);
@@ -88,7 +86,7 @@ export const Keyboard = ({
                         {i === 2 && (
                             <div
                                 onClick={() => {
-                                    if (sound && canBackspace) {
+                                    if (canBackspace) {
                                         playkeypressDelete();
                                     }
                                     onBackspace();
@@ -96,8 +94,7 @@ export const Keyboard = ({
                                 className={cn(
                                     "box",
                                     "w-[42px] sm:w-[58px]",
-                                    !canBackspace &&
-                                    "pointer-events-none"
+                                    !canBackspace && "pointer-events-none"
                                 )}
                             >
                                 <DeleteIcon className="size-5 sm:size-6" />
