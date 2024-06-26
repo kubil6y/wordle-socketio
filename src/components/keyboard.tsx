@@ -38,7 +38,7 @@ export const Keyboard = ({
                                 onClick={onEnter}
                                 className={cn("box", "w-[42px] sm:w-[58px]")}
                             >
-                                <SendHorizonalIcon className="size-4 sm:size-5" />
+                                <SendHorizonalIcon className="size-5 sm:size-6" />
                             </div>
                         )}
                         {row.split("").map((ch, j) => {
@@ -61,7 +61,7 @@ export const Keyboard = ({
                                 onClick={onBackspace}
                                 className={cn("box", "w-[42px] sm:w-[58px]")}
                             >
-                                <DeleteIcon className="size-4 sm:size-6" />
+                                <DeleteIcon className="size-5 sm:size-6" />
                             </div>
                         )}
                     </div>
@@ -84,9 +84,9 @@ const Box = ({ ch, onClick, hiYellow, hiGreen, hiNotFound }: BoxProps) => {
         <div
             className={cn(
                 "box",
-                hiYellow && "bg-amber-400 text-white",
-                hiGreen && "bg-green text-white",
-                hiNotFound && "bg-not_found text-white"
+                hiYellow && "bg-amber-500 text-white dark:bg-amber-500",
+                hiGreen && "bg-emerald-500 text-white dark:bg-emerald-500",
+                hiNotFound && "bg-zinc-600 text-white dark:bg-zinc-600"
             )}
             onClick={() => onClick(ch)}
         >

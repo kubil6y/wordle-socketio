@@ -4,12 +4,6 @@
 
 @layer base {
     :root {
-        --fg: #1a1a1b;
-        --bg: #d3d6da;
-        --green: #6aaa64;
-        --yellow: #c9b458;
-        --not-found: #787c7e;
-
         --background: 0 0% 100%;
         --foreground: 240 10% 3.9%;
 
@@ -42,12 +36,6 @@
     }
 
     .dark {
-        --fg: #d7dadc;
-        --bg: #818384;
-        --green: #538d4e;
-        --yellow: #b59f3b;
-        --not-found: #3a3a3c;
-
         --background: 240 10% 3.9%;
         --foreground: 0 0% 98%;
 
@@ -92,6 +80,6 @@
     }
 
     .box {
-        @apply standard-shadow flex h-[58px] w-[28px] cursor-pointer select-none items-center justify-center rounded bg-bg font-semibold uppercase text-fg transition sm:w-[48px] sm:text-lg;
+        @apply standard-shadow flex h-[58px] w-[28px] cursor-pointer select-none items-center justify-center rounded font-semibold uppercase transition duration-75 active:scale-90 sm:w-[48px] sm:text-lg dark:bg-zinc-400 bg-zinc-300;
     }
 }
