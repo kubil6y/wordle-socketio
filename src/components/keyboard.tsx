@@ -1,5 +1,8 @@
+import { useConfig } from "@/hooks/use-config";
+import { useCanBackspace, useCanType } from "@/hooks/use-wordle";
 import { cn } from "@/lib/utils";
 import { DeleteIcon, SendHorizonalIcon } from "lucide-react";
+import useSound from "use-sound";
 
 type Language = "en" | "tur";
 
@@ -29,7 +32,16 @@ export const Keyboard = ({
     onClick,
     onBackspace,
 }: KeyboardProps) => {
+    const { sound } = useConfig();
+    const canType = useCanType();
+    const canBackspace = useCanBackspace();
+
+    const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg");
+    const [playkeypressDelete] = useSound("/sounds/keypress_delete.ogg");
+    const [playkeypressReturn] = useSound("/sounds/keypress_return.ogg");
+
     let layout: string[] = resolveLayout(language);
+
     return (
         <div className="flex flex-col items-center gap-2">
             {layout.map((row, i) => {
@@ -37,7 +49,12 @@ export const Keyboard = ({
                     <div key={i} className="flex gap-1.5">
                         {i === 2 && (
                             <div
-                                onClick={onEnter}
+                                onClick={() => {
+                                    if (sound) {
+                                        playkeypressReturn();
+                                    }
+                                    onEnter();
+                                }}
                                 className={cn(
                                     "box",
                                     "w-[42px] sm:w-[58px] transition",
@@ -56,7 +73,12 @@ export const Keyboard = ({
                                 <Box
                                     key={j}
                                     ch={ch}
-                                    onClick={onClick}
+                                    onClick={(ch: string) => {
+                                        if (sound && canType) {
+                                            playKeypressStandard();
+                                        }
+                                        onClick(ch);
+                                    }}
                                     hiGreen={hiGreen}
                                     hiYellow={hiYellow}
                                     hiNotFound={hiNotFound}
@@ -65,8 +87,18 @@ export const Keyboard = ({
                         })}
                         {i === 2 && (
                             <div
-                                onClick={onBackspace}
-                                className={cn("box", "w-[42px] sm:w-[58px]")}
+                                onClick={() => {
+                                    if (sound && canBackspace) {
+                                        playkeypressDelete();
+                                    }
+                                    onBackspace();
+                                }}
+                                className={cn(
+                                    "box",
+                                    "w-[42px] sm:w-[58px]",
+                                    !canBackspace &&
+                                    "pointer-events-none"
+                                )}
                             >
                                 <DeleteIcon className="size-5 sm:size-6" />
                             </div>

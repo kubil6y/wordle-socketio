@@ -1,5 +1,5 @@
-import { useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 import { cn } from "@/lib/utils";
+import { useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 
 export const Board = () => {
     const { activeRowIndex, width, height, pastTries, letters } = useWordle();
@@ -82,14 +82,7 @@ const Cell = ({
                 hiActive && "border-zinc-500 dark:border-zinc-300"
             )}
         >
-            <p
-                className={cn(
-                    "text-3xl font-semibold  uppercase"
-                    //animate && "animate-scale"
-                )}
-            >
-                {ch}
-            </p>
+            <p className="text-3xl font-semibold  uppercase">{ch}</p>
         </div>
     );
 };

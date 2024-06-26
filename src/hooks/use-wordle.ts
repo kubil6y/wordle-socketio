@@ -88,3 +88,13 @@ export const useCanSubmit = () => {
     const { letters, width } = useWordle();
     return letters.length == width;
 };
+
+export const useCanType = () => {
+    const { letters, width } = useWordle();
+    return letters.length < width;
+}
+
+export const useCanBackspace = () => {
+    const { letters } = useWordle();
+    return letters.length !== 0;
+}

@@ -3,6 +3,7 @@ import { ThemeSwitcher } from "./components/theme-switcher";
 import { Board } from "./components/board";
 import { useCanSubmit, useWordle } from "./hooks/use-wordle";
 import { Button } from "./components/ui/button";
+import { SoundControls } from "./components/sound-controls";
 
 export function App() {
     const {
@@ -21,6 +22,7 @@ export function App() {
             <div className="flex gap-2">
                 <Button onClick={reset}>reset</Button>
                 <ThemeSwitcher />
+                <SoundControls />
             </div>
 
             <Board />
@@ -37,7 +39,6 @@ export function App() {
                     notFoundLetters={notFoundLetters}
                 />
             </div>
-
         </div>
     );
 }
