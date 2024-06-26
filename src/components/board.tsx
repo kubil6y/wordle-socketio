@@ -1,45 +1,48 @@
+import { useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 import { cn } from "@/lib/utils";
 
-type BoardProps = {
-    width: number;
-    height: number;
-    activeWord: string;
-    activeRowIndex: number;
-    pastTries: string[];
-    currentLetterIndex: number;
-};
-
-export const Board = ({
-    width,
-    height,
-    activeWord,
-    activeRowIndex,
-    pastTries,
-    currentLetterIndex,
-}: BoardProps) => {
+export const Board = () => {
+    const { activeRowIndex, width, height, pastTries, letters } = useWordle();
+    const hasBackspaced = useHasBackspaced();
+    const activeWord = letters.join("");
+    const currentLetterIndex = letters.length;
     return (
         <div className="flex flex-col items-center gap-2">
-            {new Array(height).fill(null).map((_, i) => {
+            {new Array(height).fill(null).map((_, rowIndex) => {
                 return (
-                    <div className="flex gap-1.5">
-                        {new Array(width).fill(null).map((_, j) => {
+                    <div className="flex gap-1.5" key={rowIndex}>
+                        {new Array(width).fill(null).map((_, i) => {
                             let ch = "";
-                            if (activeRowIndex === i) {
-                                ch = activeWord[j];
-                            } else if (pastTries.length > i) {
-                                ch = pastTries[i][j];
+                            if (activeRowIndex === rowIndex) {
+                                ch = activeWord[i];
+                            } else if (pastTries.length > rowIndex) {
+                                ch = pastTries[rowIndex][i];
                             }
 
                             let animate = false;
-                            if (currentLetterIndex === j +1 && activeRowIndex === i) {
+                            if (
+                                currentLetterIndex === i + 1 &&
+                                activeRowIndex === rowIndex &&
+                                !hasBackspaced
+                            ) {
                                 animate = true;
                             }
+
+                            const hiActive =
+                                activeRowIndex === rowIndex &&
+                                letters.length > i;
+                            const hiGreen = false;
+                            const hiYellow = false;
+                            const hiNotFound = false;
+
                             return (
                                 <Cell
+                                    key={`${rowIndex}:${i}`}
                                     ch={ch}
-                                    hiGreen={false}
-                                    hiYellow={false}
-                                    hiNotFound={false}
+                                    hiActive={hiActive}
+                                    hiGreen={hiGreen}
+                                    hiYellow={hiYellow}
+                                    hiNotFound={hiNotFound}
                                     animate={animate}
                                 />
                             );
@@ -53,26 +56,36 @@ export const Board = ({
 
 type CellProps = {
     ch?: string;
+    hiActive: boolean;
     hiGreen: boolean;
     hiYellow: boolean;
     hiNotFound: boolean;
     animate: boolean;
 };
 
-// 52px,60px
-// dark:bg-zinc-400 bg-zinc-300
-const Cell = ({ ch, hiGreen, hiYellow, hiNotFound, animate }: CellProps) => {
+const Cell = ({
+    ch,
+    hiActive,
+    hiGreen,
+    hiYellow,
+    hiNotFound,
+    animate,
+}: CellProps) => {
     return (
         <div
             className={cn(
                 "size-[52px] sm:size-[60px] flex select-none items-center justify-center border-[2px] border-zinc-300  dark:border-zinc-700",
-                animate && "border-red-500"
+                animate && "animate-scale border-red-500",
+                hiYellow && "bg-amber-500 text-white dark:bg-amber-500",
+                hiGreen && "bg-emerald-500 text-white dark:bg-emerald-500",
+                hiNotFound && "bg-zinc-600 text-white dark:bg-zinc-600",
+                hiActive && "border-zinc-500 dark:border-zinc-300"
             )}
         >
             <p
                 className={cn(
-                    "text-3xl font-semibold  uppercase",
-                    animate && "animate-scale"
+                    "text-3xl font-semibold  uppercase"
+                    //animate && "animate-scale"
                 )}
             >
                 {ch}

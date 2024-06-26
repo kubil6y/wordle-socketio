@@ -13,6 +13,7 @@ type KeyboardProps = {
     greenLetters: string[];
     yellowLetters: string[];
     notFoundLetters: string[];
+    canSubmit: boolean;
     onEnter: () => void;
     onClick: (ch: string) => void;
     onBackspace: () => void;
@@ -23,6 +24,7 @@ export const Keyboard = ({
     yellowLetters,
     greenLetters,
     notFoundLetters,
+    canSubmit,
     onEnter,
     onClick,
     onBackspace,
@@ -36,7 +38,12 @@ export const Keyboard = ({
                         {i === 2 && (
                             <div
                                 onClick={onEnter}
-                                className={cn("box", "w-[42px] sm:w-[58px]")}
+                                className={cn(
+                                    "box",
+                                    "w-[42px] sm:w-[58px] transition",
+                                    !canSubmit &&
+                                    "pointer-events-none text-zinc-400 dark:text-zinc-500"
+                                )}
                             >
                                 <SendHorizonalIcon className="size-5 sm:size-6" />
                             </div>
