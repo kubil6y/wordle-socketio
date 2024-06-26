@@ -1,17 +1,24 @@
 import { Keyboard } from "@/components/keyboard";
 import { useState } from "react";
 import { ThemeSwitcher } from "./components/theme-switcher";
+import { Board } from "./components/board";
 
 const MAX_CHAR_LENGTH = 5;
 
 export function App() {
     const [letters, setLetters] = useState<string[]>([]);
+    const [pastTries, setPastTries] = useState<string[]>([]);
+    const [activeRowIndex, setActiveRowIndex] = useState<number>(0);
 
     function onEnter(): void {
-        if (!letters.length) {
+        if (!letters.length || letters.length !== MAX_CHAR_LENGTH) {
             return;
         }
-        console.log(letters.join(""));
+        setPastTries((prev) => {
+            return [...prev, letters.join("")];
+        });
+        setActiveRowIndex((prev) => prev + 1);
+        setLetters([]);
     }
 
     function onBackspace(): void {
@@ -33,18 +40,27 @@ export function App() {
     }
 
     return (
-        <div className="px-1 py-8">
+        <div className="container px-1 py-8">
             <ThemeSwitcher />
-            <Keyboard
-                language="en"
-                onEnter={onEnter}
-                onBackspace={onBackspace}
-                onClick={onClick}
-                greenLetters={["x", "y", "a"]}
-                yellowLetters={["b", "j", "k", "o"]}
-                notFoundLetters={["a", "u", "g"]}
+            <Board
+                width={5}
+                height={6}
+                activeWord={letters.join("")}
+                activeRowIndex={activeRowIndex}
+                pastTries={pastTries}
+                currentLetterIndex={letters.length}
             />
-            <div className="text-5xl">{letters.join("").toUpperCase()}</div>
+            <div className="mt-10">
+                <Keyboard
+                    language="en"
+                    onEnter={onEnter}
+                    onBackspace={onBackspace}
+                    onClick={onClick}
+                    greenLetters={["x", "y", "a"]}
+                    yellowLetters={["b", "j", "k", "o"]}
+                    notFoundLetters={["a", "u", "g"]}
+                />
+            </div>
         </div>
     );
 }
