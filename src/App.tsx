@@ -1,5 +1,6 @@
 import { Keyboard } from "@/components/keyboard";
 import { useState } from "react";
+import { ThemeSwitcher } from "./components/theme-switcher";
 
 const MAX_CHAR_LENGTH = 5;
 
@@ -33,6 +34,7 @@ export function App() {
 
     return (
         <div className="px-1 py-8">
+            <ThemeSwitcher />
             <Keyboard
                 language="en"
                 onEnter={onEnter}
@@ -40,6 +42,7 @@ export function App() {
                 onClick={onClick}
                 greenLetters={["x", "y", "a"]}
                 yellowLetters={["b", "j", "k", "o"]}
+                notFoundLetters={["a", "u", "g"]}
             />
             <div className="text-5xl">{letters.join("").toUpperCase()}</div>
         </div>

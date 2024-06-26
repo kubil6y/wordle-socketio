@@ -12,6 +12,7 @@ type KeyboardProps = {
     language: Language;
     greenLetters: string[];
     yellowLetters: string[];
+    notFoundLetters: string[];
     onEnter: () => void;
     onClick: (ch: string) => void;
     onBackspace: () => void;
@@ -21,6 +22,7 @@ export const Keyboard = ({
     language,
     yellowLetters,
     greenLetters,
+    notFoundLetters,
     onEnter,
     onClick,
     onBackspace,
@@ -36,12 +38,13 @@ export const Keyboard = ({
                                 onClick={onEnter}
                                 className={cn("box", "w-[42px] sm:w-[58px]")}
                             >
-                                <SendHorizonalIcon className="size-5 sm:size-6" />
+                                <SendHorizonalIcon className="size-4 sm:size-5" />
                             </div>
                         )}
                         {row.split("").map((ch, j) => {
                             const hiYellow = yellowLetters.includes(ch);
                             const hiGreen = greenLetters.includes(ch);
+                            const hiNotFound = notFoundLetters.includes(ch);
                             return (
                                 <Box
                                     key={j}
@@ -49,6 +52,7 @@ export const Keyboard = ({
                                     onClick={onClick}
                                     hiGreen={hiGreen}
                                     hiYellow={hiYellow}
+                                    hiNotFound={hiNotFound}
                                 />
                             );
                         })}
@@ -57,7 +61,7 @@ export const Keyboard = ({
                                 onClick={onBackspace}
                                 className={cn("box", "w-[42px] sm:w-[58px]")}
                             >
-                                <DeleteIcon className="size-5 sm:size-7" />
+                                <DeleteIcon className="size-4 sm:size-6" />
                             </div>
                         )}
                     </div>
@@ -71,16 +75,18 @@ type BoxProps = {
     ch: string;
     hiGreen: boolean;
     hiYellow: boolean;
+    hiNotFound: boolean;
     onClick: (ch: string) => void;
 };
 
-const Box = ({ ch, onClick, hiYellow, hiGreen }: BoxProps) => {
+const Box = ({ ch, onClick, hiYellow, hiGreen, hiNotFound }: BoxProps) => {
     return (
         <div
             className={cn(
                 "box",
-                hiYellow && "bg-amber-400 active:bg-amber-500",
-                hiGreen && "bg-emerald-400 active:bg-emerald-500"
+                hiYellow && "bg-amber-400 text-white",
+                hiGreen && "bg-green text-white",
+                hiNotFound && "bg-not_found text-white"
             )}
             onClick={() => onClick(ch)}
         >
