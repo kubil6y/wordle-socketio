@@ -1,10 +1,14 @@
 import { Keyboard } from "@/components/keyboard";
 import { Board } from "@/components/board";
-import { useCanSubmit, useWordle } from "@/hooks/use-wordle";
-import { Button } from "./ui/button";
+import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 
 export const Wordle = () => {
     const {
+        width,
+        height,
+        letters,
+        activeRowIndex,
+        pastTries,
         greenLetters,
         yellowLetters,
         notFoundLetters,
@@ -14,10 +18,21 @@ export const Wordle = () => {
         reset,
     } = useWordle();
     const canSubmit = useCanSubmit();
+    const hasBackspaced = useHasBackspaced();
 
     return (
         <div className="space-y-4 sm:space-y-12">
-            <Board />
+            <Board
+                width={width}
+                height={height}
+                letters={letters}
+                pastTries={pastTries}
+                activeRowIndex={activeRowIndex}
+                greenLetters={greenLetters}
+                yellowLetters={yellowLetters}
+                notFoundLetters={notFoundLetters}
+                hasBackspaced={hasBackspaced}
+            />
 
             <div className="">
                 <Keyboard

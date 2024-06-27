@@ -1,9 +1,28 @@
 import { cn } from "@/lib/utils";
-import { useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 
-export const Board = () => {
-    const { activeRowIndex, width, height, pastTries, letters } = useWordle();
-    const hasBackspaced = useHasBackspaced();
+type BoardProps = {
+    width: number;
+    height: number;
+    letters: string[];
+    pastTries: string[];
+    activeRowIndex: number;
+    hasBackspaced: boolean;
+    greenLetters: string[];
+    yellowLetters: string[];
+    notFoundLetters: string[];
+}
+
+export const Board = ({
+    width,
+    height,
+    letters,
+    pastTries,
+    activeRowIndex,
+    hasBackspaced,
+    greenLetters,
+    yellowLetters,
+    notFoundLetters,
+}: BoardProps) => {
     const activeWord = letters.join("");
     const currentLetterIndex = letters.length;
     return (
