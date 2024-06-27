@@ -17,7 +17,6 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuGroup,
-    DropdownMenuPortal,
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
@@ -25,8 +24,8 @@ import {
 import { Slider } from "./ui/slider";
 import { useConfig } from "@/hooks/use-config";
 import { useRef, useState } from "react";
-import { useClickAways } from "@/hooks/use-click-aways";
 import { useTheme } from "@/providers/theme-provider";
+import { useClickAway } from "react-use";
 import useSound from "use-sound";
 
 export const Settings = () => {
@@ -37,7 +36,7 @@ export const Settings = () => {
     const [playBeep] = useSound("/sounds/beep.mp3", { volume });
 
     const dropdownRef = useRef(null);
-    useClickAways([dropdownRef], () => {
+    useClickAway(dropdownRef, () => {
         setOpen(false);
     });
 
@@ -80,35 +79,37 @@ export const Settings = () => {
                 <DropdownMenuGroup>
                     <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
-                            <PaletteIcon className="size-4 mr-2" />
+                            {theme === "light" ? (
+                                <SunIcon className="size-4 mr-2" />
+                            ) : (
+                                <MoonIcon className="size-4 mr-2" />
+                            )}
+
                             <span>Theme</span>
                         </DropdownMenuSubTrigger>
 
-                        <DropdownMenuPortal>
-                            <DropdownMenuSubContent
+                        <DropdownMenuSubContent>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setTheme("light")}
                             >
-                                <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    onClick={() => setTheme("light")}
-                                >
-                                    <SunIcon className="size-4 mr-2" />
-                                    <span>Apollo</span>
-                                    {theme === "light" && (
-                                        <CheckIcon className="size-4 ml-auto" />
-                                    )}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    onClick={() => setTheme("dark")}
-                                >
-                                    <MoonIcon className="size-4 mr-2" />
-                                    <span>Artemis</span>
-                                    {theme === "dark" && (
-                                        <CheckIcon className="size-4 ml-auto" />
-                                    )}
-                                </DropdownMenuItem>
-                            </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
+                                <SunIcon className="size-4 mr-2" />
+                                <span>Apollo</span>
+                                {theme === "light" && (
+                                    <CheckIcon className="size-4 ml-auto" />
+                                )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => setTheme("dark")}
+                            >
+                                <MoonIcon className="size-4 mr-2" />
+                                <span>Diana</span>
+                                {theme === "dark" && (
+                                    <CheckIcon className="size-4 ml-auto" />
+                                )}
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
                     </DropdownMenuSub>
                 </DropdownMenuGroup>
             </DropdownMenuContent>
