@@ -19,6 +19,7 @@ import {
     DropdownMenuSub,
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
+    DropdownMenuPortal,
 } from "./ui/dropdown-menu";
 import { Slider } from "./ui/slider";
 import { useConfig } from "@/hooks/use-config";
@@ -51,6 +52,9 @@ export const Settings = () => {
                             max={1}
                             min={0}
                             step={0.1}
+                            onClick={(e) => {
+                                e.preventDefault();
+                            }}
                             onValueChange={(values) => {
                                 const [vol] = values;
                                 setVolume(vol);
@@ -74,28 +78,36 @@ export const Settings = () => {
                             <span>Theme</span>
                         </DropdownMenuSubTrigger>
 
-                        <DropdownMenuSubContent>
-                            <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setTheme("light")}
-                            >
-                                <SunIcon className="size-4 mr-2" />
-                                <span>Apollo</span>
-                                {theme === "light" && (
-                                    <CheckIcon className="size-4 ml-auto" />
-                                )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="cursor-pointer"
-                                onClick={() => setTheme("dark")}
-                            >
-                                <MoonIcon className="size-4 mr-2" />
-                                <span>Diana</span>
-                                {theme === "dark" && (
-                                    <CheckIcon className="size-4 ml-auto" />
-                                )}
-                            </DropdownMenuItem>
-                        </DropdownMenuSubContent>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setTheme("light");
+                                    }}
+                                >
+                                    <SunIcon className="size-4 mr-2" />
+                                    <span>Apollo</span>
+                                    {theme === "light" && (
+                                        <CheckIcon className="size-4 ml-auto" />
+                                    )}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setTheme("dark");
+                                    }}
+                                >
+                                    <MoonIcon className="size-4 mr-2" />
+                                    <span>Diana</span>
+                                    {theme === "dark" && (
+                                        <CheckIcon className="size-4 ml-auto" />
+                                    )}
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
                     </DropdownMenuSub>
                 </DropdownMenuGroup>
             </DropdownMenuContent>

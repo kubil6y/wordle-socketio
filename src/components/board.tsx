@@ -98,7 +98,8 @@ export const Cell = ({
                 hiYellow && "bg-amber-500 text-white dark:bg-amber-500",
                 hiGreen && "bg-emerald-500 text-white dark:bg-emerald-500",
                 hiNotFound && "bg-zinc-600 text-white dark:bg-zinc-600",
-                hiActive && "border-zinc-600 dark:border-zinc-300"
+                hiActive && "border-zinc-600 dark:border-zinc-300",
+                (hiYellow || hiGreen || hiNotFound) && "border-none"
             )}
         >
             <p className="text-3xl font-semibold  uppercase">{ch}</p>

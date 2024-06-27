@@ -9,6 +9,9 @@ module.exports = {
     ],
     prefix: "",
     theme: {
+        fontFamily: {
+            sans: ["Libre Franklin", "sans-serif"]
+        },
         container: {
             center: true,
             padding: "2rem",

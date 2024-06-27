@@ -60,9 +60,9 @@ export const Keyboard = ({
                                 }}
                                 className={cn(
                                     "box",
-                                    "w-[42px] sm:w-[58px] transition",
+                                    "w-[42px] transition sm:w-[58px] duration-300",
                                     !canSubmit &&
-                                    "pointer-events-none text-zinc-400 dark:text-zinc-500"
+                                    "pointer-events-none text-zinc-400 dark:text-zinc-600"
                                 )}
                             >
                                 <SendHorizonalIcon className="size-5 sm:size-6" />

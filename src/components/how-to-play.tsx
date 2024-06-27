@@ -6,9 +6,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { DotIcon, InfoIcon } from "lucide-react";
 import { Cell } from "./board";
+import { Button } from "@/components/ui/button";
+import { CheckIcon, InfoIcon } from "lucide-react";
 
 export const HowToPlay = () => {
     return (
@@ -29,12 +29,12 @@ export const HowToPlay = () => {
                 </DialogHeader>
 
                 <ul className="space-y-1">
-                    <li>
-                        <DotIcon className="inline" />
+                    <li className="flex items-center">
+                        <CheckIcon className="size-4 mr-2 inline shrink-0 text-emerald-600" />
                         Each guess must be a valid 5-letter word.
                     </li>
-                    <li>
-                        <DotIcon className="inline" />
+                    <li className="flex items-baseline">
+                        <CheckIcon className="size-4 mr-2 inline shrink-0 text-emerald-600" />
                         The color of the tiles will change to show how close
                         your guess was to the word.
                     </li>
