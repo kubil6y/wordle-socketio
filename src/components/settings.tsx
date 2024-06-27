@@ -3,7 +3,6 @@ import {
     CogIcon,
     LucideIcon,
     MoonIcon,
-    PaletteIcon,
     SunIcon,
     Volume1Icon,
     Volume2Icon,
@@ -23,40 +22,27 @@ import {
 } from "./ui/dropdown-menu";
 import { Slider } from "./ui/slider";
 import { useConfig } from "@/hooks/use-config";
-import { useRef, useState } from "react";
 import { useTheme } from "@/providers/theme-provider";
-import { useClickAway } from "react-use";
 import useSound from "use-sound";
 
 export const Settings = () => {
-    const [open, setOpen] = useState<boolean>(false);
     const { volume, setVolume } = useConfig();
     const { theme, setTheme } = useTheme();
 
     const [playBeep] = useSound("/sounds/beep.mp3", { volume });
 
-    const dropdownRef = useRef(null);
-    useClickAway(dropdownRef, () => {
-        setOpen(false);
-    });
-
     const VolIcon = resolveVolumeIcon(volume);
 
     return (
-        <DropdownMenu
-            open={open}
-            onOpenChange={() => {
-                setOpen(true);
-            }}
-        >
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
-                    <CogIcon className="h-[1.2rem] w-[1.2rem]" />
+                    <CogIcon className="size-[1.2rem]" />
                 </Button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-56" ref={dropdownRef}>
-                <DropdownMenuItem className="">
+            <DropdownMenuContent className="w-56">
+                <DropdownMenuItem>
                     <div className="flex w-full gap-2">
                         <VolIcon className="h-[1.2rem] w-[1.2rem]" />
                         <Slider

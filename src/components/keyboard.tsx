@@ -33,12 +33,17 @@ export const Keyboard = ({
     onBackspace,
 }: KeyboardProps) => {
     const { volume } = useConfig();
-    const canType = useCanType();
     const canBackspace = useCanBackspace();
 
-    const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", { volume });
-    const [playkeypressDelete] = useSound("/sounds/keypress_delete.ogg", {volume});
-    const [playkeypressReturn] = useSound("/sounds/keypress_return.ogg", {volume});
+    const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", {
+        volume,
+    });
+    const [playkeypressDelete] = useSound("/sounds/keypress_delete.ogg", {
+        volume,
+    });
+    const [playkeypressReturn] = useSound("/sounds/keypress_return.ogg", {
+        volume,
+    });
 
     let layout: string[] = resolveLayout(language);
 
@@ -72,9 +77,7 @@ export const Keyboard = ({
                                     key={j}
                                     ch={ch}
                                     onClick={(ch: string) => {
-                                        if (canType) {
-                                            playKeypressStandard();
-                                        }
+                                        playKeypressStandard();
                                         onClick(ch);
                                     }}
                                     hiGreen={hiGreen}

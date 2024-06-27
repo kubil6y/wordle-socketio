@@ -63,7 +63,7 @@ type CellProps = {
     animate: boolean;
 };
 
-const Cell = ({
+export const Cell = ({
     ch,
     hiActive,
     hiGreen,
@@ -79,7 +79,7 @@ const Cell = ({
                 hiYellow && "bg-amber-500 text-white dark:bg-amber-500",
                 hiGreen && "bg-emerald-500 text-white dark:bg-emerald-500",
                 hiNotFound && "bg-zinc-600 text-white dark:bg-zinc-600",
-                hiActive && "border-zinc-500 dark:border-zinc-300"
+                hiActive && "border-zinc-600 dark:border-zinc-300"
             )}
         >
             <p className="text-3xl font-semibold  uppercase">{ch}</p>

@@ -43,7 +43,7 @@ export function SoundControls() {
                     size="icon"
                     onClick={() => setOpen(true)}
                 >
-                    <VolIcon className="h-[1.2rem] w-[1.2rem]" />
+                    <VolIcon className="size-[1.2rem]" />
                 </Button>
             </DropdownMenuTrigger>
 

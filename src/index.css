@@ -82,4 +82,8 @@
     .box {
         @apply standard-shadow flex h-[58px] w-[28px] cursor-pointer select-none items-center justify-center rounded font-semibold uppercase transition duration-75 sm:w-[48px] sm:text-lg dark:bg-zinc-400 bg-zinc-300;
     }
+    
+    .main-container {
+        @apply max-w-[800px] w-full mx-auto;
+    }
 }
