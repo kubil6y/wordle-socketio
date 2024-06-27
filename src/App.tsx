@@ -4,6 +4,7 @@ import { Board } from "./components/board";
 import { useCanSubmit, useWordle } from "./hooks/use-wordle";
 import { Button } from "./components/ui/button";
 import { SoundControls } from "./components/sound-controls";
+import { Settings } from "./components/settings";
 
 export function App() {
     const {
@@ -21,8 +22,7 @@ export function App() {
         <div className="container px-1 py-8">
             <div className="flex gap-2">
                 <Button onClick={reset}>reset</Button>
-                <ThemeSwitcher />
-                <SoundControls />
+                <Settings />
             </div>
 
             <Board />
