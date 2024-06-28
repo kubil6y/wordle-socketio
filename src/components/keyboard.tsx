@@ -60,7 +60,7 @@ export const Keyboard = ({
                                 }}
                                 className={cn(
                                     "box",
-                                    "w-[42px] transition sm:w-[58px] duration-300",
+                                    "w-[42px] transition sm:w-[58px] duration-200",
                                     !canSubmit &&
                                     "pointer-events-none text-zinc-400 dark:text-zinc-600"
                                 )}

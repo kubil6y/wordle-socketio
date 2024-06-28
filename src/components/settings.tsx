@@ -25,6 +25,7 @@ import { Slider } from "./ui/slider";
 import { useConfig } from "@/hooks/use-config";
 import { useTheme } from "@/providers/theme-provider";
 import useSound from "use-sound";
+import { Icons } from "./icons";
 
 export const Settings = () => {
     const { volume, setVolume } = useConfig();
@@ -117,6 +118,20 @@ export const Settings = () => {
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
                 </DropdownMenuGroup>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem>
+                    <a
+                        href="https://www.github.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center w-full gap-2"
+                    >
+                        <Icons.github className="size-4 dark:fill-foreground" />
+                        <span>GitHub</span>
+                    </a>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

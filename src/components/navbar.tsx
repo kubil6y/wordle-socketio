@@ -1,7 +1,5 @@
 import { Settings } from "./settings";
 import { HowToPlay } from "./how-to-play";
-import { Button } from "./ui/button";
-import { Icons } from "./icons";
 
 export const Navbar = () => {
     return (
@@ -14,7 +12,6 @@ export const Navbar = () => {
                 </p>
 
                 <div className="flex items-center justify-end gap-2 sm:w-[120px]">
-                    <GithubLink />
                     <HowToPlay />
                     <Settings />
                 </div>
@@ -22,11 +19,3 @@ export const Navbar = () => {
         </nav>
     );
 };
-
-function GithubLink() {
-    return (
-        <Button variant="outline" size="icon">
-            <Icons.github className="size-[1.2rem] dark:fill-white" />
-        </Button>
-    );
-}

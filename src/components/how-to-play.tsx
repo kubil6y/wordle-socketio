@@ -2,6 +2,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -9,16 +10,17 @@ import {
 import { Cell } from "./board";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, InfoIcon } from "lucide-react";
+import { Icons } from "./icons";
 
 export const HowToPlay = () => {
     return (
-        <Dialog >
+        <Dialog>
             <DialogTrigger asChild>
                 <Button variant="outline" size="icon">
                     <InfoIcon className="size-[1.2rem]" />
                 </Button>
             </DialogTrigger>
-            <DialogContent className="h-full sm:h-auto" >
+            <DialogContent className="h-full sm:h-auto">
                 <DialogHeader>
                     <DialogTitle className="text-start text-4xl font-semibold">
                         How to Play
@@ -40,7 +42,9 @@ export const HowToPlay = () => {
                     </li>
                 </ul>
 
-                <p className="mt-2 text-start text-3xl font-semibold">Examples</p>
+                <p className="mt-2 text-start text-3xl font-semibold">
+                    Examples
+                </p>
 
                 <div className="space-y-4">
                     <div className="space-y-2">
@@ -193,6 +197,21 @@ export const HowToPlay = () => {
                         </p>
                     </div>
                 </div>
+
+                <DialogFooter className="mr-auto flex items-center justify-center text-sm text-muted-foreground">
+                    <p>
+                        This project is open source! You can check it out on
+                        <a
+                            href="https://www.github.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-inline ml-1 items-center gap-1 hover:underline"
+                        >
+                            <span>GitHub</span>
+                            <Icons.github className="size-4 sm:size-5 ml-1 inline animate-bounce fill-muted-foreground duration-500" />
+                        </a>
+                    </p>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
