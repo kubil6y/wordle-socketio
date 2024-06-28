@@ -45,7 +45,13 @@ export const Settings = () => {
             <DropdownMenuContent className="w-56">
                 <DropdownMenuItem>
                     <div className="flex w-full gap-2">
-                        <VolIcon className="h-[1.2rem] w-[1.2rem]" />
+                        <VolIcon
+                            className="size-[1.2rem] cursor-pointer"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setVolume(0);
+                            }}
+                        />
                         <Slider
                             className="flex-grow cursor-pointer"
                             defaultValue={[volume]}
@@ -55,6 +61,7 @@ export const Settings = () => {
                             onClick={(e) => {
                                 e.preventDefault();
                             }}
+                            value={[volume]}
                             onValueChange={(values) => {
                                 const [vol] = values;
                                 setVolume(vol);
