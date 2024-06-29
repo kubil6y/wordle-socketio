@@ -5,21 +5,18 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Cell } from "./board";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, InfoIcon } from "lucide-react";
 import { Icons } from "./icons";
+import { useHowToPlayModal } from "@/hooks/use-how-to-play-modal";
+import { ModalFooter } from "./modal-footer";
 
-export const HowToPlay = () => {
+export const HowToPlayModal = () => {
+    const { isOpen, close } = useHowToPlayModal();
     return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="icon">
-                    <InfoIcon className="size-[1.2rem]" />
-                </Button>
-            </DialogTrigger>
+        <Dialog onOpenChange={close} open={isOpen}>
             <DialogContent className="h-full sm:h-auto">
                 <DialogHeader>
                     <DialogTitle className="text-start text-4xl font-semibold">
@@ -198,21 +195,17 @@ export const HowToPlay = () => {
                     </div>
                 </div>
 
-                <DialogFooter className="mr-auto flex items-center justify-center text-sm text-muted-foreground">
-                    <p>
-                        This project is open source! You can check it out on
-                        <a
-                            href="https://www.github.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-inline ml-1 items-center gap-1 hover:underline"
-                        >
-                            <span>GitHub</span>
-                            <Icons.github className="size-4 sm:size-5 ml-1 inline animate-bounce fill-muted-foreground duration-500" />
-                        </a>
-                    </p>
-                </DialogFooter>
+                <ModalFooter />
             </DialogContent>
         </Dialog>
+    );
+};
+
+export const HowToPlayButton = () => {
+    const { open } = useHowToPlayModal();
+    return (
+        <Button variant="outline" size="icon" onClick={open}>
+            <InfoIcon className="size-[1.2rem]" />
+        </Button>
     );
 };

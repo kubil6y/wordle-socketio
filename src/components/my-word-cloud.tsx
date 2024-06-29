@@ -1,11 +1,11 @@
+import { useMemo } from "react";
+import { useMedia } from "react-use";
 import { wordFreq } from "@/lib/utils";
 import { scaleLog } from "@visx/scale";
 import { Wordcloud } from "@visx/wordcloud";
 import { Text } from "@visx/text";
 import { Theme, useTheme } from "@/providers/theme-provider";
-import { useMedia } from "react-use";
 import { waspCharismaLyrics } from "@/data/wasp-charisma-lyrics";
-import { useMemo } from "react";
 
 export function MyWordCloud() {
     const { theme } = useTheme();

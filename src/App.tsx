@@ -2,6 +2,7 @@ import { Navbar } from "./components/navbar";
 import { Wordle } from "./components/wordle";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { LandingPage } from "./pages/landing";
+import { Deneme } from "./components/deneme";
 
 export function App() {
     return (
@@ -20,6 +21,7 @@ export function App() {
 function Layout() {
     return (
         <>
+            <Deneme />
             <Navbar />
             <Outlet />
         </>

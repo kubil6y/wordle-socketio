@@ -1,5 +1,5 @@
 import { Settings } from "./settings";
-import { HowToPlay } from "./how-to-play";
+import { HowToPlayButton } from "./how-to-play";
 import { Link } from "react-router-dom";
 
 export const Navbar = () => {
@@ -15,7 +15,7 @@ export const Navbar = () => {
                 </Link>
 
                 <div className="flex items-center justify-end gap-2 sm:w-[120px]">
-                    <HowToPlay />
+                    <HowToPlayButton />
                     <Settings />
                 </div>
             </div>

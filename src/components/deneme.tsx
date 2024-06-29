@@ -25,26 +25,14 @@ export const Deneme = () => {
             setTransport("N/A");
         }
 
-        function onFoo(msg: string) {
-            setMsg(msg);
-        }
-
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
-        socket.on("foo", onFoo);
 
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
-            socket.off("foo", onFoo);
         };
     }, []);
 
-    return (
-        <div>
-            <p>{msg}</p>
-            <p>Status: {isConnected ? "connected" : "disconnected"}</p>
-            <p>Transport: {transport}</p>
-        </div>
-    );
+    return null;
 }
