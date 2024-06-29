@@ -22,6 +22,8 @@ import { cn } from "@/lib/utils";
 import { CheckIcon } from "lucide-react";
 import { ModalFooter } from "./modal-footer";
 import { socket } from "@/lib/socket";
+import { ConnectionStatus } from "./connection-status";
+import { useSocketStatus } from "@/hooks/use-socket-connection";
 
 const DEFAULT_LANGUAGE = "en";
 const languages = [
@@ -35,6 +37,7 @@ enum GameType {
 }
 
 export const NewGameModal = () => {
+    const {isConnected} = useSocketStatus();
     const { isOpen, close } = useNewGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
 
@@ -42,20 +45,19 @@ export const NewGameModal = () => {
     const [lang, setLang] = useState<string>(DEFAULT_LANGUAGE);
 
     async function onCreate() {
-        // TODO leftoff
         const response = await socket.emitWithAck("create_game", {
             lang,
             gameType: gameTypeToString(gameType).toLowerCase(),
         });
-        console.log({response});
+        console.log({ response });
     }
 
     return (
         <Dialog open={isOpen} onOpenChange={close}>
             <DialogContent className="flex h-full flex-col sm:h-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-start text-4xl font-semibold">
-                        New Game
+                    <DialogTitle className="text-4xl font-semibold flex items-center gap-4">
+                        New Game <ConnectionStatus />
                     </DialogTitle>
                     <DialogDescription className="text-start">
                         If you are unfamiliar with how to play, please click{" "}
@@ -132,6 +134,7 @@ export const NewGameModal = () => {
                     size="lg"
                     variant="outline"
                     className="mt-4 select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                    disabled={!isConnected}
                     onClick={onCreate}
                 >
                     Create

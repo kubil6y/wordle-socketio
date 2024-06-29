@@ -1,10 +1,9 @@
+import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { socket } from "@/lib/socket";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const Deneme = () => {
-    const [isConnected, setIsConnected] = useState<boolean>(false);
-    const [transport, setTransport] = useState<string>("N/A");
-    const [msg, setMsg] = useState<string>("");
+    const { setIsConnected, setTransport } = useSocketStatus();
 
     useEffect(() => {
         if (socket.connected) {
@@ -35,4 +34,4 @@ export const Deneme = () => {
     }, []);
 
     return null;
-}
+};

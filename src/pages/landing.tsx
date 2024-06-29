@@ -5,10 +5,7 @@ import { useNewGameModal } from "@/hooks/use-new-game-modal";
 export const LandingPage = () => {
     return (
         <div>
-            {/* TODO */}
-            {/*
-              *<MyWordCloud />
-              */}
+            <MyWordCloud />
 
             <div className="mt-8 flex items-center justify-center sm:-mt-4">
                 <PlayButton />

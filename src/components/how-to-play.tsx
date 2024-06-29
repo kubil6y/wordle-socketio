@@ -2,19 +2,19 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Cell } from "./board";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, InfoIcon } from "lucide-react";
-import { Icons } from "./icons";
 import { useHowToPlayModal } from "@/hooks/use-how-to-play-modal";
 import { ModalFooter } from "./modal-footer";
+import { useNewGameModal } from "@/hooks/use-new-game-modal";
 
 export const HowToPlayModal = () => {
     const { isOpen, close } = useHowToPlayModal();
+    const { open: openNewGameModal } = useNewGameModal();
     return (
         <Dialog onOpenChange={close} open={isOpen}>
             <DialogContent className="h-full sm:h-auto">
@@ -27,7 +27,7 @@ export const HowToPlayModal = () => {
                     </DialogDescription>
                 </DialogHeader>
 
-                <ul className="space-y-1">
+                <ul className="space-y-1 text-sm">
                     <li className="flex items-center">
                         <CheckIcon className="size-4 mr-2 inline shrink-0 text-emerald-600" />
                         Each guess must be a valid 5-letter word.
@@ -145,7 +145,7 @@ export const HowToPlayModal = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <div className="flex gap-1.5">
+                        <div className="flex gap-1">
                             <Cell
                                 ch="v"
                                 hiActive={false}
@@ -193,6 +193,18 @@ export const HowToPlayModal = () => {
                             the word in any spot.{" "}
                         </p>
                     </div>
+
+                    <Button
+                        size="lg"
+                        variant="outline"
+                        className="mt-4 w-full select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                        onClick={() => {
+                            close();
+                            openNewGameModal();
+                        }}
+                    >
+                        Play
+                    </Button>
                 </div>
 
                 <ModalFooter />
