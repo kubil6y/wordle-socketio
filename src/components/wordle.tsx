@@ -7,6 +7,7 @@ export const Wordle = () => {
         width,
         height,
         letters,
+        language,
         activeRowIndex,
         pastTries,
         greenLetters,
@@ -36,7 +37,7 @@ export const Wordle = () => {
 
             <div className="">
                 <Keyboard
-                    language="en"
+                    language={language}
                     canSubmit={canSubmit}
                     onEnter={submitWord}
                     onBackspace={removeLetter}

@@ -8,7 +8,6 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { Badge } from "@/components/ui/badge";
 import {
     CircleIcon,
-    FlameIcon,
     MonitorCheckIcon,
     MonitorOffIcon,
 } from "lucide-react";

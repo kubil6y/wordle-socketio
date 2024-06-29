@@ -8,7 +8,7 @@ interface SocketStatusState {
 }
 
 export const useSocketStatus = create<SocketStatusState>()((set) => ({
-    isConnected: true,
+    isConnected: false,
     transport: "N/A",
     setIsConnected: (isConnected: boolean) => set({ isConnected }),
     setTransport: (transport) => set({ transport }),

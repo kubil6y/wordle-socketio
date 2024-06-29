@@ -1,27 +1,25 @@
 import { Navbar } from "./components/navbar";
-import { Wordle } from "./components/wordle";
-import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import { LandingPage } from "./pages/landing";
-import { Deneme } from "./components/deneme";
+import { SocketIO } from "@/components/socket-io";
+import { PlayPage } from "./pages/play";
 
 export function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Layout />}>
-                    <Route index element={<LandingPage />} />
-                    <Route path="sp" element={<div>single player</div>} />
-                    <Route path="mp" element={<div>multi player</div>} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <Routes>
+            <Route path="/" element={<Layout />}>
+                <Route index element={<LandingPage />} />
+                <Route path="play" element={<PlayPage />} />
+                <Route path="mp" element={<div>multi player</div>} />
+            </Route>
+        </Routes>
     );
 }
 
 function Layout() {
     return (
         <>
-            <Deneme />
+            <SocketIO />
             <Navbar />
             <Outlet />
         </>

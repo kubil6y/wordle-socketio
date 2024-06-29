@@ -1,8 +1,8 @@
-import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { socket } from "@/lib/socket";
 import { useEffect } from "react";
+import { useSocketStatus } from "@/hooks/use-socket-connection";
 
-export const Deneme = () => {
+export const SocketIO = () => {
     const { setIsConnected, setTransport } = useSocketStatus();
 
     useEffect(() => {

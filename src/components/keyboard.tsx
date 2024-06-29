@@ -1,10 +1,8 @@
-import { useConfig } from "@/hooks/use-config";
-import { useCanBackspace, useCanType } from "@/hooks/use-wordle";
 import { cn } from "@/lib/utils";
+import { useConfig } from "@/hooks/use-config";
+import { Language, useCanBackspace, useCanType } from "@/hooks/use-wordle";
 import { DeleteIcon, SendHorizonalIcon } from "lucide-react";
 import useSound from "use-sound";
-
-type Language = "en" | "tur";
 
 const layout = {
     en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],
@@ -34,6 +32,7 @@ export const Keyboard = ({
 }: KeyboardProps) => {
     const { volume } = useConfig();
     const canBackspace = useCanBackspace();
+    const canType = useCanType();
 
     const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", {
         volume,
@@ -77,8 +76,10 @@ export const Keyboard = ({
                                     key={j}
                                     ch={ch}
                                     onClick={(ch: string) => {
-                                        playKeypressStandard();
-                                        onClick(ch);
+                                        if (canType) {
+                                            playKeypressStandard();
+                                            onClick(ch);
+                                        }
                                     }}
                                     hiGreen={hiGreen}
                                     hiYellow={hiYellow}

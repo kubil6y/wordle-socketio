@@ -24,8 +24,9 @@ import { ModalFooter } from "./modal-footer";
 import { socket } from "@/lib/socket";
 import { ConnectionStatus } from "./connection-status";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
+import { useNavigate } from "react-router-dom";
+import { Language, useWordle } from "@/hooks/use-wordle";
 
-const DEFAULT_LANGUAGE = "en";
 const languages = [
     { label: "English", value: "en" },
     { label: "Turkish", value: "tur" },
@@ -37,19 +38,26 @@ enum GameType {
 }
 
 export const NewGameModal = () => {
-    const {isConnected} = useSocketStatus();
+    const { isConnected } = useSocketStatus();
     const { isOpen, close } = useNewGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
+    const navigate = useNavigate();
+    const wordle = useWordle();
 
     const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
-    const [lang, setLang] = useState<string>(DEFAULT_LANGUAGE);
+    const [language, setLanguage] = useState<Language>("en");
 
     async function onCreate() {
         const response = await socket.emitWithAck("create_game", {
-            lang,
-            gameType: gameTypeToString(gameType).toLowerCase(),
+            language,
+            gameType: gameTypeToString(gameType),
         });
-        console.log({ response });
+
+        if (response.ok) {
+            close();
+            navigate("/play");
+            wordle.setup(5, 6, language);
+        }
     }
 
     return (
@@ -83,7 +91,7 @@ export const NewGameModal = () => {
                         <Select
                             defaultValue="en"
                             onValueChange={(value) => {
-                                setLang(value);
+                                setLanguage(value as Language);
                             }}
                         >
                             <SelectTrigger className="w-[180px]">
@@ -188,9 +196,9 @@ const SelectGameTypeButton = ({
 function gameTypeToString(gameType: GameType) {
     switch (gameType) {
         case GameType.Multiplayer:
-            return "Multiplayer";
+            return "multiplayer";
         default:
         case GameType.Singleplayer:
-            return "Singleplayer";
+            return "singleplayer";
     }
 }

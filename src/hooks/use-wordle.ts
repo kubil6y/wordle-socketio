@@ -1,9 +1,12 @@
 import { usePrevious } from "react-use";
 import { create } from "zustand";
 
+export type Language = "en" | "tur";
+
 interface WordleState {
     width: number;
     height: number;
+    language: Language;
     letters: string[];
     pastTries: string[];
     activeRowIndex: number;
@@ -11,16 +14,17 @@ interface WordleState {
     yellowLetters: string[];
     notFoundLetters: string[];
     reset: () => void;
-    setWidthAndHeight: (width: number, height: number) => void;
     setActiveRowIndex: (index: number) => void;
     pushLetter: (letter: string) => void;
     removeLetter: () => void;
     submitWord: () => void;
+    setup: (width: number, height: number, language: Language) => void;
 }
 
 export const useWordle = create<WordleState>()((set) => ({
     width: 5,
     height: 6,
+    language: "en",
     activeRowIndex: 0,
     letters: [],
     pastTries: [],
@@ -29,8 +33,6 @@ export const useWordle = create<WordleState>()((set) => ({
     notFoundLetters: [],
     reset: () =>
         set({
-            width: 5,
-            height: 6,
             activeRowIndex: 0,
             letters: [],
             pastTries: [],
@@ -38,8 +40,12 @@ export const useWordle = create<WordleState>()((set) => ({
             yellowLetters: [],
             notFoundLetters: [],
         }),
-    setWidthAndHeight: (width: number, height: number) =>
-        set({ width, height }),
+    setup: (width: number, height: number, language: Language) =>
+        set({
+            width,
+            height,
+            language,
+        }),
     setActiveRowIndex: (index: number) => set({ activeRowIndex: index }),
     removeLetter: () =>
         set((state) => {
@@ -85,16 +91,16 @@ export const useHasBackspaced = () => {
 };
 
 export const useCanSubmit = () => {
-    const { letters, width } = useWordle();
-    return letters.length == width;
+    const { letters, width, height, activeRowIndex} = useWordle();
+    return letters.length == width && activeRowIndex < height;
 };
 
 export const useCanType = () => {
-    const { letters, width } = useWordle();
-    return letters.length < width;
-}
+    const { letters, width, height, activeRowIndex} = useWordle();
+    return letters.length < width && activeRowIndex < height;
+};
 
 export const useCanBackspace = () => {
     const { letters } = useWordle();
     return letters.length !== 0;
-}
+};
