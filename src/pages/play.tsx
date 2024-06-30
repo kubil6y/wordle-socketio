@@ -1,24 +1,30 @@
 import { Wordle } from "@/components/wordle";
+import { useNewGameModal } from "@/hooks/use-new-game-modal";
+import { useWordle } from "@/hooks/use-wordle";
 import { socket } from "@/lib/socket";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 export const PlayPage = () => {
-    const navigate = useNavigate();
+    const newGameModal = useNewGameModal();
+    const { setConfig, setData } = useWordle();
 
     useEffect(() => {
         async function hasGame() {
             const response = await socket.emitWithAck("has_game", {
                 gameType: "singleplayer",
             });
+            console.log(response);
             if (!response.ok) {
-                toast.error("Game not found!");
-                navigate("/");
+                newGameModal.open();
+            } else {
+                setConfig(response.config);
+                setData(response.data);
             }
         }
         hasGame();
     }, []);
+
     return (
         <div>
             <Wordle />

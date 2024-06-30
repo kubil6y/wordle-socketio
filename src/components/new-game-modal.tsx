@@ -53,10 +53,9 @@ export const NewGameModal = () => {
             gameType: gameTypeToString(gameType),
         });
         if (response.ok) {
-            const { width, height, language, secretWord } = response.data;
             close();
             wordle.resetAll();
-            wordle.setup(width, height, language, secretWord);
+            wordle.setConfig(response.config);
             navigate("/play");
         }
     }

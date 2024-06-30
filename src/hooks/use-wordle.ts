@@ -25,12 +25,12 @@ interface WordleState {
     pushLetter: (letter: string) => void;
     removeLetter: () => void;
     submitWord: () => void;
-    setup: (
-        width: number,
-        height: number,
-        language: Language,
-        secretWord: string
-    ) => void;
+    setConfig: (config: {
+        width: number;
+        height: number;
+        language: Language;
+        secretWord: string;
+    }) => void;
     setData: (data: {
         coloredLetters: LetterData[];
         notFoundLetters: string[];
@@ -59,12 +59,7 @@ export const useWordle = create<WordleState>()((set) => ({
             coloredLetters: [],
             notFoundLetters: [],
         }),
-    setup: (
-        width: number,
-        height: number,
-        language: Language,
-        secretWord: string
-    ) =>
+    setConfig: ({ width, height, secretWord, language }) =>
         set({
             width,
             height,
