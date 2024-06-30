@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { LetterData } from "@/hooks/use-wordle";
 
 type BoardProps = {
     width: number;
@@ -7,10 +8,9 @@ type BoardProps = {
     pastTries: string[];
     activeRowIndex: number;
     hasBackspaced: boolean;
-    greenLetters: string[];
-    yellowLetters: string[];
+    coloredLetters: LetterData[];
     notFoundLetters: string[];
-}
+};
 
 export const Board = ({
     width,
@@ -19,12 +19,12 @@ export const Board = ({
     pastTries,
     activeRowIndex,
     hasBackspaced,
-    greenLetters,
-    yellowLetters,
+    coloredLetters,
     notFoundLetters,
 }: BoardProps) => {
     const activeWord = letters.join("");
     const currentLetterIndex = letters.length;
+
     return (
         <div className="flex flex-col items-center gap-2">
             {new Array(height).fill(null).map((_, rowIndex) => {
@@ -50,9 +50,33 @@ export const Board = ({
                             const hiActive =
                                 activeRowIndex === rowIndex &&
                                 letters.length > i;
-                            const hiGreen = false;
-                            const hiYellow = false;
-                            const hiNotFound = false;
+
+                            const hiGreen =
+                                !hiActive &&
+                                Boolean(
+                                    coloredLetters.find((item) => {
+                                        return (
+                                            item.index === i &&
+                                            item.color === "green" &&
+                                            item.letter === ch
+                                        );
+                                    })
+                                );
+
+                            const hiYellow =
+                                !hiActive &&
+                                Boolean(
+                                    coloredLetters.find((item) => {
+                                        return (
+                                            item.index === i &&
+                                            item.color === "yellow" &&
+                                            item.letter === ch
+                                        );
+                                    })
+                                );
+
+                            const hiNotFound =
+                                notFoundLetters.includes(ch) && !hiActive;
 
                             return (
                                 <Cell

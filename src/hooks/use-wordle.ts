@@ -3,50 +3,75 @@ import { create } from "zustand";
 
 export type Language = "en" | "tur";
 
+export type LetterData = {
+    index: number;
+    color: string;
+    letter: string;
+};
+
 interface WordleState {
     width: number;
     height: number;
+    active: boolean;
     language: Language;
+    secretWord: string; // TODO
     letters: string[];
     pastTries: string[];
     activeRowIndex: number;
-    greenLetters: string[];
-    yellowLetters: string[];
+    coloredLetters: LetterData[];
     notFoundLetters: string[];
-    reset: () => void;
-    setActiveRowIndex: (index: number) => void;
+    resetAll: () => void;
+    clearLetters: () => void;
     pushLetter: (letter: string) => void;
     removeLetter: () => void;
     submitWord: () => void;
-    setup: (width: number, height: number, language: Language) => void;
+    setup: (
+        width: number,
+        height: number,
+        language: Language,
+        secretWord: string
+    ) => void;
+    setData: (data: {
+        coloredLetters: LetterData[];
+        notFoundLetters: string[];
+        pastTries: string[];
+        activeRowIndex: number;
+    }) => void;
 }
 
 export const useWordle = create<WordleState>()((set) => ({
     width: 5,
     height: 6,
+    active: false,
+    secretWord: "",
     language: "en",
     activeRowIndex: 0,
     letters: [],
     pastTries: [],
-    greenLetters: [],
-    yellowLetters: [],
+    coloredLetters: [],
     notFoundLetters: [],
-    reset: () =>
+    resetAll: () =>
         set({
             activeRowIndex: 0,
+            active: false,
             letters: [],
             pastTries: [],
-            greenLetters: [],
-            yellowLetters: [],
+            coloredLetters: [],
             notFoundLetters: [],
         }),
-    setup: (width: number, height: number, language: Language) =>
+    setup: (
+        width: number,
+        height: number,
+        language: Language,
+        secretWord: string
+    ) =>
         set({
             width,
             height,
+            secretWord,
             language,
+            active: true,
         }),
-    setActiveRowIndex: (index: number) => set({ activeRowIndex: index }),
     removeLetter: () =>
         set((state) => {
             if (state.letters.length === 0) {
@@ -81,6 +106,12 @@ export const useWordle = create<WordleState>()((set) => ({
                 pastTries: [...state.pastTries, state.letters.join("")],
             };
         }),
+    setData: (data) =>
+        set((state) => ({
+            ...state,
+            ...data,
+        })),
+    clearLetters: () => set({ letters: [] }),
 }));
 
 export const useHasBackspaced = () => {
@@ -91,13 +122,13 @@ export const useHasBackspaced = () => {
 };
 
 export const useCanSubmit = () => {
-    const { letters, width, height, activeRowIndex} = useWordle();
-    return letters.length == width && activeRowIndex < height;
+    const { letters, width, height, activeRowIndex, active } = useWordle();
+    return letters.length == width && activeRowIndex < height && active;
 };
 
 export const useCanType = () => {
-    const { letters, width, height, activeRowIndex} = useWordle();
-    return letters.length < width && activeRowIndex < height;
+    const { letters, width, height, activeRowIndex, active } = useWordle();
+    return letters.length < width && activeRowIndex < height && active;
 };
 
 export const useCanBackspace = () => {
