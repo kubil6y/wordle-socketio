@@ -5,7 +5,6 @@ export const ModalProvider = () => {
     return (
         <>
             <HowToPlayModal />
-            <NewGameModal />
         </>
     )
 }

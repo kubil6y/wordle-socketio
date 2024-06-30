@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { MyWordCloud } from "@/components/my-word-cloud";
 import { useNewGameModal } from "@/hooks/use-new-game-modal";
+import { NewGameModal } from "@/components/new-game-modal";
 
 export const LandingPage = () => {
     return (
         <div>
+            <NewGameModal />
             <MyWordCloud />
 
             <div className="mt-8 flex items-center justify-center sm:-mt-4">

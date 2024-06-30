@@ -70,7 +70,7 @@ export const Wordle = () => {
     }
 
     return (
-        <div className="space-y-4 sm:space-y-12">
+        <div className="space-y-4 sm:space-y-12 mt-4 sm:mt-12">
             <Board
                 width={width}
                 height={height}
@@ -81,8 +81,6 @@ export const Wordle = () => {
                 notFoundLetters={notFoundLetters}
                 hasBackspaced={hasBackspaced}
             />
-
-            <p className="text-2xl">{secretWord}</p>
 
             <div className="">
                 <Keyboard

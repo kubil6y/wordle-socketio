@@ -137,7 +137,7 @@ const Box = ({ ch, onClick, hiYellow, hiGreen, hiNotFound }: BoxProps) => {
 
 function resolveLayout(language: Language): string[] {
     switch (language) {
-        case "tur":
+        case "tr":
             return layout.tur;
         case "en":
             return layout.en;

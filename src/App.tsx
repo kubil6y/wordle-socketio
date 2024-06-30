@@ -3,6 +3,7 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import { LandingPage } from "./pages/landing";
 import { SocketIO } from "@/components/socket-io";
 import { PlayPage } from "./pages/play";
+import { HtmlLanguageMatcher } from "./components/html-language-matcher";
 
 export function App() {
     return (
@@ -21,16 +22,8 @@ function Layout() {
         <>
             <SocketIO />
             <Navbar />
+            <HtmlLanguageMatcher />
             <Outlet />
         </>
     );
 }
-
-/*
-<div className="h-screen w-screen">
-    <Navbar />
-    <div className="mt-4 sm:mt-12">
-        <Wordle />
-    </div>
-</div>
-*/

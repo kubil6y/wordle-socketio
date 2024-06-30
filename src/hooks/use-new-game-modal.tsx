@@ -7,7 +7,7 @@ interface NewGameModalState {
 }
 
 export const useNewGameModal = create<NewGameModalState>()((set) => ({
-    isOpen: false,
+    isOpen: true,
     open: () => set(() => ({ isOpen: true })),
     close: () => set(() => ({ isOpen: false })),
 }));

@@ -1,7 +1,7 @@
 import { usePrevious } from "react-use";
 import { create } from "zustand";
 
-export type Language = "en" | "tur";
+export type Language = "en" | "tr";
 
 export type LetterData = {
     index: number;

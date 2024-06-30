@@ -26,10 +26,11 @@ import { ConnectionStatus } from "./connection-status";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
 import { Language, useWordle } from "@/hooks/use-wordle";
+import { Logo } from "./logo";
 
 const languages = [
     { label: "English", value: "en" },
-    { label: "Turkish", value: "tur" },
+    { label: "Turkish", value: "tr" },
 ];
 
 enum GameType {
@@ -37,7 +38,11 @@ enum GameType {
     Multiplayer,
 }
 
-export const NewGameModal = () => {
+type NewGameModalProps = {
+    isClosable?: boolean;
+};
+
+export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
     const { isConnected } = useSocketStatus();
     const { isOpen, close } = useNewGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
@@ -60,13 +65,25 @@ export const NewGameModal = () => {
         }
     }
 
+    function onClose() {
+        if (isClosable) {
+            close();
+        }
+    }
+
     return (
-        <Dialog open={isOpen} onOpenChange={close}>
+        <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="flex h-full flex-col sm:h-auto">
                 <DialogHeader>
-                    <DialogTitle className="text-4xl font-semibold flex items-center gap-4">
-                        New Game <ConnectionStatus />
+                    <div className="flex items-center gap-4 mb-2">
+                        <Logo onClick={close} />
+                        <ConnectionStatus />
+                    </div>
+
+                    <DialogTitle className="text-4xl font-semibold">
+                        New Game 
                     </DialogTitle>
+
                     <DialogDescription className="text-start">
                         If you are unfamiliar with how to play, please click{" "}
                         <span
