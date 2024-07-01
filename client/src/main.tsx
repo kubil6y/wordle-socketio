@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <HelmetProvider>
                 <BrowserRouter>
                     <Toaster
-                        position="top-center"
+                        position="top-left"
                         richColors
                         theme="light"
                         closeButton
