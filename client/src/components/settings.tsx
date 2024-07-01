@@ -123,7 +123,7 @@ export const Settings = () => {
 
                 <DropdownMenuItem>
                     <a
-                        href="https://www.github.com"
+                        href="https://github.com/kubil6y/wordle-socketio"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center w-full gap-2"

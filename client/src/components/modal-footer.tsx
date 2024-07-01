@@ -13,7 +13,7 @@ export const ModalFooter = ({ className }: { className?: string }) => {
             <p>
                 This project is open source! You can check it out on
                 <a
-                    href="https://www.github.com"
+                    href="https://github.com/kubil6y/wordle-socketio"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-inline ml-1 items-center gap-1 hover:underline"
