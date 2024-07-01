@@ -17,13 +17,14 @@ interface WordleState {
     active: boolean;
     success: boolean;
     language: Language;
-    secretWord: string; // TODO
+    secretWord: string;
     letters: string[];
     pastTries: string[];
     activeRowIndex: number;
     coloredLetters: LetterData[];
     notFoundLetters: string[];
     duration: string;
+    setActive: (active: boolean) => void;
     reset: () => void;
     clearLetters: () => void;
     pushLetter: (letter: string) => void;
@@ -58,17 +59,18 @@ export const useWordle = create<WordleState>()((set) => ({
     coloredLetters: [],
     notFoundLetters: [],
     reset: () =>
-        set({
+        set((state) => ({
             activeRowIndex: 0,
             success: false,
             active: false,
-            language: "tr",
+            language: state.language,
             duration: "",
+            secretWord: "",
             letters: [],
             pastTries: [],
             coloredLetters: [],
             notFoundLetters: [],
-        }),
+        })),
     setConfig: ({ width, height, secretWord, language }) =>
         set({
             width,
@@ -118,6 +120,7 @@ export const useWordle = create<WordleState>()((set) => ({
         })),
     clearLetters: () => set({ letters: [] }),
     setGameOver: ({ success, duration, secretWord }) => set({ active: false, duration, secretWord, success }),
+    setActive: (active: boolean) => set({ active }),
 }));
 
 export const useHasBackspaced = () => {

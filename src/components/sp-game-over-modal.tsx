@@ -1,6 +1,7 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
@@ -16,17 +17,15 @@ import { socket } from "@/lib/socket";
 
 export const SPGameOverModal = () => {
     const { isConnected } = useSocketStatus();
-    const { success, duration, secretWord, reset } = useWordle();
+    const { success, duration, secretWord, reset, setActive } = useWordle();
     const { isOpen, close } = useSPGameOverModal();
     const navigate = useNavigate();
 
     async function onReplay() {
-        console.log("onReplay()");
         const response = await socket.emitWithAck("sp_replay");
         if (response.ok) {
-            // TODO set the data
-            // set reset game data
             reset();
+            setActive(true);
             close();
         }
     }
@@ -54,12 +53,17 @@ export const SPGameOverModal = () => {
 
                 {!success && (
                     <div className="text-xl">
-                        Correct answer was <span className="font-semibold underline">{secretWord}</span>
+                        Correct answer was{" "}
+                        <span className="font-semibold underline">
+                            {secretWord}
+                        </span>
                     </div>
                 )}
                 <div className="text-lg">Time: {duration}</div>
 
-                <div className="mt-4 flex w-full gap-4">
+                <DialogDescription>Per aspera ad astra!</DialogDescription>
+
+                <div className="mt- flex w-full gap-4">
                     <Button
                         size="lg"
                         variant="outline"

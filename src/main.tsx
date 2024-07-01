@@ -18,7 +18,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                         richColors
                         theme="light"
                         closeButton
-                        toastOptions={{}}
+                        toastOptions={{
+                            classNames: {
+                                title: "text-lg"
+                            }
+                        }}
                     />
                     <ModalProvider />
                     <App />
