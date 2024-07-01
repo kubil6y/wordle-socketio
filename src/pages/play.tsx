@@ -11,9 +11,7 @@ export const PlayPage = () => {
 
     useEffect(() => {
         async function hasGame() {
-            const response = await socket.emitWithAck("has_game", {
-                gameType: "singleplayer",
-            });
+            const response = await socket.emitWithAck("sp_has_game");
             if (!response.ok) {
                 newGameModal.open();
             } else {

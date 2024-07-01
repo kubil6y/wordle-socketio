@@ -25,6 +25,7 @@ interface WordleState {
     pushLetter: (letter: string) => void;
     removeLetter: () => void;
     submitWord: () => void;
+    setActive: (active: boolean) => void;
     setConfig: (config: {
         width: number;
         height: number;
@@ -107,6 +108,7 @@ export const useWordle = create<WordleState>()((set) => ({
             ...data,
         })),
     clearLetters: () => set({ letters: [] }),
+    setActive: (active: boolean) => set({active}),
 }));
 
 export const useHasBackspaced = () => {
@@ -127,6 +129,6 @@ export const useCanType = () => {
 };
 
 export const useCanBackspace = () => {
-    const { letters } = useWordle();
-    return letters.length !== 0;
+    const { letters, active } = useWordle();
+    return letters.length !== 0 && active;
 };

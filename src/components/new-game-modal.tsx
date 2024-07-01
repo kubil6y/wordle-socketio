@@ -29,8 +29,8 @@ import { Language, useWordle } from "@/hooks/use-wordle";
 import { Logo } from "./logo";
 
 const languages = [
-    { label: "English", value: "en" },
     { label: "Turkish", value: "tr" },
+    { label: "English", value: "en" },
 ];
 
 enum GameType {
@@ -42,6 +42,8 @@ type NewGameModalProps = {
     isClosable?: boolean;
 };
 
+const DEFAULT_LANGUAGE: Language = "tr";
+
 export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
     const { isConnected } = useSocketStatus();
     const { isOpen, close } = useNewGameModal();
@@ -50,7 +52,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
     const wordle = useWordle();
 
     const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
-    const [language, setLanguage] = useState<Language>("en");
+    const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
 
     async function onCreate() {
         const response = await socket.emitWithAck("create_game", {
@@ -106,7 +108,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
                         <FormTitle title="Language" />
 
                         <Select
-                            defaultValue="en"
+                            defaultValue={DEFAULT_LANGUAGE}
                             onValueChange={(value) => {
                                 setLanguage(value as Language);
                             }}
@@ -213,9 +215,9 @@ const SelectGameTypeButton = ({
 function gameTypeToString(gameType: GameType) {
     switch (gameType) {
         case GameType.Multiplayer:
-            return "multiplayer";
+            return "Multiplayer";
         default:
         case GameType.Singleplayer:
-            return "singleplayer";
+            return "Singleplayer";
     }
 }
