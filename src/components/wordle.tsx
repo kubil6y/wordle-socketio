@@ -1,19 +1,19 @@
-import { Keyboard } from "@/components/keyboard";
 import { Board } from "@/components/board";
-import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
-import { useEffect, useMemo } from "react";
 import { socket } from "@/lib/socket";
-import { toast } from "sonner";
+import { Keyboard } from "@/components/keyboard";
+import { useEffect, useMemo } from "react";
 import { FlagIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
+import { SPGameOverModal } from "./sp-game-over-modal";
+import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
+import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 
 export const Wordle = () => {
     const {
         active,
         width,
         height,
-        secretWord,
         letters,
         language,
         activeRowIndex,
@@ -24,10 +24,11 @@ export const Wordle = () => {
         pushLetter,
         removeLetter,
         setData,
-        setActive,
+        setGameOver,
     } = useWordle();
     const canSubmit = useCanSubmit();
     const hasBackspaced = useHasBackspaced();
+    const gameOverModal = useSPGameOverModal();
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
         "Are you sure?",
@@ -35,17 +36,22 @@ export const Wordle = () => {
     );
 
     useEffect(() => {
-        function onGameOver(summary: {
+        function onGameOver({
+            success,
+            secretWord,
+            duration,
+        }: {
             success: boolean;
             secretWord: string;
             duration: string;
+            tries: number;
         }) {
-            if (summary.success) {
-                toast.success("Congratz!");
-            } else {
-                toast.error(`'${summary.secretWord}' was the correct answer!`);
-            }
-            setActive(false);
+            setGameOver({
+                success,
+                duration,
+                secretWord,
+            });
+            gameOverModal.open();
         }
 
         socket.on("sp_game_over", onGameOver);
@@ -93,7 +99,9 @@ export const Wordle = () => {
 
     return (
         <>
+            <SPGameOverModal />
             <GiveUpConfirmDialog />
+
             <div className="container mt-4 space-y-4 sm:mt-12 sm:space-y-4">
                 <Board
                     width={width}
