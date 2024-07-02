@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { handleSingleplayer } from "./socket/singleplayer";
+import { handleMultiplayer } from "./socket/multiplayer";
 
 config();
 
@@ -50,6 +51,7 @@ io.on("connection", (socket) => {
     socket.join(req.session.id);
 
     handleSingleplayer(socket);
+    handleMultiplayer(socket);
 });
 
 const PORT = process.env.PORT ?? 5000;

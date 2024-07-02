@@ -1,14 +1,8 @@
 import { Socket } from "socket.io";
 import { Request } from "express";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { createGame, Wordle } from "../wordle";
-
-const socket_errors = {
-    game_not_found: "game_not_found",
-    not_valid_word: "not_valid_word",
-};
-
-const singleplayerGames: { [sessionId: string]: Wordle } = {};
+import { socket_errors } from "./errors";
+import { createSingleplayer, sGames } from "./games";
 
 export function handleSingleplayer(
     socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
@@ -16,22 +10,17 @@ export function handleSingleplayer(
     const req = socket.request as Request;
 
     socket.on("sp_create_game", (data, cb) => {
-        const sGame = createGame(req.session.id, data.language, data.gameType)!; // TODO
-        if (singleplayerGames[req.session.id]) {
-            delete singleplayerGames[req.session.id];
-        }
-        singleplayerGames[req.session.id] = sGame;
-
+        const game = createSingleplayer(req.session.id, data.language);
         cb({
             ok: true,
-            config: sGame.getConfig(),
+            config: game.getConfig(),
         });
     });
 
     socket.on("sp_try_word", (data, ackCb) => {
         const { word } = data;
 
-        const game = singleplayerGames[req.session.id];
+        const game = sGames.findById(req.session.id);
         if (!game) {
             socket.emit("alert", {
                 message: "Game not found!",
@@ -61,7 +50,7 @@ export function handleSingleplayer(
     });
 
     socket.on("sp_has_game", (ackCb) => {
-        const game = singleplayerGames[req.session.id];
+        const game = sGames.findById(req.session.id);
         if (game) {
             ackCb({
                 ok: true,
@@ -79,7 +68,7 @@ export function handleSingleplayer(
     });
 
     socket.on("sp_give_up", () => {
-        const game = singleplayerGames[req.session.id];
+        const game = sGames.findById(req.session.id);
         if (!game) {
             socket.emit("alert", {
                 message: "Game not found!",
@@ -95,7 +84,7 @@ export function handleSingleplayer(
     });
 
     socket.on("sp_replay", (ackCb) => {
-        const game = singleplayerGames[req.session.id];
+        const game = sGames.findById(req.session.id);
         if (!game) {
             socket.emit("alert", {
                 message: "Game not found!",

@@ -1,10 +1,11 @@
-import { Navbar } from "./components/navbar";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { LandingPage } from "./pages/landing";
-import { SocketIO } from "@/components/socket-io";
 import { PlayPage } from "./pages/play";
-import { HtmlLanguageMatcher } from "./components/html-language-matcher";
 import { Lobby } from "./pages/lobby";
+import { Navbar } from "./components/navbar";
+import { SocketIO } from "@/components/socket-io";
+import { HtmlLanguageMatcher } from "./components/html-language-matcher";
+import { NotFoundPage } from "./pages/not-found-page";
 
 export function App() {
     return (
@@ -12,7 +13,8 @@ export function App() {
             <Route path="/" element={<Layout />}>
                 <Route index element={<LandingPage />} />
                 <Route path="play" element={<PlayPage />} />
-                <Route path="lobby" element={<Lobby />} />
+                <Route path="lobby/:code" element={<Lobby />} />
+                <Route path="*" element={<NotFoundPage />} />
             </Route>
         </Routes>
     );

@@ -28,6 +28,11 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
+import {
+    GameState,
+    gameStates,
+    useMultiWordle,
+} from "@/hooks/use-multi-wordle";
 
 const languages = [
     { label: "Turkish", value: "tr" },
@@ -48,17 +53,18 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
     const { isOpen, close } = useNewGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const wordle = useWordle();
+    const multiWordle = useMultiWordle();
     const gameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
 
-    const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
+    const [gameType, setGameType] = useState<GameType>(GameType.Multiplayer);
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
 
     async function onCreate() {
         switch (gameType) {
             case GameType.Multiplayer:
                 await createMultiplayer();
-            break;
+                break;
             default:
             case GameType.Singleplayer:
                 await createSingleplayer();
@@ -66,10 +72,22 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
         }
     }
 
+    async function createMultiplayer() {
+        const response = await socket.emitWithAck("mp_create_game", {
+            language,
+        });
+        if (response.ok) {
+            close();
+            //gameOverModal.close();
+            wordle.reset();
+            multiWordle.reset();
+            navigate(`/lobby/${response.invitationCode}`);
+        }
+    }
+
     async function createSingleplayer() {
         const response = await socket.emitWithAck("sp_create_game", {
             language,
-            gameType: gameTypeToString(gameType),
         });
         if (response.ok) {
             close();
@@ -79,8 +97,6 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
             navigate("/play");
         }
     }
-
-    async function createMultiplayer() {}
 
     function onClose() {
         if (isClosable) {

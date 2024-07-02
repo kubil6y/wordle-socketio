@@ -32,9 +32,9 @@ export class Wordle {
     private _endTimestamp: number;
 
     public constructor(
+        ownerSessionId: string,
         words: Words,
         language: Language,
-        ownerSessionId: string
     ) {
         this._gameId = createId();
         this._words = words;
@@ -161,17 +161,3 @@ export class Wordle {
     }
 }
 
-export function createGame(
-    sessionId: string,
-    language: Language,
-    gameType: GameType
-) {
-    switch (gameType) {
-        default:
-        case "singleplayer":
-            return new Wordle(words, language, sessionId);
-        case "multiplayer":
-            console.log("TODO");
-            return;
-    }
-}

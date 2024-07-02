@@ -30,7 +30,11 @@ interface WordleState {
     pushLetter: (letter: string) => void;
     removeLetter: () => void;
     submitWord: () => void;
-    setGameOver: (data: {success: boolean; duration: string; secretWord: string }) => void;
+    setGameOver: (data: {
+        success: boolean;
+        duration: string;
+        secretWord: string;
+    }) => void;
     setConfig: (config: {
         width: number;
         height: number;
@@ -119,7 +123,8 @@ export const useWordle = create<WordleState>()((set) => ({
             ...data,
         })),
     clearLetters: () => set({ letters: [] }),
-    setGameOver: ({ success, duration, secretWord }) => set({ active: false, duration, secretWord, success }),
+    setGameOver: ({ success, duration, secretWord }) =>
+        set({ active: false, duration, secretWord, success }),
     setActive: (active: boolean) => set({ active }),
 }));
 
