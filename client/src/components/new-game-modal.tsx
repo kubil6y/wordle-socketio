@@ -55,7 +55,19 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
 
     async function onCreate() {
-        const response = await socket.emitWithAck("create_game", {
+        switch (gameType) {
+            case GameType.Multiplayer:
+                await createMultiplayer();
+            break;
+            default:
+            case GameType.Singleplayer:
+                await createSingleplayer();
+                break;
+        }
+    }
+
+    async function createSingleplayer() {
+        const response = await socket.emitWithAck("sp_create_game", {
             language,
             gameType: gameTypeToString(gameType),
         });
@@ -67,6 +79,8 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
             navigate("/play");
         }
     }
+
+    async function createMultiplayer() {}
 
     function onClose() {
         if (isClosable) {

@@ -4,6 +4,7 @@ import { LandingPage } from "./pages/landing";
 import { SocketIO } from "@/components/socket-io";
 import { PlayPage } from "./pages/play";
 import { HtmlLanguageMatcher } from "./components/html-language-matcher";
+import { Lobby } from "./pages/lobby";
 
 export function App() {
     return (
@@ -11,7 +12,7 @@ export function App() {
             <Route path="/" element={<Layout />}>
                 <Route index element={<LandingPage />} />
                 <Route path="play" element={<PlayPage />} />
-                <Route path="mp" element={<div>multi player</div>} />
+                <Route path="lobby" element={<Lobby />} />
             </Route>
         </Routes>
     );
