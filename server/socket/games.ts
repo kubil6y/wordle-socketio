@@ -1,3 +1,4 @@
+import { Logger } from "../logger";
 import { MultiWordle } from "../multi-wordle";
 import { Language, Wordle } from "../wordle";
 import { words } from "../words";
@@ -31,6 +32,9 @@ export class MultiGames {
         this._games[game.getId()] = game;
         this._owners[game.getOwnerSessionId()] = game.getId();
         this._codes[game.getInvitationCode()] = game.getId();
+        Logger.debug(
+            `MultiGames.register game: ${game.getId()} for session: ${game.getOwnerSessionId()}}`
+        );
     }
 
     public delete(id: string): void {
@@ -41,6 +45,7 @@ export class MultiGames {
         delete this._games[id];
         delete this._owners[game.getOwnerSessionId()];
         delete this._codes[game.getInvitationCode()];
+        Logger.debug(`MultiGames.delete game id: ${id}`);
     }
 
     public updateInvitationCode(gameId: string, newCode: string): void {
@@ -51,6 +56,9 @@ export class MultiGames {
         const oldCode = game.getInvitationCode();
         delete this._codes[oldCode];
         this._codes[newCode] = game.getId();
+        Logger.debug(
+            `MultiGames.updateInvitationCode for gameId: ${gameId} new code: ${newCode}`
+        );
     }
 }
 
@@ -63,6 +71,7 @@ class SingleplayerGames {
 
     public register(sessionId: string, game: Wordle): void {
         this._games[sessionId] = game;
+        Logger.debug(`SingleplayerGames.register for session id: ${sessionId}`);
     }
 
     public has(sessionId: string): boolean {
@@ -71,6 +80,7 @@ class SingleplayerGames {
 
     public delete(sessionId: string): void {
         delete this._games[sessionId];
+        Logger.debug(`SingleplayerGames.delete for session id: ${sessionId}`);
     }
 }
 

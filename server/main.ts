@@ -6,6 +6,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { handleSingleplayer } from "./socket/singleplayer";
 import { handleMultiplayer } from "./socket/multiplayer";
+import { Logger } from "./logger";
 
 config();
 
@@ -45,9 +46,7 @@ io.engine.use(sessionMiddleware);
 
 io.on("connection", (socket) => {
     const req = socket.request as Request;
-    console.log(
-        `socket_id: ${socket.id} | session_id: ${req.session.id}`
-    );
+    Logger.info(`socket_id: ${socket.id} | session_id: ${req.session.id}`);
     socket.join(req.session.id);
 
     handleSingleplayer(socket);
@@ -56,5 +55,5 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT ?? 5000;
 httpServer.listen(PORT, () => {
-    console.log(`listening :${PORT}`);
+    Logger.info(`listening :${PORT}`);
 });

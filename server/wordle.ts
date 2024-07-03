@@ -1,3 +1,4 @@
+import { Logger } from "./logger";
 import { formatTimestamps } from "./utils";
 import { Words, words } from "./words";
 import { createId } from "@paralleldrive/cuid2";
@@ -145,7 +146,7 @@ export class Wordle {
 
     public generateRandomWord() {
         const secretWord = this._words.getRandomWord(this._language);
-        console.log(`generated secret word: "${secretWord}"`);
+        Logger.debug(`generated secret word: "${secretWord}"`);
         this._secretWord = secretWord;
     }
 
