@@ -1,13 +1,4 @@
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
-import {
     Dialog,
     DialogContent,
     DialogHeader,
@@ -108,7 +99,7 @@ export const JoinGameModal = ({
                     </div>
 
                     <DialogTitle className="text-4xl font-semibold">
-                        Join Game
+                        Join Party
                     </DialogTitle>
 
                     <DialogDescription className="text-start">
@@ -128,7 +119,9 @@ export const JoinGameModal = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <AvatarSelection selectedAvatar={avatar} onSelect={onAvatarSelect} />
+                <div className="mx-8">
+                    <AvatarSelection selectedAvatar={avatar} onSelect={onAvatarSelect} />
+                </div>
 
                 <div className="space-y-2">
                     <FormTitle title={"Username"} />

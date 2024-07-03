@@ -42,7 +42,7 @@ export const AvatarSelection = ({
 }: AvatarSelectionProps) => {
     return (
         <Carousel className={cn("mx-auto w-full max-w-sm", className)}>
-            <CarouselContent className="">
+            <CarouselContent>
                 {avatars.map((avatar, index) => {
                     const avatarPath = resolveAvatarPath(avatar);
                     const isSelected = selectedAvatar === avatar;
@@ -50,7 +50,8 @@ export const AvatarSelection = ({
                         <CarouselItem
                             key={index}
                             //className="pl-1 md:basis-1/2 lg:basis-1/3"
-                            className="pl-4 md:basis-1/5"
+                            //className="pl-4 md:basis-1/5" // current
+                            className="sm:pl-4 basis-1/4 sm:basis-1/5"
                         >
                             <div
                                 className={cn(

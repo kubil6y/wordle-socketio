@@ -153,7 +153,7 @@ type InvitationCodeProps = {
 
 function InvitationCode({ code, isAdmin, onGenerate }: InvitationCodeProps) {
     return (
-        <div className="flex h-8 w-full items-center justify-between overflow-hidden rounded shadow">
+        <div className="flex h-8 w-full items-center justify-between overflow-hidden shadow">
             <div
                 className={cn(
                     "h-full w-[90%] bg-gray-200 text-primary",

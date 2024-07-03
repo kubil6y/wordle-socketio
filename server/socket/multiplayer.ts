@@ -43,4 +43,11 @@ export function handleMultiplayer(
             ackCb({ ok: false, data: null });
         }
     });
+
+    socket.on("mp_join_game", (data, ackCb) => {
+        const game = mGames.findByInvitationCode(data.code);
+        if (game) {
+        } else {
+        }
+    })
 }

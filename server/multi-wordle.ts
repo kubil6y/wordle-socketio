@@ -58,6 +58,14 @@ class PlayerLobby {
         this._spectators = [];
     }
 
+    public getAdminSessionId(): string {
+        return this._adminId;
+    }
+
+    public isAdmin(sessionId: string): boolean {
+        return this._adminId === sessionId;
+    }
+
     public addPlayer(player: Player): void {
         this._players.push(player);
     }
