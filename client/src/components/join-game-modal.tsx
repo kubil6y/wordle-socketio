@@ -14,23 +14,25 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { socket } from "@/lib/socket";
 import { Logo } from "./logo";
 import { Button } from "./ui/button";
 import { useHowToPlayModal } from "@/hooks/use-how-to-play-modal";
 import { FormEvent, useState } from "react";
-import { CheckIcon } from "lucide-react";
 import { ModalFooter } from "./modal-footer";
 import { ConnectionStatus } from "./connection-status";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
+import { useWordle } from "@/hooks/use-wordle";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 import { useMultiWordle } from "@/hooks/use-multi-wordle";
 import { Input } from "./ui/input";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
+import { AvatarSelection } from "./avatar-selection";
+import { FormErrorMessage } from "./form-error-message";
+
+const DEFAULT_AVATAR = "avatar1";
 
 type JoinGameModalProps = {
     isClosable?: boolean;
@@ -50,7 +52,10 @@ export const JoinGameModal = ({
     const gameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
 
+    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
+
     const [codeInput, setCodeInput] = useState<string>("");
+    const [username, setUsername] = useState<string>(""); // this should be cached on client? TODO
     const [gameNotFound, setGameNotFound] = useState<boolean>(false);
 
     function onClose() {
@@ -63,6 +68,10 @@ export const JoinGameModal = ({
     function resetInputs() {
         setGameNotFound(false);
         setCodeInput("");
+    }
+
+    function onAvatarSelect(avatar: string): void {
+        setAvatar(avatar);
     }
 
     async function handleJoin(e: FormEvent<HTMLFormElement>): Promise<void> {
@@ -89,10 +98,12 @@ export const JoinGameModal = ({
             >
                 <DialogHeader>
                     <div className="mb-2 flex items-center gap-4">
-                        <Logo onClick={() => {
-                            resetInputs();
-                            close();
-                        }} />
+                        <Logo
+                            onClick={() => {
+                                resetInputs();
+                                close();
+                            }}
+                        />
                         <ConnectionStatus />
                     </div>
 
@@ -117,9 +128,21 @@ export const JoinGameModal = ({
                     </DialogDescription>
                 </DialogHeader>
 
+                <AvatarSelection selectedAvatar={avatar} onSelect={onAvatarSelect} />
+
+                <div className="space-y-2">
+                    <FormTitle title={"Username"} />
+                    <Input
+                        className="placeholder:italic rounded-none"
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </div>
+
                 {/* JOIN GAME */}
                 <form onSubmit={handleJoin} className="mt-4 space-y-2">
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         <FormTitle title={"Got an invitation code?"} />
                         <div className="flex items-center gap-2">
                             <Input
@@ -138,9 +161,7 @@ export const JoinGameModal = ({
                         </div>
                     </div>
                     {gameNotFound && (
-                        <p className="text-destructive text-sm font-semibold">
-                            Game not found!
-                        </p>
+                        <FormErrorMessage message={"Game not found!"}/>
                     )}
                 </form>
 

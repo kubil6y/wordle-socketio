@@ -43,3 +43,7 @@ export function showConnectionLostToast(isHome: boolean, actionCallback?: () => 
         });
     }
 }
+
+export function resolveAvatarPath(name: string): string {
+    return `/avatars/${name}.png`;
+}
