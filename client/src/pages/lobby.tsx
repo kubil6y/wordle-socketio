@@ -1,8 +1,7 @@
 import {
-    convertGameStateStringToEnum,
     GameState,
-    gameStates,
     useMultiWordle,
+    convertGameStateStringToEnum,
 } from "@/hooks/use-multi-wordle";
 import {
     Dialog,
@@ -20,7 +19,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "@/lib/socket";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { CopyIcon, RotateCcwIcon } from "lucide-react";
 
@@ -29,6 +27,7 @@ type LobbyParams = {
 };
 
 export const Lobby = () => {
+    const { isConnected } = useSocketStatus();
     const [welcomeModalOpen, setWelcomeModalOpen] = useState<boolean>(false);
     const navigate = useNavigate();
     const params = useParams<LobbyParams>();

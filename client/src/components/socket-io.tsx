@@ -2,15 +2,16 @@ import { socket } from "@/lib/socket";
 import { useEffect } from "react";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { showConnectionLostToast } from "@/lib/utils";
 
 const socket_errors = {
     game_not_found: "game_not_found",
     not_valid_word: "not_valid_word",
 };
 
-
 export const SocketIO = () => {
+    const location = useLocation();
     const { setIsConnected, setTransport } = useSocketStatus();
     const navigate = useNavigate();
 
@@ -30,9 +31,22 @@ export const SocketIO = () => {
         function onDisconnect() {
             setIsConnected(false);
             setTransport("N/A");
+
+            const isHome = location.pathname === "/";
+            showConnectionLostToast(isHome, () => {
+                navigate("/");
+            });
         }
 
-        function onAlert({ type, message, code }: { type: string; message: string, code: string }) {
+        function onAlert({
+            type,
+            message,
+            code,
+        }: {
+            type: string;
+            message: string;
+            code: string;
+        }) {
             switch (type) {
                 case "error":
                     toast.error(message);

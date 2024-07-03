@@ -28,11 +28,9 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import {
-    GameState,
-    gameStates,
-    useMultiWordle,
-} from "@/hooks/use-multi-wordle";
+import { useMultiWordle } from "@/hooks/use-multi-wordle";
+import { FormTitle } from "./form-title";
+import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 
 const languages = [
     { label: "Turkish", value: "tr" },
@@ -46,11 +44,16 @@ enum GameType {
 
 type NewGameModalProps = {
     isClosable?: boolean;
+    showHomeButton?: boolean;
 };
 
-export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
+export const NewGameModal = ({
+    showHomeButton = true,
+    isClosable = true,
+}: NewGameModalProps) => {
     const { isConnected } = useSocketStatus();
-    const { isOpen, close } = useNewGameModal();
+    const newGameModal = useNewGameModal();
+    const joinGameModal = useJoinGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const wordle = useWordle();
     const multiWordle = useMultiWordle();
@@ -77,7 +80,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
             language,
         });
         if (response.ok) {
-            close();
+            newGameModal.close();
             //gameOverModal.close();
             wordle.reset();
             multiWordle.reset();
@@ -90,7 +93,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
             language,
         });
         if (response.ok) {
-            close();
+            newGameModal.close();
             gameOverModal.close();
             wordle.reset();
             wordle.setConfig(response.config);
@@ -100,19 +103,24 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
 
     function onClose() {
         if (isClosable) {
-            close();
+            newGameModal.close();
         }
     }
 
+    function onAlreadyHaveAcode() {
+        newGameModal.close();
+        joinGameModal.open();
+    }
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={newGameModal.isOpen} onOpenChange={onClose}>
             <DialogContent
                 className="flex h-full flex-col sm:h-auto"
                 hideCloseButton={!isClosable}
             >
                 <DialogHeader>
                     <div className="mb-2 flex items-center gap-4">
-                        <Logo onClick={close} />
+                        <Logo onClick={newGameModal.close} />
                         <ConnectionStatus />
                     </div>
 
@@ -126,7 +134,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
                             className="cursor-pointer underline"
                             onClick={(e) => {
                                 e.preventDefault();
-                                close();
+                                newGameModal.close();
                                 openHowToPlayModal();
                             }}
                         >
@@ -191,7 +199,7 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
                     </div>
                 </div>
 
-                <div className="flex w-full flex-col gap-2 mt-4">
+                <div className="mt-4 flex w-full flex-col gap-2">
                     <Button
                         size="lg"
                         variant="outline"
@@ -199,31 +207,34 @@ export const NewGameModal = ({ isClosable = true }: NewGameModalProps) => {
                         disabled={!isConnected}
                         onClick={onCreate}
                     >
-                        Create
+                        CREATE
                     </Button>
 
                     <Button
                         size="sm"
                         variant="outline"
-                        className="w-full select-none rounded-none text font-semibold uppercase"
-                        onClick={() => navigate("/")}
+                        className="text w-full select-none rounded-none font-semibold"
+                        onClick={onAlreadyHaveAcode}
                     >
-                        Home
+                        Already have a code?
                     </Button>
+
+                    {showHomeButton && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="text w-full select-none rounded-none font-semibold uppercase"
+                            onClick={() => navigate("/")}
+                        >
+                            Home
+                        </Button>
+                    )}
                 </div>
 
                 <ModalFooter />
             </DialogContent>
         </Dialog>
     );
-};
-
-type FormTitleProps = {
-    title: string;
-};
-
-const FormTitle = ({ title }: FormTitleProps) => {
-    return <p className="text-2xl font-semibold">{title}</p>;
 };
 
 type SelectGameTypeButtonProps = {
