@@ -10,7 +10,7 @@ export enum LogLevel {
 }
 
 export class Logger {
-    private static _minLevel: LogLevel;
+    private static _minLevel: LogLevel = LogLevel.Debug;
 
     public static setLevel(logLevel: LogLevel): void {
         Logger._minLevel = logLevel;
@@ -38,6 +38,7 @@ export class Logger {
 
     private static log(logLevel: LogLevel, message: string): void {
         if (logLevel < Logger._minLevel) {
+            console.log('return');
             return;
         }
 

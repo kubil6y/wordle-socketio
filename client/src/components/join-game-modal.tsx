@@ -5,25 +5,38 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
 import { socket } from "@/lib/socket";
 import { Logo } from "./logo";
 import { Button } from "./ui/button";
 import { useHowToPlayModal } from "@/hooks/use-how-to-play-modal";
-import { FormEvent, useState } from "react";
 import { ModalFooter } from "./modal-footer";
 import { ConnectionStatus } from "./connection-status";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
-import { useNavigate } from "react-router-dom";
-import { useWordle } from "@/hooks/use-wordle";
-import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import { useMultiWordle } from "@/hooks/use-multi-wordle";
-import { Input } from "./ui/input";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { AvatarSelection } from "./avatar-selection";
-import { FormErrorMessage } from "./form-error-message";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const DEFAULT_AVATAR = "avatar1";
+
+const formSchema = z.object({
+    username: z.string().min(2).max(12),
+    avatar: z.string(),
+    code: z.string().min(1, { message: "Invitation code is required"}),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 type JoinGameModalProps = {
     isClosable?: boolean;
@@ -35,54 +48,43 @@ export const JoinGameModal = ({
     isClosable = true,
 }: JoinGameModalProps) => {
     const { isConnected } = useSocketStatus();
-    const { isOpen, close } = useJoinGameModal();
+    const joinModal = useJoinGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
 
-    const wordle = useWordle();
-    const multiWordle = useMultiWordle();
-    const gameOverModal = useSPGameOverModal();
-    const navigate = useNavigate();
+    const form = useForm<FormSchema>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            username: "",
+            code: "",
+            avatar: DEFAULT_AVATAR,
+        },
+    });
 
-    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
-
-    const [codeInput, setCodeInput] = useState<string>("");
-    const [username, setUsername] = useState<string>(""); // this should be cached on client? TODO
-    const [gameNotFound, setGameNotFound] = useState<boolean>(false);
-
-    function onClose() {
-        if (isClosable) {
-            resetInputs();
-            close();
-        }
-    }
-
-    function resetInputs() {
-        setGameNotFound(false);
-        setCodeInput("");
-    }
-
-    function onAvatarSelect(avatar: string): void {
-        setAvatar(avatar);
-    }
-
-    async function handleJoin(e: FormEvent<HTMLFormElement>): Promise<void> {
-        e.preventDefault();
+    async function onSubmit(values: FormSchema) {
+        console.log(values);
         if (!isConnected) {
             return;
         }
-        console.log(codeInput);
-        const response = await socket.emitWithAck("mp_has_game", {
-            code: codeInput,
+        const response = await socket.emitWithAck("mp_join_game", {
+            code: values.code,
         });
+
         if (response.ok) {
             console.log(response);
         } else {
-            setGameNotFound(true);
+            toast.error("Game not found!");
+        }
+    }
+
+    function onClose() {
+        if (isClosable) {
+            form.reset();
+            joinModal.close();
         }
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={joinModal.isOpen} onOpenChange={onClose}>
             <DialogContent
                 className="flex h-full flex-col sm:h-auto"
                 hideCloseButton={!isClosable}
@@ -91,8 +93,8 @@ export const JoinGameModal = ({
                     <div className="mb-2 flex items-center gap-4">
                         <Logo
                             onClick={() => {
-                                resetInputs();
-                                close();
+                                form.reset();
+                                joinModal.close();
                             }}
                         />
                         <ConnectionStatus />
@@ -108,8 +110,8 @@ export const JoinGameModal = ({
                             className="cursor-pointer underline"
                             onClick={(e) => {
                                 e.preventDefault();
-                                resetInputs();
-                                close();
+                                form.reset();
+                                joinModal.close();
                                 openHowToPlayModal();
                             }}
                         >
@@ -119,45 +121,74 @@ export const JoinGameModal = ({
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="mx-8">
-                    <AvatarSelection selectedAvatar={avatar} onSelect={onAvatarSelect} />
-                </div>
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-8"
+                    >
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormTitle title="Username" />
+                                    <FormControl>
+                                        <Input
+                                            placeholder="Kubilay"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                <div className="space-y-2">
-                    <FormTitle title={"Username"} />
-                    <Input
-                        className="placeholder:italic rounded-none"
-                        placeholder="Enter username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
+                        <FormField
+                            control={form.control}
+                            name="avatar"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormTitle title="Username" />
+                                    <FormControl>
+                                        <AvatarSelection
+                                            selectedAvatar={field.value}
+                                            onSelect={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                {/* JOIN GAME */}
-                <form onSubmit={handleJoin} className="mt-4 space-y-2">
-                    <div className="space-y-2">
-                        <FormTitle title={"Got an invitation code?"} />
-                        <div className="flex items-center gap-2">
-                            <Input
-                                className="placeholder:italic rounded-none"
-                                placeholder="Enter invitation code"
-                                value={codeInput}
-                                onChange={(e) => setCodeInput(e.target.value)}
-                            />
-                            <Button
-                                disabled={!isConnected}
-                                className="select-none rounded-none bg-red-600 font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-                                type="submit"
-                            >
-                                JOIN
-                            </Button>
-                        </div>
-                    </div>
-                    {gameNotFound && (
-                        <FormErrorMessage message={"Game not found!"}/>
-                    )}
-                </form>
-
+                        <FormField
+                            control={form.control}
+                            name="code"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormTitle title="Invitation Code" />
+                                    <FormControl>
+                                        <div className="flex items-center gap-2">
+                                            <Input
+                                                className="rounded-none placeholder:italic"
+                                                placeholder="Enter invitation code"
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                            />
+                                            <Button
+                                                disabled={!isConnected}
+                                                className="select-none rounded-none bg-red-600 font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                                                type="submit"
+                                            >
+                                                JOIN
+                                            </Button>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </form>
+                </Form>
                 <ModalFooter />
             </DialogContent>
         </Dialog>

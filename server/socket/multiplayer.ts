@@ -20,6 +20,7 @@ export function handleMultiplayer(
         });
     });
 
+    // TODO this should be called if client state is empty!
     socket.on("mp_has_game", (data, ackCb) => {
         // player game is required!
         const game = mGames.findByInvitationCode(data.code);
@@ -45,6 +46,7 @@ export function handleMultiplayer(
     });
 
     socket.on("mp_join_game", (data, ackCb) => {
+        // TODO create player here!
         const game = mGames.findByInvitationCode(data.code);
         if (game) {
         } else {
