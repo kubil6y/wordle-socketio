@@ -145,7 +145,8 @@ export class Wordle {
     }
 
     public generateRandomWord() {
-        const secretWord = this._words.getRandomWord(this._language);
+        //const secretWord = this._words.getRandomWord(this._language);
+        const secretWord = "düşeş";
         Logger.debug(`Wordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`);
         this._secretWord = secretWord;
     }

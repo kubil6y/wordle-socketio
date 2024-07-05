@@ -60,7 +60,7 @@ export const NewGameModal = ({
     const gameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
 
-    const [gameType, setGameType] = useState<GameType>(GameType.Multiplayer);
+    const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
 
     async function onCreate() {

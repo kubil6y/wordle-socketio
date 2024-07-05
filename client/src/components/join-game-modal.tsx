@@ -28,12 +28,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-const DEFAULT_AVATAR = "avatar1";
+const DEFAULT_AVATAR = "avatar3";
 
 const formSchema = z.object({
-    username: z.string().min(2).max(12),
+    username: z
+        .string()
+        .refine((value) => value.length >= 2 && value.length <= 16, {
+            message: "Username must be between 2 and 16 characters long.",
+        }),
+
     avatar: z.string(),
-    code: z.string().min(1, { message: "Invitation code is required"}),
+    code: z.string().min(1, { message: "Invitation code is required" }),
 });
 
 type FormSchema = z.infer<typeof formSchema>;

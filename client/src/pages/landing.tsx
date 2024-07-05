@@ -4,6 +4,7 @@ import { useNewGameModal } from "@/hooks/use-new-game-modal";
 import { NewGameModal } from "@/components/new-game-modal";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { JoinGameModal } from "@/components/join-game-modal";
+import { useConnectedUserCount } from "@/hooks/use-connect-user-count";
 
 export const LandingPage = () => {
     return (
@@ -12,9 +13,12 @@ export const LandingPage = () => {
             <JoinGameModal />
             <MyWordCloud />
 
-            <div className="mt-8 flex items-center justify-center gap-2 sm:-mt-4">
-                <PlayButton />
-                <JoinButton />
+            <div className="mt-8 space-y-2 sm:-mt-4">
+                <div className="flex items-center justify-center gap-2">
+                    <PlayButton />
+                    <JoinButton />
+                </div>
+                <TotalOnlineUsers />
             </div>
         </div>
     );
@@ -45,5 +49,17 @@ function JoinButton() {
         >
             JOIN
         </Button>
+    );
+}
+
+function TotalOnlineUsers() {
+    const { count } = useConnectedUserCount();
+    if (count === 0) {
+        return null;
+    }
+    return (
+        <p className="text-center text-sm text-muted-foreground">
+            {count} online users
+        </p>
     );
 }

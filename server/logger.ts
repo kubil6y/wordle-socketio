@@ -49,7 +49,7 @@ export class Logger {
 
         switch (logLevel) {
             case LogLevel.Debug:
-                console.log(colors.green(logMessage));
+                console.log(colors.dim(logMessage));
                 break;
             case LogLevel.Info:
                 console.log(colors.cyan(logMessage));

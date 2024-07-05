@@ -4,6 +4,7 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import { showConnectionLostToast } from "@/lib/utils";
+import { useConnectedUserCount } from "@/hooks/use-connect-user-count";
 
 const socket_errors = {
     game_not_found: "game_not_found",
@@ -13,6 +14,7 @@ const socket_errors = {
 export const SocketIO = () => {
     const location = useLocation();
     const { setIsConnected, setTransport } = useSocketStatus();
+    const {setCount} = useConnectedUserCount();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,6 +38,10 @@ export const SocketIO = () => {
             showConnectionLostToast(isHome, () => {
                 navigate("/");
             });
+        }
+
+        function onUserCount(count: number){ 
+            setCount(count);
         }
 
         function onAlert({
@@ -66,11 +72,13 @@ export const SocketIO = () => {
 
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
+        socket.on("user_count", onUserCount);
         socket.on("alert", onAlert);
 
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
+            socket.off("user_count", onUserCount);
             socket.off("alert", onAlert);
         };
     }, []);

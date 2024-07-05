@@ -35,11 +35,17 @@ export const Lobby = () => {
     const { isAdmin, setInvitationCode, setGameState, setIsAdmin } =
         useMultiWordle();
 
+    // TODO important it should only be possible to join from main menu
+    // if i have the same code on client it means we get from join game!
+    // it should only be possible to join game from main menu!
+    // so client state if its empty than and has not have the code redirect
     useEffect(() => {
         async function hasGame() {
             if (!params.code) {
+                navigate("/");
                 return;
             }
+
             const response = await socket.emitWithAck("mp_has_game", {
                 code: params.code,
             });

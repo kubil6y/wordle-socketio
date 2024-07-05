@@ -1,5 +1,5 @@
 import { Logger } from "../logger";
-import { MultiWordle } from "../multi-wordle";
+import { MultiWordle } from "../multiplayer/multi-worlde";
 import { Language, Wordle } from "../wordle";
 import { words } from "../words";
 

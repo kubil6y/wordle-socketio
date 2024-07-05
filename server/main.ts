@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { handleSingleplayer } from "./socket/singleplayer";
 import { handleMultiplayer } from "./socket/multiplayer";
 import { Logger } from "./logger";
+import { mGames, sGames } from "./socket/games";
 
 config();
 
@@ -46,11 +47,30 @@ io.engine.use(sessionMiddleware);
 
 io.on("connection", (socket) => {
     const req = socket.request as Request;
-    Logger.info(`socket_id: ${socket.id} | session_id: ${req.session.id}`);
+    Logger.info(
+        `user connected: socket_id: ${socket.id} | session_id: ${req.session.id}`
+    );
     socket.join(req.session.id);
 
+    io.emit("user_count", io.engine.clientsCount);
     handleSingleplayer(socket);
     handleMultiplayer(socket);
+
+    socket.on("disconnect", () => {
+        Logger.warning(
+            `user disconnected: socket_id: ${socket.id} | session_id: ${req.session.id}`
+        );
+
+        io.emit("user_count", io.engine.clientsCount);
+
+        // Cleanup on disconnection!
+        if (sGames.has(req.session.id)) {
+            sGames.delete(req.session.id);
+        }
+        if (mGames.findByOwnerSessionId(req.session.id)) {
+            mGames.delete(req.session.id);
+        }
+    });
 });
 
 const PORT = process.env.PORT ?? 5000;
