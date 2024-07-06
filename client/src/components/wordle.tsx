@@ -1,7 +1,7 @@
 import { Board } from "@/components/board";
 import { socket } from "@/lib/socket";
 import { Keyboard } from "@/components/keyboard";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { FlagIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -18,8 +18,7 @@ export const Wordle = () => {
         language,
         activeRowIndex,
         pastTries,
-        coloredLetters,
-        notFoundLetters,
+        pastTryResults,
         clearLetters,
         pushLetter,
         removeLetter,
@@ -83,20 +82,6 @@ export const Wordle = () => {
         }
     }
 
-    // Colored letters for keyboard
-    const [greenLetters, yellowLetters] = useMemo(() => {
-        const greenLetters = [];
-        const yellowLetters = [];
-        for (const item of coloredLetters) {
-            if (item.color === "yellow") {
-                yellowLetters.push(item.letter);
-            } else if (item.color === "green") {
-                greenLetters.push(item.letter);
-            }
-        }
-        return [greenLetters, yellowLetters];
-    }, [coloredLetters]);
-
     return (
         <>
             <SPGameOverModal />
@@ -108,9 +93,8 @@ export const Wordle = () => {
                     height={height}
                     letters={letters}
                     pastTries={pastTries}
+                    pastTryResults={pastTryResults}
                     activeRowIndex={activeRowIndex}
-                    coloredLetters={coloredLetters}
-                    notFoundLetters={notFoundLetters}
                     hasBackspaced={hasBackspaced}
                 />
 
@@ -130,9 +114,6 @@ export const Wordle = () => {
                         onEnter={onSubmit}
                         onBackspace={removeLetter}
                         onClick={pushLetter}
-                        greenLetters={greenLetters}
-                        yellowLetters={yellowLetters}
-                        notFoundLetters={notFoundLetters}
                     />
                 </div>
             </div>

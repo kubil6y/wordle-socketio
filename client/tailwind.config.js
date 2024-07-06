@@ -74,13 +74,19 @@ module.exports = {
                     "70%": { transform: "scale(1.05)" },
                     "100%": { transform: "scale(1)" },
                 },
+                shake: {
+                    "0%, 100%": { transform: "translateX(0)" },
+                    "10%, 30%, 50%, 70%, 90%": {
+                        transform: "translateX(-10px)",
+                    },
+                    "20%, 40%, 60%, 80%": { transform: "translateX(10px)" },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 scale: "scale 100ms ease-in-out",
-                "border-beam":
-                    "border-beam calc(var(--duration)*1s) infinite linear",
+                shake: "shake 0.82s cubic-bezier(.36,.07,.19,.97) both",
             },
         },
     },

@@ -5,7 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Cell } from "./board";
+import { BoardCell } from "./board";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, InfoIcon } from "lucide-react";
 import { useHowToPlayModal } from "@/hooks/use-how-to-play-modal";
@@ -46,7 +46,7 @@ export const HowToPlayModal = () => {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <div className="flex gap-1.5">
-                            <Cell
+                            <BoardCell
                                 ch="W"
                                 hiActive={false}
                                 hiGreen={true}
@@ -54,7 +54,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="e"
                                 hiActive={false}
                                 hiGreen={false}
@@ -62,7 +62,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="a"
                                 hiActive={false}
                                 hiGreen={false}
@@ -70,7 +70,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="r"
                                 hiActive={false}
                                 hiGreen={false}
@@ -78,7 +78,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="y"
                                 hiActive={false}
                                 hiGreen={false}
@@ -96,7 +96,7 @@ export const HowToPlayModal = () => {
 
                     <div className="space-y-2">
                         <div className="flex gap-1.5">
-                            <Cell
+                            <BoardCell
                                 ch="p"
                                 hiActive={false}
                                 hiGreen={false}
@@ -104,7 +104,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="i"
                                 hiActive={false}
                                 hiGreen={false}
@@ -112,7 +112,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="l"
                                 hiActive={false}
                                 hiGreen={false}
@@ -120,7 +120,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="l"
                                 hiActive={false}
                                 hiGreen={false}
@@ -128,7 +128,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="s"
                                 hiActive={false}
                                 hiGreen={false}
@@ -146,7 +146,7 @@ export const HowToPlayModal = () => {
 
                     <div className="space-y-2">
                         <div className="flex gap-1">
-                            <Cell
+                            <BoardCell
                                 ch="v"
                                 hiActive={false}
                                 hiGreen={false}
@@ -154,7 +154,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="a"
                                 hiActive={false}
                                 hiGreen={false}
@@ -162,7 +162,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="g"
                                 hiActive={false}
                                 hiGreen={false}
@@ -170,7 +170,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={false}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="u"
                                 hiActive={false}
                                 hiGreen={false}
@@ -178,7 +178,7 @@ export const HowToPlayModal = () => {
                                 hiNotFound={true}
                                 animate={false}
                             />
-                            <Cell
+                            <BoardCell
                                 ch="e"
                                 hiActive={false}
                                 hiGreen={false}

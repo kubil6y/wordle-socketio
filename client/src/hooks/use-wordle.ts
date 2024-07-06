@@ -1,15 +1,9 @@
 import { usePrevious } from "react-use";
 import { create } from "zustand";
 
-export type Language = "en" | "tr";
-
 export const DEFAULT_LANGUAGE: Language = "tr";
-
-export type LetterData = {
-    index: number;
-    color: string;
-    letter: string;
-};
+export type Language = "en" | "tr";
+export type LetterColor = "green" | "yellow" | "black";
 
 interface WordleState {
     width: number;
@@ -19,10 +13,9 @@ interface WordleState {
     language: Language;
     secretWord: string;
     letters: string[];
+    pastTryResults: LetterColor[][];
     pastTries: string[];
     activeRowIndex: number;
-    coloredLetters: LetterData[];
-    notFoundLetters: string[];
     duration: string;
     setActive: (active: boolean) => void;
     reset: () => void;
@@ -42,9 +35,9 @@ interface WordleState {
         secretWord: string;
     }) => void;
     setData: (data: {
-        coloredLetters: LetterData[];
-        notFoundLetters: string[];
+        active: boolean;
         pastTries: string[];
+        pastTryResults: LetterColor[][],
         activeRowIndex: number;
     }) => void;
 }
@@ -60,8 +53,7 @@ export const useWordle = create<WordleState>()((set) => ({
     duration: "",
     letters: [],
     pastTries: [],
-    coloredLetters: [],
-    notFoundLetters: [],
+    pastTryResults: [],
     reset: () =>
         set((state) => ({
             activeRowIndex: 0,
@@ -72,8 +64,7 @@ export const useWordle = create<WordleState>()((set) => ({
             secretWord: "",
             letters: [],
             pastTries: [],
-            coloredLetters: [],
-            notFoundLetters: [],
+            pastTryResults: [],
         })),
     setConfig: ({ width, height, secretWord, language }) =>
         set({
@@ -113,14 +104,16 @@ export const useWordle = create<WordleState>()((set) => ({
             return {
                 ...state,
                 letters: [],
-                activeRowIndex: state.activeRowIndex + 1,
                 pastTries: [...state.pastTries, state.letters.join("")],
             };
         }),
-    setData: (data) =>
+    setData: ({ active, activeRowIndex, pastTries, pastTryResults}) =>
         set((state) => ({
             ...state,
-            ...data,
+            active,
+            pastTries,
+            pastTryResults,
+            activeRowIndex,
         })),
     clearLetters: () => set({ letters: [] }),
     setGameOver: ({ success, duration, secretWord }) =>
