@@ -148,22 +148,24 @@ export const JoinGameModal = ({
                             )}
                         />
 
-                        <FormField
-                            control={form.control}
-                            name="avatar"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormTitle title="Username" />
-                                    <FormControl>
-                                        <AvatarSelection
-                                            selectedAvatar={field.value}
-                                            onSelect={field.onChange}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="mx-8">
+                            <FormField
+                                control={form.control}
+                                name="avatar"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormTitle title="Username" />
+                                        <FormControl>
+                                            <AvatarSelection
+                                                selectedAvatar={field.value}
+                                                onSelect={field.onChange}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <FormField
                             control={form.control}

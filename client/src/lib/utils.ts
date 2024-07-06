@@ -1,5 +1,4 @@
 import { type ClassValue, clsx } from "clsx";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
@@ -42,8 +41,4 @@ export function showConnectionLostToast(isHome: boolean, actionCallback?: () => 
             },
         });
     }
-}
-
-export function resolveAvatarPath(name: string): string {
-    return `/avatars/${name}.png`;
 }

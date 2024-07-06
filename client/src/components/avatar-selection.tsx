@@ -5,7 +5,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
-import { cn, resolveAvatarPath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const avatars = [
     "avatar1",
@@ -41,10 +41,10 @@ export const AvatarSelection = ({
     onSelect,
 }: AvatarSelectionProps) => {
     return (
-        <Carousel className={cn("mx-auto w-full max-w-sm", className)}>
+        <Carousel className={cn("", className)}>
             <CarouselContent>
                 {avatars.map((avatar, index) => {
-                    const avatarPath = resolveAvatarPath(avatar);
+                    const avatarPath = `/avatars/${avatar}.png`;
                     const isSelected = selectedAvatar === avatar;
                     return (
                         <CarouselItem
@@ -56,7 +56,8 @@ export const AvatarSelection = ({
                             <div
                                 className={cn(
                                     "size-[64px] flex cursor-pointer select-none items-center justify-center border p-1",
-                                    isSelected && "border-2 border-black"
+                                    //isSelected && "border-2 border-black"
+                                    isSelected && "border-4 border-red-600"
                                 )}
                                 onClick={() => {
                                     onSelect(avatar);
