@@ -1,22 +1,31 @@
 import {
     Language,
+    LetterCellColor,
     LetterColor,
     useCanBackspace,
     useCanType,
 } from "@/hooks/use-wordle";
+import useSound from "use-sound";
 import { cn } from "@/lib/utils";
 import { useConfig } from "@/hooks/use-config";
 import { DeleteIcon, SendHorizonalIcon } from "lucide-react";
-import useSound from "use-sound";
+import { useMemo, useState } from "react";
 
 const layouts = {
     en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],
-    tur: ["ertyuıopğü", "asdfghjklşi", "zcvbnmöç"],
+    tr: ["ertyuıopğü", "asdfghjklşi", "zcvbnmöç"],
+};
+
+const alphabets = {
+    en: "abcdefghijklmnopqrstuvwxyz",
+    tr: "abcçdefgğhıijklmnoöprsştuüvyz",
 };
 
 type KeyboardProps = {
     language: Language;
     canSubmit: boolean;
+    pastTries: string[];
+    pastTryResults: LetterColor[][];
     onEnter: () => void;
     onClick: (ch: string) => void;
     onBackspace: () => void;
@@ -25,6 +34,8 @@ type KeyboardProps = {
 export const Keyboard = ({
     language,
     canSubmit,
+    pastTries,
+    pastTryResults,
     onEnter,
     onClick,
     onBackspace,
@@ -32,6 +43,8 @@ export const Keyboard = ({
     const { volume } = useConfig();
     const canBackspace = useCanBackspace();
     const canType = useCanType();
+
+    const [keyColors, setKeyColors] = useState({});
 
     const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", {
         volume,
@@ -44,6 +57,42 @@ export const Keyboard = ({
     });
 
     let layout: string[] = resolveLayout(language);
+
+    const [greens, yellows, blacks] = useMemo(() => {
+        const greens: Set<string> = new Set<string>();
+        const yellows: Set<string> = new Set<string>();
+        const blacks: Set<string> = new Set<string>();
+
+        for (let i = 0; i < pastTryResults.length; i++) {
+            const result = pastTryResults[i];
+            for (let j = 0; j < result.length; j++) {
+                const ch = pastTries[i][j];
+                if (result[j] === "green") {
+                    greens.add(ch);
+                } else if (result[j] === "yellow" && !greens.has(ch)) {
+                } else if (
+                    result[j] === "black" &&
+                    !greens.has(ch) &&
+                    !yellows.has(ch)
+                ) {
+                    blacks.add(ch);
+                }
+            }
+        }
+        return [greens, yellows, blacks];
+    }, [pastTries, pastTryResults]);
+
+    function resolveHi(ch: string): LetterCellColor {
+        let hiColor: LetterCellColor = "none";
+        if (greens.has(ch)) {
+            return "green";
+        } else if (yellows.has(ch)) {
+            return "yellow";
+        } else if (blacks.has(ch)) {
+            return "black";
+        }
+        return hiColor;
+    }
 
     return (
         <div className="flex flex-col items-center gap-2">
@@ -67,11 +116,12 @@ export const Keyboard = ({
                             </div>
                         )}
                         {row.split("").map((ch, j) => {
+                            const hiColor = resolveHi(ch);
                             return (
                                 <KeyboardButton
                                     key={j}
                                     ch={ch}
-                                    hiColor="none"
+                                    hiColor={hiColor}
                                     onClick={(ch: string) => {
                                         if (canType) {
                                             playKeypressStandard();
@@ -105,10 +155,9 @@ export const Keyboard = ({
     );
 };
 
-type KeyboardButtonColors = LetterColor | "none";
 type KeyboardButtonProps = {
     ch: string;
-    hiColor: KeyboardButtonColors;
+    hiColor: LetterCellColor;
     onClick: (ch: string) => void;
 };
 
@@ -126,7 +175,7 @@ const KeyboardButton = ({ ch, onClick, hiColor }: KeyboardButtonProps) => {
 function resolveLayout(language: Language): string[] {
     switch (language) {
         case "tr":
-            return layouts.tur;
+            return layouts.tr;
         case "en":
             return layouts.en;
         default:
@@ -134,7 +183,7 @@ function resolveLayout(language: Language): string[] {
     }
 }
 
-function getBoxColorStyles(color: KeyboardButtonColors): string {
+function getBoxColorStyles(color: KeyboardButtonColor): string {
     switch (color) {
         case "green":
             return "bg-emerald-500 text-white dark:bg-emerald-500";

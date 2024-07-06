@@ -36,11 +36,7 @@ export function handleSingleplayer(
             const gameData = game.getData();
             ackCb({ ok: true, data: gameData });
         } else {
-            socket.emit("alert", {
-                type: "error",
-                message: `"${word}" is not a valid word!`,
-                code: socket_errors.not_valid_word,
-            });
+            socket.emit("sp_not_valid_word", game.getActiveRowIndex());
         }
 
         if (game.isOver()) {

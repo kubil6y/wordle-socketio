@@ -53,6 +53,7 @@ io.on("connection", (socket) => {
     socket.join(req.session.id);
 
     io.emit("user_count", io.engine.clientsCount);
+
     handleSingleplayer(socket);
     handleMultiplayer(socket);
 

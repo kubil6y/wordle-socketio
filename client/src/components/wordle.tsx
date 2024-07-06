@@ -110,6 +110,8 @@ export const Wordle = () => {
                 <div>
                     <Keyboard
                         language={language}
+                        pastTries={pastTries}
+                        pastTryResults={pastTryResults}
                         canSubmit={canSubmit}
                         onEnter={onSubmit}
                         onBackspace={removeLetter}

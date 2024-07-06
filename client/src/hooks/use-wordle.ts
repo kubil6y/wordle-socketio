@@ -4,6 +4,7 @@ import { create } from "zustand";
 export const DEFAULT_LANGUAGE: Language = "tr";
 export type Language = "en" | "tr";
 export type LetterColor = "green" | "yellow" | "black";
+export type LetterCellColor = LetterColor | "none";
 
 interface WordleState {
     width: number;

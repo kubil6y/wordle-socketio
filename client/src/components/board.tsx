@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
-import { LetterColor } from "@/hooks/use-wordle";
+import { LetterCellColor, LetterColor } from "@/hooks/use-wordle";
+import { useEffect, useState } from "react";
+import { socket } from "@/lib/socket";
 
 type BoardProps = {
     width: number;
@@ -20,11 +22,29 @@ export const Board = ({
     activeRowIndex,
     hasBackspaced,
 }: BoardProps) => {
+    const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
+
+    useEffect(() => {
+        function onNotValidWord(rowIndex: number) {
+            setShakeRowIndex(rowIndex);
+            setTimeout(() => {
+                setShakeRowIndex(-1);
+            }, 1000);
+        }
+
+        socket.on("sp_not_valid_word", onNotValidWord);
+
+        return () => {
+            socket.off("sp_not_valid_word", onNotValidWord);
+        };
+    }, []);
+
     return (
         <div className="flex flex-col items-center gap-2">
             {new Array(height).fill(null).map((_, rowIndex) => {
+                const shake = shakeRowIndex === rowIndex;
                 return (
-                    <div className="flex gap-1.5" key={rowIndex}>
+                    <div className={cn("flex gap-1.5", shake && "animate-shake")} key={rowIndex}>
                         {new Array(width).fill(null).map((_, i) => {
                             // Active row
                             if (activeRowIndex === rowIndex) {
@@ -53,8 +73,7 @@ export const Board = ({
                                         hiColor={hiColor}
                                         animate={false}
                                     />
-                                )
-
+                                );
                             }
 
                             // Empty rows
@@ -74,11 +93,10 @@ export const Board = ({
     );
 };
 
-type BoardCellColor = LetterColor | "none";
 type BoardCellProps = {
     ch?: string;
     hiActive: boolean;
-    hiColor: BoardCellColor;
+    hiColor: LetterCellColor;
     animate: boolean;
 };
 
@@ -93,12 +111,7 @@ export const BoardCell = ({
             className={cn(
                 "size-[52px] sm:size-[60px] flex select-none items-center justify-center border-[2px] border-zinc-300  dark:border-zinc-700",
                 animate && "animate-scale border-red-500",
-                getBoardCellStyles(hiActive, hiColor),
-                //hiYellow && "bg-amber-500 text-white dark:bg-amber-500",
-                //hiGreen && "bg-emerald-500 text-white dark:bg-emerald-500",
-                //hiNotFound && "bg-zinc-600 text-white dark:bg-zinc-600",
-                //hiActive && "border-zinc-600 dark:border-zinc-300",
-                //(hiYellow || hiGreen || hiNotFound) && "border-none"
+                getBoardCellStyles(hiActive, hiColor)
             )}
         >
             <p className="text-3xl font-semibold  uppercase">{ch}</p>
@@ -106,9 +119,9 @@ export const BoardCell = ({
     );
 };
 
-function getBoardCellStyles(active: boolean, color: BoardCellColor) {
+function getBoardCellStyles(active: boolean, color: LetterCellColor) {
     if (active) {
-        return "border-zinc-600 dark:border-zinc-300"
+        return "border-zinc-600 dark:border-zinc-300";
     }
     switch (color) {
         case "green":
@@ -121,94 +134,3 @@ function getBoardCellStyles(active: boolean, color: BoardCellColor) {
             return "";
     }
 }
-
-//const hiActive =
-//activeRowIndex === rowIndex &&
-//letters.length > i;
-
-/*
-{new Array(width).fill(null).map((_, i) => {
-                            let ch = "";
-                            if (letters[i]) {
-                                ch = letters[i];
-                            }
-                            const hiActive =
-                                activeRowIndex === rowIndex &&
-                                letters.length > i;
-
-                            const animate =
-                                letters.length === i + 1 &&
-                                activeRowIndex === rowIndex &&
-                                !hasBackspaced;
-
-                            if (pastTries.length === 0) {
-                                return (
-                                    <BoardCell
-                                        key={`${rowIndex}:${i}`}
-                                        ch={ch}
-                                        hiActive={hiActive}
-                                        hiColor={"none"}
-                                        animate={false}
-                                    />
-                                );
-                            }
-
-                            const isPastTryRow =
-                                pastTryResults.length > rowIndex;
-                            if (isPastTryRow) {
-                                const ch = pastTries[rowIndex][i];
-                                const hiColor: BoardCellColor =
-                                    pastTryResults[rowIndex][i];
-
-                                return (
-                                    <BoardCell
-                                        key={`${rowIndex}:${i}`}
-                                        ch={ch}
-                                        hiActive={hiActive}
-                                        hiColor={hiColor}
-                                        animate={false}
-                                    />
-                                );
-                            }
-                            if (activeRowIndex === rowIndex) {
-                                let ch = "";
-                                if (letters[i]) {
-                                    ch = letters[i];
-                                }
-                                const hiColor: BoardCellColor = "none";
-                                const animate =
-                                    letters.length === i + 1 &&
-                                    activeRowIndex === rowIndex &&
-                                    !hasBackspaced;
-                                return (
-                                    <BoardCell
-                                        key={`${rowIndex}:${i}`}
-                                        ch={ch}
-                                        hiActive={hiActive}
-                                        hiColor={hiColor}
-                                        animate={animate}
-                                    />
-                                );
-                            } else {
-                                let ch = "";
-                                //if (pastTries[rowIndex][i]) {
-                                //ch = pastTries[rowIndex][i];
-                                //}
-                                const hiColor = pastTryResults[rowIndex][i];
-                                //let hiColor = "none"
-                                const animate =
-                                    letters.length === i + 1 &&
-                                    activeRowIndex === rowIndex &&
-                                    !hasBackspaced;
-                                return (
-                                    <BoardCell
-                                        key={`${rowIndex}:${i}`}
-                                        ch={ch}
-                                        hiActive={hiActive}
-                                        hiColor={hiColor}
-                                        animate={animate}
-                                    />
-                                );
-                            }
-                        })}
-*/

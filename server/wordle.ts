@@ -1,7 +1,6 @@
 import { Logger } from "./logger";
+import { Words } from "./words";
 import { formatTimestamps } from "./utils";
-import { Words, words } from "./words";
-import { createId } from "@paralleldrive/cuid2";
 
 export const GAME_WIDTH = 5;
 export const GAME_HEIGHT = 6;
@@ -9,14 +8,9 @@ export const GAME_HEIGHT = 6;
 export type Language = "en" | "tr";
 export type GameType = "singleplayer" | "multiplayer";
 
-type LetterData = {
-    index: number;
-    color: string;
-    letter: string;
-};
+type LetterColor = "green" | "yellow" | "black";
 
 export class Wordle {
-    private _gameId: string;
     private _ownerSessionId: string;
 
     private _words: Words;
@@ -25,9 +19,9 @@ export class Wordle {
     private _secretWord: string;
     private _activeRowIndex: number;
     private _language: Language;
+
     private _pastTries: string[];
-    private _coloredLetters: LetterData[];
-    private _notFoundLetters: Set<string>;
+    private _pastTryResults: LetterColor[][];
 
     private _startTimestamp: number;
     private _endTimestamp: number;
@@ -35,16 +29,14 @@ export class Wordle {
     public constructor(
         ownerSessionId: string,
         words: Words,
-        language: Language,
+        language: Language
     ) {
-        this._gameId = createId();
         this._words = words;
         this._language = language;
         this._ownerSessionId = ownerSessionId;
         this._activeRowIndex = 0;
-        this._coloredLetters = [];
         this._pastTries = [];
-        this._notFoundLetters = new Set<string>();
+        this._pastTryResults = [];
         this._startTimestamp = Date.now();
         this._endTimestamp = 0;
         this._active = true;
@@ -57,30 +49,44 @@ export class Wordle {
             return;
         }
 
+        const result: LetterColor[] = new Array(this._secretWord.length).fill("");
+        const chMap = new Map<string, number>();
+        for (const letter of this._secretWord) {
+            const letterCount = chMap.get(letter) ?? 0;
+            chMap.set(letter, letterCount + 1);
+        }
+
+        // greens
         for (let i = 0; i < word.length; i++) {
-            const letter = word[i];
-            // letter not found
-            if (!this._secretWord.includes(letter)) {
-                this._notFoundLetters.add(letter);
-            } else {
-                // has letter
-                // same position
-                if (this._secretWord[i] === letter) {
-                    this._coloredLetters.push({
-                        index: i,
-                        letter,
-                        color: "green",
-                    });
+            const ch = word[i];
+            if (this._secretWord[i] === ch) {
+                result[i] = "green";
+                chMap.set(ch, chMap.get(ch)! - 1);
+            }
+        }
+
+        // yellows and blacks
+        for (let i = 0; i < word.length; i++) {
+            const ch = word[i];
+            const letterCount = chMap.get(ch) ?? 0;
+            if (this._secretWord[i] !== ch && this._secretWord.includes(ch)) {
+                if (letterCount > 0) {
+                    result[i] = "yellow";
                 } else {
-                    this._coloredLetters.push({
-                        index: i,
-                        letter,
-                        color: "yellow",
-                    });
+                    result[i] = "black";
                 }
             }
         }
 
+        // blacks
+        for (let i = 0; i < word.length; i++) {
+            const ch = word[i];
+            if (!this._secretWord.includes(ch)) {
+                result[i] = "black";
+            }
+        }
+
+        this._pastTryResults.push(result);
         this._pastTries.push(word);
         this._activeRowIndex++;
 
@@ -98,10 +104,9 @@ export class Wordle {
     public getData() {
         return {
             active: this._active,
-            coloredLetters: this._coloredLetters,
-            notFoundLetters: Array.from(this._notFoundLetters),
             activeRowIndex: this._activeRowIndex,
             pastTries: this._pastTries,
+            pastTryResults: this._pastTryResults,
         };
     }
 
@@ -126,6 +131,10 @@ export class Wordle {
         };
     }
 
+    public getActiveRowIndex(): number {
+        return this._activeRowIndex;
+    }
+
     public getSecretWord(): string {
         return this._secretWord;
     }
@@ -145,21 +154,21 @@ export class Wordle {
     }
 
     public generateRandomWord() {
-        //const secretWord = this._words.getRandomWord(this._language);
-        const secretWord = "düşeş";
-        Logger.debug(`Wordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`);
+        const secretWord = this._words.getRandomWord(this._language);
         this._secretWord = secretWord;
+
+        Logger.debug(
+            `Wordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`
+        );
     }
 
     public replay() {
         this.generateRandomWord();
-        this._startTimestamp = Date.now();
         this._active = true;
         this._success = false;
-        this._pastTries = [];
-        this._coloredLetters = [];
-        this._notFoundLetters.clear();
         this._activeRowIndex = 0;
+        this._pastTries = [];
+        this._pastTryResults = [];
+        this._startTimestamp = Date.now();
     }
 }
-
