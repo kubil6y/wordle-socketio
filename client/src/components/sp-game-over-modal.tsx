@@ -14,6 +14,7 @@ import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 import { useWordle } from "@/hooks/use-wordle";
 import { useNavigate } from "react-router-dom";
 import { socket } from "@/lib/socket";
+import LetterPullup from "./magicui/letter-pullup";
 
 export const SPGameOverModal = () => {
     const { isConnected } = useSocketStatus();
@@ -44,9 +45,15 @@ export const SPGameOverModal = () => {
 
                     <DialogTitle className="text-4xl font-semibold">
                         {success ? (
-                            <p className="text-emerald-600">You win!</p>
+                            <LetterPullup
+                                words={"YOU WIN"}
+                                className="text-emerald-600 dark:text-emerald-600"
+                            />
                         ) : (
-                            <p className="text-red-600">You lose!</p>
+                            <LetterPullup
+                                words={"YOU LOSE"}
+                                className="text-red-600 dark:text-red-600"
+                            />
                         )}
                     </DialogTitle>
                 </DialogHeader>

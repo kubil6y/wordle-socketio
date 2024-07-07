@@ -9,6 +9,6 @@ export function formatTimestamps(start: number, end: number): string {
         .padStart(2, "0");
     const seconds = (differenceInSeconds % 60).toString().padStart(2, "0");
 
-    const formattedTime = `${hours}:${minutes}:${seconds}s`;
+    const formattedTime = `${hours}:${minutes}:${seconds}`;
     return formattedTime;
 }
