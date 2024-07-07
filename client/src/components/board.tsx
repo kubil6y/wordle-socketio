@@ -95,16 +95,16 @@ export const Board = ({
 
 type BoardCellProps = {
     ch?: string;
-    hiActive: boolean;
+    animate?: boolean;
+    hiActive?: boolean;
     hiColor: LetterCellColor;
-    animate: boolean;
 };
 
 export const BoardCell = ({
     ch,
-    hiActive,
     hiColor,
-    animate,
+    hiActive = false,
+    animate = false,
 }: BoardCellProps) => {
     return (
         <div
@@ -125,11 +125,11 @@ function getBoardCellStyles(active: boolean, color: LetterCellColor) {
     }
     switch (color) {
         case "green":
-            return "bg-emerald-500 text-white dark:bg-emerald-500";
+            return "bg-emerald-500 text-white dark:bg-emerald-500 border-none";
         case "yellow":
-            return "bg-amber-500 text-white dark:bg-amber-500";
+            return "bg-amber-500 text-white dark:bg-amber-500 border-none";
         case "black":
-            return "bg-zinc-600 text-white dark:bg-zinc-600";
+            return "bg-zinc-600 text-white dark:bg-zinc-600 border-none";
         case "none":
             return "";
     }

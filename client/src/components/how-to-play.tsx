@@ -46,46 +46,11 @@ export const HowToPlayModal = () => {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <div className="flex gap-1.5">
-                            <BoardCell
-                                ch="W"
-                                hiActive={false}
-                                hiGreen={true}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="e"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="a"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="r"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="y"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
+                            <BoardCell ch="W" hiColor="green" />
+                            <BoardCell ch="E" hiColor="none" />
+                            <BoardCell ch="A" hiColor="none" />
+                            <BoardCell ch="R" hiColor="none" />
+                            <BoardCell ch="Y" hiColor="none" />
                         </div>
 
                         <p>
@@ -96,46 +61,11 @@ export const HowToPlayModal = () => {
 
                     <div className="space-y-2">
                         <div className="flex gap-1.5">
-                            <BoardCell
-                                ch="p"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="i"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={true}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="l"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="l"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="s"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
+                            <BoardCell ch="P" hiColor="none" />
+                            <BoardCell ch="I" hiColor="yellow" />
+                            <BoardCell ch="L" hiColor="none" />
+                            <BoardCell ch="L" hiColor="none" />
+                            <BoardCell ch="S" hiColor="none" />
                         </div>
 
                         <p>
@@ -146,46 +76,11 @@ export const HowToPlayModal = () => {
 
                     <div className="space-y-2">
                         <div className="flex gap-1">
-                            <BoardCell
-                                ch="v"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="a"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="g"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="u"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={true}
-                                animate={false}
-                            />
-                            <BoardCell
-                                ch="e"
-                                hiActive={false}
-                                hiGreen={false}
-                                hiYellow={false}
-                                hiNotFound={false}
-                                animate={false}
-                            />
+                            <BoardCell ch="V" hiColor="none" />
+                            <BoardCell ch="A" hiColor="none" />
+                            <BoardCell ch="G" hiColor="none" />
+                            <BoardCell ch="U" hiColor="black" />
+                            <BoardCell ch="E" hiColor="none" />
                         </div>
 
                         <p>
