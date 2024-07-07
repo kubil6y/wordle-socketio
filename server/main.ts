@@ -65,6 +65,7 @@ io.on("connection", (socket) => {
         io.emit("user_count", io.engine.clientsCount);
 
         // Cleanup on disconnection!
+        // TODO handle room things in here
         if (sGames.has(req.session.id)) {
             sGames.delete(req.session.id);
         }

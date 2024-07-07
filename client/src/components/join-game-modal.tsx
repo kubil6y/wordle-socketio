@@ -66,12 +66,14 @@ export const JoinGameModal = ({
     });
 
     async function onSubmit(values: FormSchema) {
-        console.log(values);
+        const { avatar, code, username } = values;
         if (!isConnected) {
             return;
         }
         const response = await socket.emitWithAck("mp_join_game", {
-            code: values.code,
+            code,
+            avatar,
+            username,
         });
 
         if (response.ok) {

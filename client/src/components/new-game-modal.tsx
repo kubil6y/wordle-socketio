@@ -31,6 +31,10 @@ import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 import { useMultiWordle } from "@/hooks/use-multi-wordle";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
+import { AvatarSelection } from "./avatar-selection";
+import { Input } from "./ui/input";
+
+const DEFAULT_AVATAR = "avatar3";
 
 const languages = [
     { label: "Turkish", value: "tr" },
@@ -62,6 +66,8 @@ export const NewGameModal = ({
 
     const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
+    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
+    const [username, setUsername] = useState<string>("");
 
     async function onCreate() {
         switch (gameType) {
@@ -78,10 +84,12 @@ export const NewGameModal = ({
     async function createMultiplayer() {
         const response = await socket.emitWithAck("mp_create_game", {
             language,
+            avatar,
+            username,
         });
         if (response.ok) {
             newGameModal.close();
-            //gameOverModal.close();
+            gameOverModal.close();
             wordle.reset();
             multiWordle.reset();
             navigate(`/lobby/${response.invitationCode}`);
@@ -110,6 +118,17 @@ export const NewGameModal = ({
     function onAlreadyHaveAcode() {
         newGameModal.close();
         joinGameModal.open();
+    }
+
+    const isUssernameValid = username.length >= 2 && username.length <= 16;
+    function isDisabled() {
+        if (!isConnected) {
+            return true;
+        }
+        if (gameType === GameType.Multiplayer) {
+            return !isUssernameValid;
+        }
+        return false;
     }
 
     return (
@@ -191,10 +210,36 @@ export const NewGameModal = ({
                         </div>
 
                         {gameType === GameType.Multiplayer && (
-                            <p className="text-sm italic text-muted-foreground">
-                                The maximum capacity for the lobby is three
-                                people.
-                            </p>
+                            <div className="space-y-6">
+                                <p className="text-sm italic text-muted-foreground">
+                                    The maximum capacity for the lobby is three
+                                    people.
+                                </p>
+
+                                <div className="mx-8">
+                                    <AvatarSelection
+                                        selectedAvatar={avatar}
+                                        onSelect={setAvatar}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <FormTitle title="Username" />
+                                    <Input
+                                        placeholder="Kubilay"
+                                        value={username}
+                                        onChange={(e) =>
+                                            setUsername(e.target.value)
+                                        }
+                                    />
+                                    {!isUssernameValid && (
+                                        <p className="text-sm font-medium text-destructive">
+                                            Username must be between 2 and 16
+                                            characters long.
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -203,8 +248,8 @@ export const NewGameModal = ({
                     <Button
                         size="lg"
                         variant="outline"
-                        className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-                        disabled={!isConnected}
+                        disabled={isDisabled()}
+                        className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white disabled:opacity-50 dark:hover:bg-white dark:hover:text-black"
                         onClick={onCreate}
                     >
                         CREATE

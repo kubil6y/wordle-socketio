@@ -1,5 +1,6 @@
 import { Logger } from "../logger";
 import { MultiWordle } from "../multiplayer/multi-worlde";
+import { Player } from "../multiplayer/player";
 import { Language, Wordle } from "../wordle";
 import { words } from "../words";
 
@@ -37,6 +38,7 @@ export class MultiGames {
         );
     }
 
+    // TODO disconnected users from the room and delete the room!
     public delete(id: string): void {
         const game = this.findById(id);
         if (!game) {
@@ -113,6 +115,7 @@ export function createMultiplayer(
         mGames.delete(existingMultiGame.getId());
     }
     mGames.register(game);
+    //const player = new Player(sessionId, game.getId())
 
     if (sGames.has(sessionId)) {
         sGames.delete(sessionId);

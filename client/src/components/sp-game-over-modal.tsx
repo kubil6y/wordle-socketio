@@ -47,12 +47,12 @@ export const SPGameOverModal = () => {
                         {success ? (
                             <LetterPullup
                                 words={"YOU WIN"}
-                                className="text-emerald-600 dark:text-emerald-600"
+                                className="select-none text-emerald-600 dark:text-emerald-600"
                             />
                         ) : (
                             <LetterPullup
                                 words={"YOU LOSE"}
-                                className="text-red-600 dark:text-red-600"
+                                className="select-none text-red-600 dark:text-red-600"
                             />
                         )}
                     </DialogTitle>

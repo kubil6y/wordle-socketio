@@ -12,7 +12,7 @@ export function handleMultiplayer(
     const req = socket.request as Request;
 
     socket.on("mp_create_game", (data, ackCb) => {
-        const { language } = data;
+        const { language, avatar, username } = data;
         const game = createMultiplayer(req.session.id, language);
         ackCb({
             ok: true,

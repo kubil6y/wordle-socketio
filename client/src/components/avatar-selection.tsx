@@ -49,22 +49,20 @@ export const AvatarSelection = ({
                     return (
                         <CarouselItem
                             key={index}
-                            //className="pl-1 md:basis-1/2 lg:basis-1/3"
-                            //className="pl-4 md:basis-1/5" // current
-                            className="sm:pl-4 basis-1/4 sm:basis-1/5"
+                            className="basis-1/4 sm:basis-1/5 sm:pl-4"
                         >
                             <div
                                 className={cn(
-                                    "size-[64px] flex cursor-pointer select-none items-center justify-center border p-1",
-                                    //isSelected && "border-2 border-black"
-                                    isSelected && "border-4 border-red-600"
+                                    "size-[64px] flex cursor-pointer select-none items-center justify-center overflow-hidden border p-1",
+                                    isSelected && "border-[3px] border-red-600",
+                                    !isSelected && "grayscale"
                                 )}
                                 onClick={() => {
                                     onSelect(avatar);
                                 }}
                             >
                                 <img
-                                    className=""
+                                    className={cn(!isSelected && "transition hover:scale-90")}
                                     src={avatarPath}
                                     alt={avatar}
                                 />
