@@ -16,10 +16,10 @@ const layouts = {
     tr: ["ertyuıopğü", "asdfghjklşi", "zcvbnmöç"],
 };
 
-const alphabets = {
-    en: "abcdefghijklmnopqrstuvwxyz",
-    tr: "abcçdefgğhıijklmnoöprsştuüvyz",
-};
+//const alphabets = {
+    //en: "abcdefghijklmnopqrstuvwxyz",
+    //tr: "abcçdefgğhıijklmnoöprsştuüvyz",
+//};
 
 type KeyboardProps = {
     language: Language;
@@ -43,8 +43,6 @@ export const Keyboard = ({
     const { volume } = useConfig();
     const canBackspace = useCanBackspace();
     const canType = useCanType();
-
-    const [keyColors, setKeyColors] = useState({});
 
     const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", {
         volume,
@@ -70,6 +68,7 @@ export const Keyboard = ({
                 if (result[j] === "green") {
                     greens.add(ch);
                 } else if (result[j] === "yellow" && !greens.has(ch)) {
+                    yellows.add(ch);
                 } else if (
                     result[j] === "black" &&
                     !greens.has(ch) &&
@@ -183,14 +182,14 @@ function resolveLayout(language: Language): string[] {
     }
 }
 
-function getBoxColorStyles(color: KeyboardButtonColor): string {
+function getBoxColorStyles(color: LetterCellColor): string {
     switch (color) {
         case "green":
             return "bg-emerald-500 text-white dark:bg-emerald-500";
         case "yellow":
             return "bg-amber-500 text-white dark:bg-amber-500";
         case "black":
-            return "bg-zinc-600 text-white dark:bg-zinc-600";
+            return "bg-zinc-600 text-white dark:bg-zinc-700";
         case "none":
             return "";
     }

@@ -99,6 +99,8 @@ export class Wordle {
             this._active = false;
             this._endTimestamp = Date.now();
         }
+
+        console.log(this._pastTryResults); // TODO
     }
 
     public getData() {
@@ -154,9 +156,9 @@ export class Wordle {
     }
 
     public generateRandomWord() {
-        const secretWord = this._words.getRandomWord(this._language);
+        //const secretWord = this._words.getRandomWord(this._language);
+        const secretWord = "şuara";
         this._secretWord = secretWord;
-
         Logger.debug(
             `Wordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`
         );
