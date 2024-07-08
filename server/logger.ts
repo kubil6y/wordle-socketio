@@ -38,7 +38,6 @@ export class Logger {
 
     private static log(logLevel: LogLevel, message: string): void {
         if (logLevel < Logger._minLevel) {
-            console.log('return');
             return;
         }
 

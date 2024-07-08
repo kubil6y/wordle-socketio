@@ -2,6 +2,7 @@ import { Socket } from "socket.io";
 import { Request } from "express";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Wordle } from "../wordle";
+import { Player } from "../multiplayer/player";
 import { createMultiplayer, mGames } from "./games";
 
 export const multiplayerGames: { [sessionId: string]: Wordle } = {};
@@ -13,10 +14,16 @@ export function handleMultiplayer(
 
     socket.on("mp_create_game", (data, ackCb) => {
         const { language, avatar, username } = data;
-        const game = createMultiplayer(req.session.id, language);
+        const ownerSessionId = req.session.id;
+        const game = createMultiplayer(ownerSessionId, language);
+
+        const player = new Player(ownerSessionId, game.getId(), username, avatar);
+        game.addPlayer(player);
+        socket.join(game.getId()); // admin joins game room
+
         ackCb({
             ok: true,
-            invitationCode: game.getInvitationCode(),
+            config: game.getConfig(ownerSessionId),
         });
     });
 

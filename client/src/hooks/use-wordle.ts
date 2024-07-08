@@ -1,6 +1,8 @@
 import { usePrevious } from "react-use";
 import { create } from "zustand";
 
+export const DEFAULT_GAME_WIDTH = 5;
+export const DEFAULT_GAME_HEIGHT = 6;
 export const DEFAULT_LANGUAGE: Language = "tr";
 export type Language = "en" | "tr";
 export type LetterColor = "green" | "yellow" | "black";
@@ -44,8 +46,8 @@ interface WordleState {
 }
 
 export const useWordle = create<WordleState>()((set) => ({
-    width: 5,
-    height: 6,
+    width: DEFAULT_GAME_WIDTH,
+    height: DEFAULT_GAME_HEIGHT,
     success: false,
     active: false,
     secretWord: "",

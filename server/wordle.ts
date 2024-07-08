@@ -7,8 +7,7 @@ export const GAME_HEIGHT = 6;
 
 export type Language = "en" | "tr";
 export type GameType = "singleplayer" | "multiplayer";
-
-type LetterColor = "green" | "yellow" | "black";
+export type LetterColor = "green" | "yellow" | "black";
 
 export class Wordle {
     private _ownerSessionId: string;
@@ -99,8 +98,6 @@ export class Wordle {
             this._active = false;
             this._endTimestamp = Date.now();
         }
-
-        console.log(this._pastTryResults); // TODO
     }
 
     public getData() {

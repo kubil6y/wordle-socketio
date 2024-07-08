@@ -18,9 +18,9 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "@/lib/socket";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { CopyIcon, RotateCcwIcon } from "lucide-react";
+import { toast } from "sonner";
 
 type LobbyParams = {
     code: string;
@@ -49,17 +49,19 @@ export const Lobby = () => {
             const response = await socket.emitWithAck("mp_has_game", {
                 code: params.code,
             });
-            if (!response.ok) {
-                toast.error("Game not found!");
-                navigate("/");
-            } else {
-                const { gameState, invitationCode, isAdmin } = response.data;
-                console.log({ gameState, invitationCode });
-                setIsAdmin(isAdmin);
-                setWelcomeModalOpen(true);
-                setGameState(convertGameStateStringToEnum(gameState));
-                setInvitationCode(invitationCode);
-            }
+            console.log("mp_has_game repsonse", response);
+
+            //if (!response.ok) {
+                //toast.error("Game not found!");
+                //navigate("/");
+            //} else {
+                //const { gameState, invitationCode, isAdmin } = response.data;
+                //console.log({ gameState, invitationCode });
+                //setIsAdmin(isAdmin);
+                //setWelcomeModalOpen(true);
+                //setGameState(convertGameStateStringToEnum(gameState));
+                //setInvitationCode(invitationCode);
+            //}
         }
         hasGame();
     }, [params]);

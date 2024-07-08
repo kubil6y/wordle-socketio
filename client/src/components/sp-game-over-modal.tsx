@@ -59,11 +59,12 @@ export const SPGameOverModal = () => {
                 </DialogHeader>
 
                 {!success && (
-                    <div className="text-xl">
-                        Correct answer was{" "}
-                        <span className="font-semibold underline">
-                            {secretWord}
+                    <div className="text-lg">
+                        <span className="font-semibold text-xl">
+                            '{secretWord}'{" "}
                         </span>
+
+                        was the answer!
                     </div>
                 )}
                 <div className="text-lg">Time: {duration}</div>

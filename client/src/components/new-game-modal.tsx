@@ -55,6 +55,11 @@ export const NewGameModal = ({
     showHomeButton = true,
     isClosable = true,
 }: NewGameModalProps) => {
+    const [gameType, setGameType] = useState<GameType>(GameType.Multiplayer);
+    const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
+    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
+    const [username, setUsername] = useState<string>("");
+
     const { isConnected } = useSocketStatus();
     const newGameModal = useNewGameModal();
     const joinGameModal = useJoinGameModal();
@@ -63,11 +68,6 @@ export const NewGameModal = ({
     const multiWordle = useMultiWordle();
     const gameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
-
-    const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
-    const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
-    const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
-    const [username, setUsername] = useState<string>("");
 
     async function onCreate() {
         switch (gameType) {
@@ -87,11 +87,12 @@ export const NewGameModal = ({
             avatar,
             username,
         });
+
         if (response.ok) {
             newGameModal.close();
-            gameOverModal.close();
-            wordle.reset();
-            multiWordle.reset();
+            multiWordle.reset(); 
+            multiWordle.setConfig(response.config);
+            console.log(multiWordle);
             navigate(`/lobby/${response.invitationCode}`);
         }
     }

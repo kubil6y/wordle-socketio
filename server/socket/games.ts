@@ -105,20 +105,19 @@ export function createSingleplayer(sessionId: string, language: Language) {
 }
 
 export function createMultiplayer(
-    sessionId: string,
-    language: Language
+    ownerSessionId: string,
+    language: Language,
 ): MultiWordle {
-    const game = new MultiWordle(mGames, sessionId, words, language);
+    const game = new MultiWordle(mGames, ownerSessionId, words, language);
 
-    const existingMultiGame = mGames.findByOwnerSessionId(sessionId);
+    const existingMultiGame = mGames.findByOwnerSessionId(ownerSessionId);
     if (existingMultiGame) {
         mGames.delete(existingMultiGame.getId());
     }
     mGames.register(game);
-    //const player = new Player(sessionId, game.getId())
 
-    if (sGames.has(sessionId)) {
-        sGames.delete(sessionId);
+    if (sGames.has(ownerSessionId)) {
+        sGames.delete(ownerSessionId);
     }
     return game;
 }

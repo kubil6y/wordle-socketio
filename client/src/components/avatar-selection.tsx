@@ -55,14 +55,14 @@ export const AvatarSelection = ({
                                 className={cn(
                                     "size-[64px] flex cursor-pointer select-none items-center justify-center overflow-hidden border p-1",
                                     isSelected && "border-[3px] border-red-600",
-                                    !isSelected && "grayscale"
+                                    //!isSelected && "grayscale"
                                 )}
                                 onClick={() => {
                                     onSelect(avatar);
                                 }}
                             >
                                 <img
-                                    className={cn(!isSelected && "transition hover:scale-90")}
+                                    className={cn(!isSelected && "transition")}
                                     src={avatarPath}
                                     alt={avatar}
                                 />
