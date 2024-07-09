@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMultiWordle } from "@/hooks/use-multi-wordle";
 
 const DEFAULT_AVATAR = "avatar3";
@@ -58,7 +58,6 @@ export const JoinGameModal = ({
     const joinModal = useJoinGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const navigate = useNavigate();
-    const multiWordle = useMultiWordle();
 
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
@@ -81,7 +80,6 @@ export const JoinGameModal = ({
         });
 
         if (response.ok) {
-            multiWordle.setHasUsedJoined(true);
             navigate(`/lobby/${code}`);
         } else {
             toast.error("Game not found!");

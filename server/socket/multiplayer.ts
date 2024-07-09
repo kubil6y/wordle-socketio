@@ -25,6 +25,7 @@ export function handleMultiplayer(
             avatar
         );
         game.addPlayer(player);
+        mGames.addPlayer(ownerSessionId, game.getId());
         socket.join(game.getId()); // admin joins game room
 
         ackCb({
@@ -34,17 +35,22 @@ export function handleMultiplayer(
         });
     });
 
-    socket.on("already_has_game", (ackCb) => {
-        const gameId = mGames.getPlayerGameId(req.session.id);
-        if (!gameId) {
+    socket.on("mp_has_game2", (data, ackCb) => {
+        const { code } = data;
+        const game = mGames.findByInvitationCode(code);
+        if (!game) {
+            socket.emit("alert", {
+                message: "Game not found!",
+                type: "error",
+                code: socket_errors.game_not_found,
+            });
             ackCb({ ok: false });
             return;
         }
-        const game = mGames.findById(gameId);
-        if (!gameId) {
-            ackCb({ ok: false });
-            return;
-        }
+        ackCb({
+            ok: true,
+            data: game.getLobbyData(req.session.id),
+        })
     });
 
     // TODO this should be called if client state is empty!
@@ -106,8 +112,6 @@ export function handleMultiplayer(
         });
 
         // inform others in the room
-        socket
-            .to(game.getId())
-            .emit("players_changed", game.getPlayersData() );
+        socket.to(game.getId()).emit("players_changed", game.getPlayersData());
     });
 }

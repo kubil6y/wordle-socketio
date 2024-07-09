@@ -37,6 +37,13 @@ interface MultiWordleState {
     secretWord: string;
     gameState: GameState;
     players: Player[];
+    setLobbyData: (data: {
+        isAdmin: boolean;
+        language: Language;
+        gameState: string;
+        invitationCode: string;
+        players: Player[];
+    }) => void;
     setData: (config: {
         width: number;
         height: number;
@@ -53,7 +60,6 @@ interface MultiWordleState {
 }
 
 export const useMultiWordle = create<MultiWordleState>()((set) => ({
-    hasUsedJoined: false,
     width: DEFAULT_GAME_WIDTH,
     height: DEFAULT_GAME_HEIGHT,
     language: DEFAULT_LANGUAGE,
@@ -94,6 +100,15 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 players: config.players,
             };
         }),
+    setLobbyData: (data) =>
+        set((state) => ({
+            ...state,
+            gameState: convertGameStateStringToEnum(data.gameState),
+            language: data.language,
+            isAdmin: data.isAdmin,
+            players: data.players,
+            invitationCode: data.invitationCode,
+        })),
 }));
 
 export function convertGameStateStringToEnum(gameState: string): GameState {

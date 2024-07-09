@@ -92,7 +92,6 @@ export const NewGameModal = ({
             newGameModal.close();
             multiWordle.reset();
             multiWordle.setGameState(convertGameStateStringToEnum(response.gameState));
-            multiWordle.setHasUsedJoined(true);
             navigate(`/lobby/${response.invitationCode}`);
         }
     }

@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import { showConnectionLostToast } from "@/lib/utils";
 import { useConnectedUserCount } from "@/hooks/use-connect-user-count";
+import { useMultiWordle } from "@/hooks/use-multi-wordle";
+import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
 const socket_errors = {
     game_not_found: "game_not_found",
@@ -16,6 +18,8 @@ export const SocketIO = () => {
     const { setIsConnected, setTransport } = useSocketStatus();
     const { setCount } = useConnectedUserCount();
     const navigate = useNavigate();
+    const multiWordle = useMultiWordle();
+    const lobbyModal = useLobbyModal();
 
     useEffect(() => {
         if (socket.connected) {
@@ -70,6 +74,7 @@ export const SocketIO = () => {
             }
         }
 
+        // general
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("user_count", onUserCount);
@@ -82,7 +87,6 @@ export const SocketIO = () => {
             socket.off("alert", onAlert);
         };
     }, []);
-
 
     return null;
 };

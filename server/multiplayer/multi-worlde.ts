@@ -87,6 +87,17 @@ export class MultiWordle {
         return playersData;
     }
 
+    public getLobbyData(sessionId: string) {
+        return {
+            gameState: this.gameStateToString(),
+            language: this._language,
+            isAdmin: this.isOwner(sessionId),
+            players: this.getPlayersData(),
+            invitationCode: this.getInvitationCode(),
+            hasAlreadyJoined: this.hasPlayer(sessionId),
+        }
+    }
+
     public getData(sessionId: string) {
         return {
             width: GAME_WIDTH,

@@ -26,7 +26,7 @@ export class MultiGames {
         if (!gameId) {
             return null;
         }
-        return this.findById(gameId);
+        return this.findById(gameId)
     }
 
     public addPlayer(sessionId: string, gameId: string): void {
@@ -37,10 +37,14 @@ export class MultiGames {
         return this._players[playerSessionId] ?? null;
     }
 
+    public getGameIdByPlayerSessionId(sessionId: string): string | null {
+        return this._players[sessionId] ?? null;
+    }
+
     public register(game: MultiWordle): void {
         this._games[game.getId()] = game;
         this._owners[game.getOwnerSessionId()] = game.getOwnerSessionId();
-        this._players[game.getOwnerSessionId()] = game.getId(); // add owner as player!
+        this._players[game.getOwnerSessionId()] = game.getId(); // add owner also as player!
         this._codes[game.getInvitationCode()] = game.getId();
         Logger.debug(
             `MultiGames.register game: ${game.getId()} for session: ${game.getOwnerSessionId()}}`
@@ -51,15 +55,19 @@ export class MultiGames {
     public delete(id: string): void {
         const game = this.findById(id);
         if (!game) {
+            Logger.debug(`MultiGames.delete game not found id: ${id}`);
             return;
         }
+        Logger.debug(`MultiGames.delete game id: ${id}`);
         delete this._games[id];
         delete this._owners[game.getOwnerSessionId()];
         delete this._codes[game.getInvitationCode()];
-        for(const playerSessionId of game.getPlayerSessionIds()) {
+        for (const playerSessionId of game.getPlayerSessionIds()) {
             delete this._players[playerSessionId];
+            Logger.debug(
+                `MultiGames.delete game id: ${id}, player session id: ${playerSessionId}`
+            );
         }
-        Logger.debug(`MultiGames.delete game id: ${id}`);
     }
 
     public updateInvitationCode(gameId: string, newCode: string): void {

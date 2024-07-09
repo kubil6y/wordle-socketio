@@ -69,7 +69,16 @@ io.on("connection", (socket) => {
         if (sGames.has(req.session.id)) {
             sGames.delete(req.session.id);
         }
+
+        const gameId = mGames.getGameIdByPlayerSessionId(req.session.id);
+        if (gameId) {
+            const game = mGames.findById(gameId);
+            mGames.delete(gameId);
+        }
+
         if (mGames.findByOwnerSessionId(req.session.id)) {
+            const game = mGames.findByOwnerSessionId(req.session.id)!;
+            socket.to(game.getId()).emit("mp_admin_quit");
             mGames.delete(req.session.id);
         }
     });
