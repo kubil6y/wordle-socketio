@@ -16,7 +16,10 @@ export function App() {
                 <Route path="play" element={<PlayPage />} />
                 <Route path="lobby/:code" element={<Lobby />} />
                 <Route path="test" element={<TestPage />} />
-                <Route path="*" element={<NotFoundPage />} />
+                {/*
+                 * TODO remove this
+                 *<Route path="*" element={<NotFoundPage />} />
+                 */}
             </Route>
         </Routes>
     );

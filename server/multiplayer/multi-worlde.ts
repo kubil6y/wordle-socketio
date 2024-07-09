@@ -48,6 +48,23 @@ export class MultiWordle {
         );
     }
 
+    public hasPlayer(sessionId: string): boolean {
+        for(const p of this._players) {
+            if (p.getSessionId() === sessionId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public getPlayerSessionIds(): string[] {
+        const sessionIds: string[] = [];
+        for(const p of this._players) {
+            sessionIds.push(p.getSessionId());
+        }
+        return sessionIds;
+    }
+
     // TODO
     public getPlayersData() {
         const playersData: {
@@ -70,12 +87,12 @@ export class MultiWordle {
         return playersData;
     }
 
-    public getConfig(sessionId: string) {
+    public getData(sessionId: string) {
         return {
             width: GAME_WIDTH,
             height: GAME_HEIGHT,
             secretWord: this._secretWord, // TODO remove this later!
-            gameState: this._gameState,
+            gameState: this.gameStateToString(),
             language: this._language,
             isAdmin: this.isOwner(sessionId),
             invitationCode: this.getInvitationCode(),
@@ -103,7 +120,7 @@ export class MultiWordle {
         return this._invitationCode;
     }
 
-    public getGameStateToString(): string {
+    public gameStateToString(): string {
         switch (this._gameState) {
             case GameState.WaitingToStart:
                 return "waiting_to_start";

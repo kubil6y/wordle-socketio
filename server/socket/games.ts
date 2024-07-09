@@ -1,6 +1,5 @@
 import { Logger } from "../logger";
 import { MultiWordle } from "../multiplayer/multi-worlde";
-import { Player } from "../multiplayer/player";
 import { Language, Wordle } from "../wordle";
 import { words } from "../words";
 
@@ -8,6 +7,7 @@ export class MultiGames {
     private _games: { [id: string]: MultiWordle } = {};
     private _owners: { [ownerSessionId: string]: string } = {}; // ownerSessionId,gameId
     private _codes: { [invitationCode: string]: string } = {}; // code,gameId
+    private _players: { [playerSessionId: string]: string } = {}; // playerSessionId,gameId
 
     public findById(id: string): MultiWordle | null {
         return this._games[id] ?? null;
@@ -29,9 +29,18 @@ export class MultiGames {
         return this.findById(gameId);
     }
 
+    public addPlayer(sessionId: string, gameId: string): void {
+        this._players[sessionId] = gameId;
+    }
+
+    public getPlayerGameId(playerSessionId: string): string | null {
+        return this._players[playerSessionId] ?? null;
+    }
+
     public register(game: MultiWordle): void {
         this._games[game.getId()] = game;
-        this._owners[game.getOwnerSessionId()] = game.getId();
+        this._owners[game.getOwnerSessionId()] = game.getOwnerSessionId();
+        this._players[game.getOwnerSessionId()] = game.getId(); // add owner as player!
         this._codes[game.getInvitationCode()] = game.getId();
         Logger.debug(
             `MultiGames.register game: ${game.getId()} for session: ${game.getOwnerSessionId()}}`
@@ -47,6 +56,9 @@ export class MultiGames {
         delete this._games[id];
         delete this._owners[game.getOwnerSessionId()];
         delete this._codes[game.getInvitationCode()];
+        for(const playerSessionId of game.getPlayerSessionIds()) {
+            delete this._players[playerSessionId];
+        }
         Logger.debug(`MultiGames.delete game id: ${id}`);
     }
 
@@ -106,7 +118,7 @@ export function createSingleplayer(sessionId: string, language: Language) {
 
 export function createMultiplayer(
     ownerSessionId: string,
-    language: Language,
+    language: Language
 ): MultiWordle {
     const game = new MultiWordle(mGames, ownerSessionId, words, language);
 

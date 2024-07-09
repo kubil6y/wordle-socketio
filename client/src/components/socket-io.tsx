@@ -14,7 +14,7 @@ const socket_errors = {
 export const SocketIO = () => {
     const location = useLocation();
     const { setIsConnected, setTransport } = useSocketStatus();
-    const {setCount} = useConnectedUserCount();
+    const { setCount } = useConnectedUserCount();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -40,7 +40,7 @@ export const SocketIO = () => {
             });
         }
 
-        function onUserCount(count: number){ 
+        function onUserCount(count: number) {
             setCount(count);
         }
 
@@ -82,6 +82,7 @@ export const SocketIO = () => {
             socket.off("alert", onAlert);
         };
     }, []);
+
 
     return null;
 };

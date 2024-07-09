@@ -57,7 +57,8 @@ export const AvatarSelection = ({
                                     isSelected && "border-[3px] border-red-600",
                                     //!isSelected && "grayscale"
                                 )}
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.preventDefault();
                                     onSelect(avatar);
                                 }}
                             >

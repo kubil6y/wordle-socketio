@@ -28,7 +28,7 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import { useMultiWordle } from "@/hooks/use-multi-wordle";
+import { convertGameStateStringToEnum, useMultiWordle } from "@/hooks/use-multi-wordle";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { AvatarSelection } from "./avatar-selection";
@@ -90,9 +90,9 @@ export const NewGameModal = ({
 
         if (response.ok) {
             newGameModal.close();
-            multiWordle.reset(); 
-            multiWordle.setConfig(response.config);
-            console.log(multiWordle);
+            multiWordle.reset();
+            multiWordle.setGameState(convertGameStateStringToEnum(response.gameState));
+            multiWordle.setHasUsedJoined(true);
             navigate(`/lobby/${response.invitationCode}`);
         }
     }
@@ -227,7 +227,7 @@ export const NewGameModal = ({
                                 <div className="space-y-2">
                                     <FormTitle title="Username" />
                                     <Input
-                                        placeholder="Kubilay"
+                                        placeholder="ex: kubilay"
                                         value={username}
                                         onChange={(e) =>
                                             setUsername(e.target.value)

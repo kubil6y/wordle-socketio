@@ -4,6 +4,7 @@ export class Player {
     private _username: string;
     private _avatarId: string;
     private _score: number;
+
     public constructor(
         sessionId: string,
         gameId: string,

@@ -1,10 +1,10 @@
-import { create } from "zustand";
 import {
     DEFAULT_GAME_HEIGHT,
     DEFAULT_GAME_WIDTH,
     DEFAULT_LANGUAGE,
     Language,
 } from "./use-wordle";
+import { create } from "zustand";
 
 export const gameStates = {
     waiting_to_start: "waiting_to_start",
@@ -20,7 +20,7 @@ export enum GameState {
     GameEnd,
 }
 
-type Player = {
+export type Player = {
     sessionId: string;
     username: string;
     avatarId: string;
@@ -37,10 +37,7 @@ interface MultiWordleState {
     secretWord: string;
     gameState: GameState;
     players: Player[];
-    setIsAdmin: (isAdmin: boolean) => void;
-    setInvitationCode: (code: string) => void;
-    setGameState: (gameState: GameState) => void;
-    setConfig: (config: {
+    setData: (config: {
         width: number;
         height: number;
         secretWord: string;
@@ -50,10 +47,13 @@ interface MultiWordleState {
         gameState: string;
         players: Player[];
     }) => void;
+    setGameState: (gameState: GameState) => void;
+    setPlayersData: (players: Player[]) => void;
     reset: () => void;
 }
 
 export const useMultiWordle = create<MultiWordleState>()((set) => ({
+    hasUsedJoined: false,
     width: DEFAULT_GAME_WIDTH,
     height: DEFAULT_GAME_HEIGHT,
     language: DEFAULT_LANGUAGE,
@@ -63,14 +63,24 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
     secretWord: "",
     gameState: GameState.WaitingToStart,
     players: [],
-    setIsAdmin: (isAdmin: boolean) => set({ isAdmin }),
-    setGameState: (gameState: GameState) => set({ gameState }),
-    setInvitationCode: (invitationCode: string) => set({ invitationCode }),
     reset: () =>
         set((state) => {
-            return state;
+            // TODO
+            return {
+                ...state,
+                width: DEFAULT_GAME_WIDTH,
+                height: DEFAULT_GAME_HEIGHT,
+                language: DEFAULT_LANGUAGE,
+                success: false,
+                isAdmin: false,
+                invitationCode: "",
+                secretWord: "",
+                players: [],
+            };
         }),
-    setConfig: (config) =>
+    setGameState: (gameState) => set({ gameState }),
+    setPlayersData: (players) => set({ players }),
+    setData: (config) =>
         set((state) => {
             return {
                 ...state,

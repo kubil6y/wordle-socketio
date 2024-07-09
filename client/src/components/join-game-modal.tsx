@@ -27,6 +27,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { useMultiWordle } from "@/hooks/use-multi-wordle";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -55,6 +57,8 @@ export const JoinGameModal = ({
     const { isConnected } = useSocketStatus();
     const joinModal = useJoinGameModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
+    const navigate = useNavigate();
+    const multiWordle = useMultiWordle();
 
     const form = useForm<FormSchema>({
         resolver: zodResolver(formSchema),
@@ -77,7 +81,8 @@ export const JoinGameModal = ({
         });
 
         if (response.ok) {
-            console.log(response);
+            multiWordle.setHasUsedJoined(true);
+            navigate(`/lobby/${code}`);
         } else {
             toast.error("Game not found!");
         }
@@ -141,7 +146,7 @@ export const JoinGameModal = ({
                                     <FormTitle title="Username" />
                                     <FormControl>
                                         <Input
-                                            placeholder="Kubilay"
+                                            placeholder="ex: kubilay"
                                             {...field}
                                         />
                                     </FormControl>
@@ -155,7 +160,9 @@ export const JoinGameModal = ({
                                 control={form.control}
                                 name="avatar"
                                 render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem onClick={(e) => {
+                                        e.preventDefault();
+                                    }}>
                                         <FormTitle title="Username" />
                                         <FormControl>
                                             <AvatarSelection

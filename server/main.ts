@@ -26,7 +26,7 @@ const sessionMiddleware = session({
     saveUninitialized: true,
 });
 
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
     pingInterval: 2000,
     pingTimeout: 5000,
     cors: {
