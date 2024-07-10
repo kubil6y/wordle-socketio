@@ -10,12 +10,13 @@ import { Logo } from "@/components/logo";
 import { ModalFooter } from "@/components/modal-footer";
 import { Button } from "@/components/ui/button";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
-import { GameState, Player, useMultiWordle } from "@/hooks/use-multi-wordle";
+import { GameState, useMultiWordle } from "@/hooks/use-multi-wordle";
 import { useNavigate } from "react-router-dom";
 import { InvitationCode } from "./invitation-code";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
-import { CrownIcon } from "lucide-react";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
+import { PlayerCard } from "./player-card";
+import { getLanguageIcon } from "@/lib/utils";
 
 type LobbyWelcomeModalProps = {
     hasAlreadyJoined: boolean;
@@ -25,7 +26,8 @@ export const LobbyWelcomeModal = ({
     hasAlreadyJoined,
 }: LobbyWelcomeModalProps) => {
     const { isConnected } = useSocketStatus();
-    const { isAdmin, invitationCode, gameState, players, language } = useMultiWordle();
+    const { isAdmin, invitationCode, gameState, players, language } =
+        useMultiWordle();
     const joinGameModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const navigate = useNavigate();
@@ -49,6 +51,8 @@ export const LobbyWelcomeModal = ({
         navigate("/");
     }
 
+    const LanguageIcon = getLanguageIcon(language);
+
     return (
         <Dialog open={lobbyModal.isOpen} onOpenChange={onClose}>
             <DialogContent
@@ -61,8 +65,8 @@ export const LobbyWelcomeModal = ({
                         <ConnectionStatus />
                     </div>
 
-                    <DialogTitle className="text-4xl font-semibold">
-                        Lobby
+                    <DialogTitle className="text-4xl font-semibold flex items-start gap-3">
+                        Lobby <LanguageIcon className="size-8"/>
                     </DialogTitle>
 
                     <DialogDescription className="text-start">
@@ -74,7 +78,7 @@ export const LobbyWelcomeModal = ({
 
                 <div className="flex items-center gap-6">
                     {players?.map((player) => (
-                        <PlayerCard key={player.sessionId} player={player} />
+                        <PlayerCard key={player.sessionId} player={player} showScore={false} />
                     ))}
                 </div>
 
@@ -89,7 +93,10 @@ export const LobbyWelcomeModal = ({
                             disabled={!isConnected || players.length < 2}
                             onClick={onStart}
                         >
-                            Start <span className="italic ml-2">({players.length}/3)</span>
+                            Start{" "}
+                            <span className="ml-2 italic">
+                                ({players.length}/3)
+                            </span>
                         </Button>
                     )}
                     {!hasAlreadyJoined && (
@@ -119,29 +126,6 @@ export const LobbyWelcomeModal = ({
         </Dialog>
     );
 };
-
-function PlayerCard({ player }: { player: Player }) {
-    const avatarPath = `/avatars/${player.avatarId}.png`;
-    return (
-        <div className="flex flex-col items-center">
-            <div className="relative">
-                <img src={avatarPath} className="size-[64px] aspect-square" />
-
-                {player.isAdmin && (
-                    <div className="absolute right-0 top-0">
-                        <CrownIcon className="size-5 fill-yellow-600 text-white" />
-                    </div>
-                )}
-            </div>
-
-            <div className="px-2 py-1">
-                <p className="text-center text-sm font-semibold">
-                    {player.username}
-                </p>
-            </div>
-        </div>
-    );
-}
 
 function getGameStateMessage(gameState: GameState): string {
     switch (gameState) {
