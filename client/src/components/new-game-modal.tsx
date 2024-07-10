@@ -37,6 +37,7 @@ import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { AvatarSelection } from "./avatar-selection";
 import { Input } from "./ui/input";
 import { Icons } from "./icons";
+import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -67,6 +68,7 @@ export const NewGameModal = ({
     const { isConnected } = useSocketStatus();
     const newGameModal = useNewGameModal();
     const joinGameModal = useJoinGameModal();
+    const lobbyModal = useLobbyModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const wordle = useWordle();
     const multiWordle = useMultiWordle();
@@ -98,6 +100,7 @@ export const NewGameModal = ({
             multiWordle.setGameState(
                 convertGameStateStringToEnum(response.gameState)
             );
+            lobbyModal.open();
             navigate(`/lobby/${response.invitationCode}`);
         }
     }

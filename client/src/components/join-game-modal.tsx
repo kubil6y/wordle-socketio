@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -54,6 +55,7 @@ export const JoinGameModal = ({
 }: JoinGameModalProps) => {
     const { isConnected } = useSocketStatus();
     const joinModal = useJoinGameModal();
+    const lobbyModal = useLobbyModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const navigate = useNavigate();
 
@@ -78,6 +80,7 @@ export const JoinGameModal = ({
         });
 
         if (response.ok) {
+            lobbyModal.open();
             navigate(`/lobby/${code}`);
         } else {
             if (response.error === "join_twice") {

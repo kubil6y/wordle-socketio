@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { showConnectionLostToast } from "@/lib/utils";
 import { useConnectedUserCount } from "@/hooks/use-connect-user-count";
 import { Player, useMultiWordle } from "@/hooks/use-multi-wordle";
+import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
 const socket_errors = {
     game_not_found: "game_not_found",
@@ -18,6 +19,7 @@ export const SocketIO = () => {
     const { setCount } = useConnectedUserCount();
     const navigate = useNavigate();
     const multiWordle = useMultiWordle();
+    const lobbyModal = useLobbyModal();
 
     useEffect(() => {
         if (socket.connected) {
@@ -81,6 +83,7 @@ export const SocketIO = () => {
             players: Player[];
         }) {
             multiWordle.setData(data);
+            lobbyModal.close();
         }
 
         // General

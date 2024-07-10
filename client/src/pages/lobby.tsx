@@ -30,9 +30,9 @@ export const Lobby = () => {
             } else {
                 multiWordle.setLobbyData(response.data);
                 setHasAlreadyJoined(response.data.hasAlreadyJoined ?? false);
-                if (multiWordle.gameState === GameState.WaitingToStart) {
-                    lobbyModal.open();
-                }
+                //if (multiWordle.gameState === GameState.WaitingToStart) {
+                    //lobbyModal.open();
+                //}
             }
         }
         checkHasGame();
@@ -49,6 +49,8 @@ export const Lobby = () => {
             socket.off("mp_players_changed", onPlayersChanged);
         };
     }, []);
+
+    console.log(multiWordle.gameState === GameState.GamePlaying)
 
     return (
         <>
