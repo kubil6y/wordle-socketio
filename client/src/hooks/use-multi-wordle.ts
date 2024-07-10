@@ -29,6 +29,7 @@ export type Player = {
 };
 
 interface MultiWordleState {
+    gameId: string;
     width: number;
     height: number;
     isAdmin: boolean;
@@ -38,28 +39,29 @@ interface MultiWordleState {
     gameState: GameState;
     players: Player[];
     setLobbyData: (data: {
+        gameId: string;
         isAdmin: boolean;
         language: Language;
         gameState: string;
         invitationCode: string;
         players: Player[];
     }) => void;
-    setData: (config: {
+    setData: (data: {
         width: number;
         height: number;
         secretWord: string;
-        language: Language;
-        isAdmin: boolean;
-        invitationCode: string;
         gameState: string;
+        isAdmin: boolean;
         players: Player[];
     }) => void;
+    setGameId: (gameId: string) => void;
     setGameState: (gameState: GameState) => void;
     setPlayersData: (players: Player[]) => void;
     reset: () => void;
 }
 
 export const useMultiWordle = create<MultiWordleState>()((set) => ({
+    gameId: "",
     width: DEFAULT_GAME_WIDTH,
     height: DEFAULT_GAME_HEIGHT,
     language: DEFAULT_LANGUAGE,
@@ -74,6 +76,7 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
             // TODO
             return {
                 ...state,
+                gameId: "",
                 width: DEFAULT_GAME_WIDTH,
                 height: DEFAULT_GAME_HEIGHT,
                 language: DEFAULT_LANGUAGE,
@@ -84,25 +87,25 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 players: [],
             };
         }),
+    setGameId: (gameId: string) => set({ gameId }),
     setGameState: (gameState) => set({ gameState }),
     setPlayersData: (players) => set({ players }),
-    setData: (config) =>
+    setData: (data) =>
         set((state) => {
             return {
                 ...state,
-                gameState: convertGameStateStringToEnum(config.gameState),
-                width: config.width,
-                height: config.height,
-                secretWord: config.secretWord,
-                language: config.language,
-                isAdmin: config.isAdmin,
-                invitationCode: config.invitationCode,
-                players: config.players,
+                width: data.width,
+                height: data.height,
+                secretWord: data.secretWord,
+                gameState: convertGameStateStringToEnum(data.gameState),
+                isAdmin: data.isAdmin,
+                players: data.players,
             };
         }),
     setLobbyData: (data) =>
         set((state) => ({
             ...state,
+            gameId: data.gameId,
             gameState: convertGameStateStringToEnum(data.gameState),
             language: data.language,
             isAdmin: data.isAdmin,

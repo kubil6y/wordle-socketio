@@ -43,11 +43,10 @@ export class MultiWordle {
         this._language = language;
         this._words = words;
         this._games = games;
-        this._startTimestamp = Date.now();
         this._players = [];
         this._currentPlayerIndex = 0;
         this._currentPlayerSessionId = ownerSessionId;
-        this.generateRandomWord();
+        this._secretWord = "";
     }
 
     // TODO convert index to session id player functions
@@ -70,7 +69,7 @@ export class MultiWordle {
         }
         if (index !== -1) {
             this._players.splice(index, 1);
-            Logger.debug(`MultiWordle.deletePlayer sessionId: ${sessionId}`)
+            Logger.debug(`MultiWordle.deletePlayer sessionId: ${sessionId}`);
         }
     }
 
@@ -115,6 +114,7 @@ export class MultiWordle {
 
     public getLobbyData(sessionId: string) {
         return {
+            gameId: this.getId(),
             gameState: this.gameStateToString(),
             language: this._language,
             isAdmin: this.isOwner(sessionId),
@@ -130,9 +130,7 @@ export class MultiWordle {
             height: GAME_HEIGHT,
             secretWord: this._secretWord, // TODO remove this later!
             gameState: this.gameStateToString(),
-            language: this._language,
             isAdmin: this.isOwner(sessionId),
-            invitationCode: this.getInvitationCode(),
             players: this.getPlayersData(),
         };
     }
@@ -177,18 +175,27 @@ export class MultiWordle {
         Logger.debug(`MultiWordle.generateNewInvitationCode: "${newCode}"`);
     }
 
-    public startGame(): void {
+    public start(): void {
+        this._startTimestamp = Date.now();
         this._gameState = GameState.GamePlaying;
-        Logger.debug("MultiWordle.startGame");
+        Logger.debug(
+            `MultiWordle.start gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`
+        );
+        this.generateRandomWord();
     }
 
-    public endGame(): void {
+    public end(): void {
         this._gameState = GameState.GameEnd;
-        Logger.debug("MultiWordle.endGame");
+        Logger.debug(
+            `MultiWordle.end gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`
+        );
     }
 
-    public setState(gameState: GameState): void {
-        this._gameState = gameState;
+    public canStart(): boolean {
+        if (this._players.length >= 2 && !this.isPlaying()) {
+            return true;
+        }
+        return false;
     }
 
     public isPlaying(): boolean {
@@ -209,7 +216,7 @@ export class MultiWordle {
         const secretWord = this._words.getRandomWord(this._language);
         this._secretWord = secretWord;
         Logger.debug(
-            `MultiWordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`
+            `MultiWordle.generateRandomWord secretWord:${secretWord} gameId:"${this._ownerSessionId}"`
         );
     }
 }

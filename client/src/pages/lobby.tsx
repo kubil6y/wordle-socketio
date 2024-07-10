@@ -2,8 +2,8 @@ import { toast } from "sonner";
 import { socket } from "@/lib/socket";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Player, useMultiWordle } from "@/hooks/use-multi-wordle";
-import { LobbyWelcomeModal } from "@/components/lobby-welcome-modal";
+import { GameState, Player, useMultiWordle } from "@/hooks/use-multi-wordle";
+import { LobbyModal } from "@/components/lobby-modal";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
 type LobbyParams = {
@@ -30,7 +30,9 @@ export const Lobby = () => {
             } else {
                 multiWordle.setLobbyData(response.data);
                 setHasAlreadyJoined(response.data.hasAlreadyJoined ?? false);
-                lobbyModal.open();
+                if (multiWordle.gameState === GameState.WaitingToStart) {
+                    lobbyModal.open();
+                }
             }
         }
         checkHasGame();
@@ -50,7 +52,11 @@ export const Lobby = () => {
 
     return (
         <>
-            <LobbyWelcomeModal hasAlreadyJoined={hasAlreadyJoined} />
+            <LobbyModal hasAlreadyJoined={hasAlreadyJoined} />
+
+            {multiWordle.gameState === GameState.GamePlaying && (
+                <p>game playing</p>
+            )}
         </>
     );
 };

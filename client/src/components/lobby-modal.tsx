@@ -17,23 +17,27 @@ import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
 import { PlayerCard } from "./player-card";
 import { getLanguageIcon } from "@/lib/utils";
+import { socket } from "@/lib/socket";
 
-type LobbyWelcomeModalProps = {
+type LobbyModalProps = {
     hasAlreadyJoined: boolean;
 };
 
-export const LobbyWelcomeModal = ({
+export const LobbyModal = ({
     hasAlreadyJoined,
-}: LobbyWelcomeModalProps) => {
+}: LobbyModalProps) => {
     const { isConnected } = useSocketStatus();
-    const { isAdmin, invitationCode, gameState, players, language } =
+    const { isAdmin, invitationCode, gameState, players, language, gameId } =
         useMultiWordle();
     const joinGameModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const navigate = useNavigate();
 
     function onStart() {
-        console.log("onStart()");
+        // TODO
+        socket.emit("mp_start_game", {
+            gameId,
+        });
     }
 
     function onClickJoin() {
@@ -44,6 +48,7 @@ export const LobbyWelcomeModal = ({
 
     function onClose() {
         // TODO
+        console.log("onClose()lmao")
     }
 
     function onClickHome() {
@@ -65,8 +70,8 @@ export const LobbyWelcomeModal = ({
                         <ConnectionStatus />
                     </div>
 
-                    <DialogTitle className="text-4xl font-semibold flex items-start gap-3">
-                        Lobby <LanguageIcon className="size-8"/>
+                    <DialogTitle className="flex items-start gap-3 text-4xl font-semibold">
+                        Lobby <LanguageIcon className="size-8" />
                     </DialogTitle>
 
                     <DialogDescription className="text-start">
@@ -78,7 +83,11 @@ export const LobbyWelcomeModal = ({
 
                 <div className="flex items-center gap-6">
                     {players?.map((player) => (
-                        <PlayerCard key={player.sessionId} player={player} showScore={false} />
+                        <PlayerCard
+                            key={player.sessionId}
+                            player={player}
+                            showScore={false}
+                        />
                     ))}
                 </div>
 
@@ -115,7 +124,7 @@ export const LobbyWelcomeModal = ({
                         size="sm"
                         variant="outline"
                         className="text w-full select-none rounded-none font-semibold uppercase"
-                        onClick={() => navigate("/")}
+                        onClick={onClickHome}
                     >
                         Home
                     </Button>

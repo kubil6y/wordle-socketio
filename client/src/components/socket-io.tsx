@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
 import { showConnectionLostToast } from "@/lib/utils";
 import { useConnectedUserCount } from "@/hooks/use-connect-user-count";
+import { Player, useMultiWordle } from "@/hooks/use-multi-wordle";
 
 const socket_errors = {
     game_not_found: "game_not_found",
@@ -16,6 +17,7 @@ export const SocketIO = () => {
     const { setIsConnected, setTransport } = useSocketStatus();
     const { setCount } = useConnectedUserCount();
     const navigate = useNavigate();
+    const multiWordle = useMultiWordle();
 
     useEffect(() => {
         if (socket.connected) {
@@ -70,17 +72,31 @@ export const SocketIO = () => {
             }
         }
 
+        function onStart(data: {
+            width: number;
+            height: number;
+            secretWord: string;
+            gameState: string;
+            isAdmin: boolean;
+            players: Player[];
+        }) {
+            multiWordle.setData(data);
+        }
+
         // General
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("user_count", onUserCount);
         socket.on("alert", onAlert);
 
+        socket.on("mp_game_start", onStart);
+
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("user_count", onUserCount);
             socket.off("alert", onAlert);
+            socket.off("mp_game_start", onStart);
         };
     }, []);
 

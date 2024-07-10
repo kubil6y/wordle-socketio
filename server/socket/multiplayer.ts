@@ -5,6 +5,7 @@ import { Wordle } from "../wordle";
 import { Player } from "../multiplayer/player";
 import { createMultiplayer, mGames } from "./games";
 import { socket_errors } from "./errors";
+import { io } from "../main";
 
 export const multiplayerGames: { [sessionId: string]: Wordle } = {};
 
@@ -30,6 +31,7 @@ export function handleMultiplayer(
 
         ackCb({
             ok: true,
+            gameId: game.getId(),
             invitationCode: game.getInvitationCode(),
             gameStatus: "waiting_to_start",
         });
@@ -38,24 +40,17 @@ export function handleMultiplayer(
     socket.on("mp_has_game", (data, ackCb) => {
         const { code } = data;
         const game = mGames.findByInvitationCode(code);
-        if (!game) {
-            socket.emit("alert", {
-                message: "Game not found!",
-                type: "error",
-                code: socket_errors.game_not_found,
+        if (game) {
+            ackCb({
+                ok: true,
+                data: game.getLobbyData(req.session.id),
             });
+        } else {
             ackCb({ ok: false });
-            return;
         }
-        ackCb({
-            ok: true,
-            data: game.getLobbyData(req.session.id),
-        })
     });
 
     socket.on("mp_join_game", (data, ackCb) => {
-        // TODO: also emit and send other players about this
-        // alert other players in this!
         const { avatar, username, code } = data;
         const game = mGames.findByInvitationCode(code);
         if (!game) {
@@ -84,6 +79,7 @@ export function handleMultiplayer(
             username,
             avatar
         );
+        socket.join(game.getId());
         game.addPlayer(player);
         mGames.addPlayer(player.getSessionId(), game.getId());
 
@@ -93,6 +89,23 @@ export function handleMultiplayer(
         });
 
         // inform others in the room
-        socket.to(game.getId()).emit("mp_players_changed", game.getPlayersData());
+        socket
+            .to(game.getId())
+            .emit("mp_players_changed", game.getPlayersData());
+    });
+
+    socket.on("mp_start_game", (data) => {
+        const { gameId } = data;
+        const game = mGames.findById(gameId);
+        if (!game) {
+            return;
+        }
+        if (game.isOwner(req.session.id) && game.canStart()) {
+            game.start();
+            io.to(game.getId()).emit("mp_game_start", {
+                ok: true,
+                data: game.getData(req.session.id),
+            });
+        }
     });
 }
