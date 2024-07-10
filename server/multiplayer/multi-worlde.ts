@@ -22,7 +22,13 @@ export class MultiWordle {
     private _invitationCode: string;
     private _games: MultiGames;
     private _secretWord: string;
+
     private _players: Player[];
+    private _currentPlayerIndex: number;
+    private _currentPlayerSessionId: string;
+
+    private _startTimestamp: number;
+    private _endTimestamp: number;
 
     public constructor(
         games: MultiGames,
@@ -37,9 +43,15 @@ export class MultiWordle {
         this._language = language;
         this._words = words;
         this._games = games;
+        this._startTimestamp = Date.now();
         this._players = [];
+        this._currentPlayerIndex = 0;
+        this._currentPlayerSessionId = ownerSessionId;
         this.generateRandomWord();
     }
+
+    // TODO convert index to session id player functions
+    // TODO rounds and scores
 
     public addPlayer(player: Player): void {
         this._players.push(player);
@@ -48,8 +60,22 @@ export class MultiWordle {
         );
     }
 
+    public deletePlayer(sessionId: string): void {
+        let index = -1;
+        for (let i = 0; i < this._players.length; i++) {
+            if (this._players[i].getSessionId() === sessionId) {
+                index = i;
+                break;
+            }
+        }
+        if (index !== -1) {
+            this._players.splice(index, 1);
+            Logger.debug(`MultiWordle.deletePlayer sessionId: ${sessionId}`)
+        }
+    }
+
     public hasPlayer(sessionId: string): boolean {
-        for(const p of this._players) {
+        for (const p of this._players) {
             if (p.getSessionId() === sessionId) {
                 return true;
             }
@@ -59,7 +85,7 @@ export class MultiWordle {
 
     public getPlayerSessionIds(): string[] {
         const sessionIds: string[] = [];
-        for(const p of this._players) {
+        for (const p of this._players) {
             sessionIds.push(p.getSessionId());
         }
         return sessionIds;
@@ -95,7 +121,7 @@ export class MultiWordle {
             players: this.getPlayersData(),
             invitationCode: this.getInvitationCode(),
             hasAlreadyJoined: this.hasPlayer(sessionId),
-        }
+        };
     }
 
     public getData(sessionId: string) {

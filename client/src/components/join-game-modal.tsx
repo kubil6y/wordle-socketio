@@ -27,8 +27,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useMultiWordle } from "@/hooks/use-multi-wordle";
+import { useNavigate } from "react-router-dom";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -38,7 +37,6 @@ const formSchema = z.object({
         .refine((value) => value.length >= 2 && value.length <= 16, {
             message: "Username must be between 2 and 16 characters long.",
         }),
-
     avatar: z.string(),
     code: z.string().min(1, { message: "Invitation code is required" }),
 });
@@ -82,7 +80,9 @@ export const JoinGameModal = ({
         if (response.ok) {
             navigate(`/lobby/${code}`);
         } else {
-            toast.error("Game not found!");
+            if (response.error === "join_twice") {
+                navigate(`/lobby/${code}`);
+            }
         }
     }
 
@@ -158,9 +158,11 @@ export const JoinGameModal = ({
                                 control={form.control}
                                 name="avatar"
                                 render={({ field }) => (
-                                    <FormItem onClick={(e) => {
-                                        e.preventDefault();
-                                    }}>
+                                    <FormItem
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                        }}
+                                    >
                                         <FormTitle title="Username" />
                                         <FormControl>
                                             <AvatarSelection

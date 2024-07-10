@@ -13,6 +13,10 @@ export class MultiGames {
         return this._games[id] ?? null;
     }
 
+    public count(): number {
+        return Object.keys(this._games).length;
+    }
+
     public findByOwnerSessionId(sessionId: string): MultiWordle | null {
         const gameId = this._owners[sessionId];
         if (!gameId) {
@@ -47,7 +51,7 @@ export class MultiGames {
         this._players[game.getOwnerSessionId()] = game.getId(); // add owner also as player!
         this._codes[game.getInvitationCode()] = game.getId();
         Logger.debug(
-            `MultiGames.register game: ${game.getId()} for session: ${game.getOwnerSessionId()}}`
+            `MultiGames.register game:${game.getId()} for session: ${game.getOwnerSessionId()}}`
         );
     }
 
@@ -55,7 +59,7 @@ export class MultiGames {
     public delete(id: string): void {
         const game = this.findById(id);
         if (!game) {
-            Logger.debug(`MultiGames.delete game not found id: ${id}`);
+            Logger.debug(`MultiGames.delete game not found id:${id}`);
             return;
         }
         Logger.debug(`MultiGames.delete game id: ${id}`);
@@ -65,9 +69,13 @@ export class MultiGames {
         for (const playerSessionId of game.getPlayerSessionIds()) {
             delete this._players[playerSessionId];
             Logger.debug(
-                `MultiGames.delete game id: ${id}, player session id: ${playerSessionId}`
+                `MultiGames.delete gameId:${id} playerSessionId:${playerSessionId}`
             );
         }
+    }
+
+    public deletePlayer(playerSessionId: string): void {
+        delete this._players[playerSessionId];
     }
 
     public updateInvitationCode(gameId: string, newCode: string): void {
@@ -79,7 +87,7 @@ export class MultiGames {
         delete this._codes[oldCode];
         this._codes[newCode] = game.getId();
         Logger.debug(
-            `MultiGames.updateInvitationCode for gameId: ${gameId} new code: ${newCode}`
+            `MultiGames.updateInvitationCode for gameId:${gameId} newCode:${newCode}`
         );
     }
 }
@@ -93,7 +101,7 @@ class SingleplayerGames {
 
     public register(sessionId: string, game: Wordle): void {
         this._games[sessionId] = game;
-        Logger.debug(`SingleplayerGames.register for session id: ${sessionId}`);
+        Logger.debug(`SingleplayerGames.register for sessionId:${sessionId}`);
     }
 
     public has(sessionId: string): boolean {
@@ -102,7 +110,7 @@ class SingleplayerGames {
 
     public delete(sessionId: string): void {
         delete this._games[sessionId];
-        Logger.debug(`SingleplayerGames.delete for session id: ${sessionId}`);
+        Logger.debug(`SingleplayerGames.delete for sessionId:${sessionId}`);
     }
 }
 

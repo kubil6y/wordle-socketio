@@ -15,10 +15,12 @@ import { useWordle } from "@/hooks/use-wordle";
 import { useNavigate } from "react-router-dom";
 import { socket } from "@/lib/socket";
 import LetterPullup from "./magicui/letter-pullup";
+import { getLanguageIcon } from "@/lib/utils";
 
 export const SPGameOverModal = () => {
     const { isConnected } = useSocketStatus();
-    const { success, duration, secretWord, reset, setActive } = useWordle();
+    const { success, duration, secretWord, reset, setActive, language } =
+        useWordle();
     const { isOpen, close } = useSPGameOverModal();
     const navigate = useNavigate();
 
@@ -30,6 +32,8 @@ export const SPGameOverModal = () => {
             close();
         }
     }
+
+    const LanguageIcon = getLanguageIcon(language);
 
     return (
         <Dialog open={isOpen} onOpenChange={() => { }}>
@@ -63,11 +67,16 @@ export const SPGameOverModal = () => {
                         <span className="font-semibold text-xl">
                             '{secretWord}'{" "}
                         </span>
-
                         was the answer!
                     </div>
                 )}
-                <div className="text-lg">Time: {duration}</div>
+
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        Language: <LanguageIcon className="size-5" />
+                    </div>
+                    <p>Time: {duration}</p>
+                </div>
 
                 <DialogDescription>Per aspera ad astra!</DialogDescription>
 

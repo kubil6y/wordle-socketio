@@ -64,25 +64,44 @@ io.on("connection", (socket) => {
 
         io.emit("user_count", io.engine.clientsCount);
 
-        // Cleanup on disconnection!
-        // TODO handle room things in here
         if (sGames.has(req.session.id)) {
             sGames.delete(req.session.id);
         }
 
+        // Cleanup multiplayer
+        /*
         const gameId = mGames.getGameIdByPlayerSessionId(req.session.id);
-        if (gameId) {
-            const game = mGames.findById(gameId);
-            mGames.delete(gameId);
-        }
+        const game = mGames.findById(gameId ?? "");
+        if (game && gameId) {
+            if (game.isOwner(req.session.id)) {
+                 mGames.delete(gameId);
 
-        if (mGames.findByOwnerSessionId(req.session.id)) {
-            const game = mGames.findByOwnerSessionId(req.session.id)!;
-            socket.to(game.getId()).emit("mp_admin_quit");
-            mGames.delete(req.session.id);
+                const socketsInRoom = io.sockets.adapter.rooms.get(gameId);
+                if (socketsInRoom) {
+                    // Disconnect all sockets in the room
+                    socketsInRoom.forEach((socketId) => {
+                        io.sockets.sockets.get(socketId)?.leave(gameId);
+                        io.sockets.sockets.get(socketId)?.disconnect(true);
+                    });
+
+                    // Delete the room
+                    delete io.sockets.adapter.rooms[gameId];
+                }
+            } else {
+                game.deletePlayer(req.session.id);
+                mGames.deletePlayer(req.session.id);
+                socket
+                    .to(game.getId())
+                    .emit("mp_players_changed", game.getPlayersData());
+            }
         }
+        */
     });
 });
+
+setInterval(() => {
+    Logger.debug(`Game count ${mGames.count()}`);
+}, 5000);
 
 const PORT = process.env.PORT ?? 5000;
 httpServer.listen(PORT, () => {

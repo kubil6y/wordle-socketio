@@ -35,7 +35,7 @@ export function handleMultiplayer(
         });
     });
 
-    socket.on("mp_has_game2", (data, ackCb) => {
+    socket.on("mp_has_game", (data, ackCb) => {
         const { code } = data;
         const game = mGames.findByInvitationCode(code);
         if (!game) {
@@ -51,25 +51,6 @@ export function handleMultiplayer(
             ok: true,
             data: game.getLobbyData(req.session.id),
         })
-    });
-
-    // TODO this should be called if client state is empty!
-    socket.on("mp_has_game", (data, ackCb) => {
-        // player game is required!
-        const game = mGames.findByInvitationCode(data.code);
-        if (game) {
-            ackCb({
-                ok: true,
-                data: game.getData(req.session.id),
-            });
-
-            if (game.isEnded()) {
-                //const summary = game.getSummary();
-                //socket.emit("sp_game_over", summary);
-            }
-        } else {
-            ackCb({ ok: false, data: null });
-        }
     });
 
     socket.on("mp_join_game", (data, ackCb) => {
@@ -93,7 +74,7 @@ export function handleMultiplayer(
                 type: "error",
                 code: socket_errors.join_twice,
             });
-            ackCb({ ok: false });
+            ackCb({ ok: false, error: "join_twice" });
             return;
         }
 
@@ -112,6 +93,6 @@ export function handleMultiplayer(
         });
 
         // inform others in the room
-        socket.to(game.getId()).emit("players_changed", game.getPlayersData());
+        socket.to(game.getId()).emit("mp_players_changed", game.getPlayersData());
     });
 }

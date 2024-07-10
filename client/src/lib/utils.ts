@@ -1,3 +1,5 @@
+import { Icons } from "@/components/icons";
+import { Language } from "@/hooks/use-wordle";
 import { type ClassValue, clsx } from "clsx";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
@@ -42,3 +44,13 @@ export function showConnectionLostToast(isHome: boolean, actionCallback?: () => 
         });
     }
 }
+
+export function getLanguageIcon(language: Language) {
+    switch (language) {
+        case "en":
+            return Icons.flag.en;
+        case "tr":
+            return Icons.flag.tr;
+    }
+}
+

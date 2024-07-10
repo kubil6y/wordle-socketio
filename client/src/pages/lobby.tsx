@@ -11,7 +11,7 @@ type LobbyParams = {
 };
 
 export const Lobby = () => {
-    const { setPlayersData, setLobbyData } = useMultiWordle();
+    const multiWordle = useMultiWordle();
     const navigate = useNavigate();
     const params = useParams<LobbyParams>();
 
@@ -20,15 +20,15 @@ export const Lobby = () => {
 
     useEffect(() => {
         async function checkHasGame() {
-            const response = await socket.emitWithAck("mp_has_game2", {
+            const response = await socket.emitWithAck("mp_has_game", {
                 code: params.code,
             });
 
             if (!response.ok) {
-                toast.error("Game not found!");
                 navigate("/");
+                toast.error("Game not found!");
             } else {
-                setLobbyData(response.data);
+                multiWordle.setLobbyData(response.data);
                 setHasAlreadyJoined(response.data.hasAlreadyJoined ?? false);
                 lobbyModal.open();
             }
@@ -38,21 +38,19 @@ export const Lobby = () => {
 
     useEffect(() => {
         function onPlayersChanged(players: Player[]) {
-            setPlayersData(players);
+            multiWordle.setPlayersData(players);
         }
 
-        socket.on("players_changed", onPlayersChanged);
+        socket.on("mp_players_changed", onPlayersChanged);
 
         return () => {
-            socket.off("players_changed", onPlayersChanged);
+            socket.off("mp_players_changed", onPlayersChanged);
         };
     }, []);
 
     return (
         <>
-            <LobbyWelcomeModal
-                hasAlreadyJoined={hasAlreadyJoined}
-            />
+            <LobbyWelcomeModal hasAlreadyJoined={hasAlreadyJoined} />
         </>
     );
 };

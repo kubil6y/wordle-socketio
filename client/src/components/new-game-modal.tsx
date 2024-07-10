@@ -14,7 +14,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { cn, getLanguageIcon } from "@/lib/utils";
 import { socket } from "@/lib/socket";
 import { Logo } from "./logo";
 import { Button } from "./ui/button";
@@ -28,17 +28,21 @@ import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
 import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import { convertGameStateStringToEnum, useMultiWordle } from "@/hooks/use-multi-wordle";
+import {
+    convertGameStateStringToEnum,
+    useMultiWordle,
+} from "@/hooks/use-multi-wordle";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { AvatarSelection } from "./avatar-selection";
 import { Input } from "./ui/input";
+import { Icons } from "./icons";
 
 const DEFAULT_AVATAR = "avatar3";
 
 const languages = [
-    { label: "Turkish", value: "tr" },
-    { label: "English", value: "en" },
+    { label: "Turkish", value: "tr", icon: Icons.flag.tr },
+    { label: "English", value: "en", icon: Icons.flag.en },
 ];
 
 enum GameType {
@@ -91,7 +95,9 @@ export const NewGameModal = ({
         if (response.ok) {
             newGameModal.close();
             multiWordle.reset();
-            multiWordle.setGameState(convertGameStateStringToEnum(response.gameState));
+            multiWordle.setGameState(
+                convertGameStateStringToEnum(response.gameState)
+            );
             navigate(`/lobby/${response.invitationCode}`);
         }
     }
@@ -180,14 +186,21 @@ export const NewGameModal = ({
                             <SelectContent>
                                 <SelectGroup>
                                     <SelectLabel>Languages</SelectLabel>
-                                    {languages.map((language, index) => (
-                                        <SelectItem
-                                            value={language.value}
-                                            key={index}
-                                        >
-                                            {language.label}
-                                        </SelectItem>
-                                    ))}
+                                    {languages.map((language, index) => {
+                                        const LanguageIcon = getLanguageIcon(
+                                            language.value as Language
+                                        );
+                                        return (
+                                            <SelectItem
+                                                value={language.value}
+                                                key={index}
+                                                className=""
+                                            >
+                                                <LanguageIcon className="size-5 mr-1 inline" />
+                                                {language.label}
+                                            </SelectItem>
+                                        );
+                                    })}
                                 </SelectGroup>
                             </SelectContent>
                         </Select>

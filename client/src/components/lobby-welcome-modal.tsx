@@ -25,7 +25,7 @@ export const LobbyWelcomeModal = ({
     hasAlreadyJoined,
 }: LobbyWelcomeModalProps) => {
     const { isConnected } = useSocketStatus();
-    const { isAdmin, invitationCode, gameState, players } = useMultiWordle();
+    const { isAdmin, invitationCode, gameState, players, language } = useMultiWordle();
     const joinGameModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const navigate = useNavigate();
@@ -86,10 +86,10 @@ export const LobbyWelcomeModal = ({
                             size="lg"
                             variant="outline"
                             className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-                            disabled={!isConnected}
+                            disabled={!isConnected || players.length < 2}
                             onClick={onStart}
                         >
-                            Start
+                            Start <span className="italic ml-2">({players.length}/3)</span>
                         </Button>
                     )}
                     {!hasAlreadyJoined && (

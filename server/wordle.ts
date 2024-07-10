@@ -156,7 +156,7 @@ export class Wordle {
         const secretWord = this._words.getRandomWord(this._language);
         this._secretWord = secretWord;
         Logger.debug(
-            `Wordle.generateRandomWord "${secretWord}" sessionId ${this._ownerSessionId}`
+            `Wordle.generateRandomWord language:"${this._language}" secretWord:"${secretWord}" sessionId:${this._ownerSessionId}`
         );
     }
 

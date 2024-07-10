@@ -7,7 +7,14 @@ import { Button } from "./ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { SPGameOverModal } from "./sp-game-over-modal";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
+import {
+    Language,
+    useCanSubmit,
+    useHasBackspaced,
+    useWordle,
+} from "@/hooks/use-wordle";
+import { Icons } from "./icons";
+import { getLanguageIcon } from "@/lib/utils";
 
 export const Wordle = () => {
     const {
@@ -82,6 +89,8 @@ export const Wordle = () => {
         }
     }
 
+    const LanguageIcon = getLanguageIcon(language);
+
     return (
         <>
             <SPGameOverModal />
@@ -98,14 +107,17 @@ export const Wordle = () => {
                     hasBackspaced={hasBackspaced}
                 />
 
-                <div className="mx-auto flex max-w-[600px] items-center justify-end">
-                    {active && (
-                        <Button variant="outline" onClick={onGiveUp}>
-                            <FlagIcon className="size-4 mr-2 fill-primary" />
-                            Give up
-                        </Button>
-                    )}
-                </div>
+                {active && (
+                    <div className="mx-auto flex max-w-[600px] items-center justify-end">
+                        <div className="flex items-center gap-2">
+                            <LanguageIcon className="size-5" />
+                            <Button variant="outline" onClick={onGiveUp}>
+                                <FlagIcon className="size-4 mr-2 fill-primary" />
+                                Give up
+                            </Button>
+                        </div>
+                    </div>
+                )}
 
                 <div>
                     <Keyboard
