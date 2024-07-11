@@ -13,10 +13,10 @@ import { ModalFooter } from "./modal-footer";
 import { useNewGameModal } from "@/hooks/use-new-game-modal";
 
 export const HowToPlayModal = () => {
-    const { isOpen, close } = useHowToPlayModal();
-    const { open: openNewGameModal } = useNewGameModal();
+    const howToPlayModal = useHowToPlayModal();
+    const newGameModal = useNewGameModal();
     return (
-        <Dialog onOpenChange={close} open={isOpen}>
+        <Dialog onOpenChange={howToPlayModal.close} open={howToPlayModal.isOpen}>
             <DialogContent className="h-full sm:h-auto">
                 <DialogHeader>
                     <DialogTitle className="text-start text-4xl font-semibold">
@@ -94,8 +94,8 @@ export const HowToPlayModal = () => {
                         variant="outline"
                         className="mt-4 w-full select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
                         onClick={() => {
-                            close();
-                            openNewGameModal();
+                            howToPlayModal.close();
+                            newGameModal.open();
                         }}
                     >
                         Play
@@ -109,9 +109,9 @@ export const HowToPlayModal = () => {
 };
 
 export const HowToPlayButton = () => {
-    const { open } = useHowToPlayModal();
+    const howToPlayModal = useHowToPlayModal();
     return (
-        <Button variant="outline" size="icon" onClick={open}>
+        <Button variant="outline" size="icon" onClick={howToPlayModal.open}>
             <InfoIcon className="size-[1.2rem]" />
         </Button>
     );

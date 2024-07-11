@@ -7,14 +7,8 @@ import { Button } from "./ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { SPGameOverModal } from "./sp-game-over-modal";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import {
-    Language,
-    useCanSubmit,
-    useHasBackspaced,
-    useWordle,
-} from "@/hooks/use-wordle";
-import { Icons } from "./icons";
 import { getLanguageIcon } from "@/lib/utils";
+import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
 
 export const Wordle = () => {
     const {
@@ -34,7 +28,7 @@ export const Wordle = () => {
     } = useWordle();
     const canSubmit = useCanSubmit();
     const hasBackspaced = useHasBackspaced();
-    const gameOverModal = useSPGameOverModal();
+    const spGameOverModal = useSPGameOverModal();
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
         "Are you sure?",
@@ -57,7 +51,7 @@ export const Wordle = () => {
                 duration,
                 secretWord,
             });
-            gameOverModal.open();
+            spGameOverModal.open();
         }
 
         socket.on("sp_game_over", onGameOver);

@@ -21,7 +21,7 @@ export const SPGameOverModal = () => {
     const { isConnected } = useSocketStatus();
     const { success, duration, secretWord, reset, setActive, language } =
         useWordle();
-    const { isOpen, close } = useSPGameOverModal();
+    const spGameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
 
     async function onReplay() {
@@ -29,14 +29,14 @@ export const SPGameOverModal = () => {
         if (response.ok) {
             reset();
             setActive(true);
-            close();
+            spGameOverModal.close();
         }
     }
 
     const LanguageIcon = getLanguageIcon(language);
 
     return (
-        <Dialog open={isOpen} onOpenChange={() => { }}>
+        <Dialog open={spGameOverModal.isOpen} onOpenChange={() => { }}>
             <DialogContent
                 className="flex h-full flex-col sm:h-auto"
                 hideCloseButton

@@ -74,6 +74,7 @@ export const SocketIO = () => {
             }
         }
 
+        // TODO move this to lobby!
         function onStart(data: {
             width: number;
             height: number;

@@ -72,7 +72,7 @@ export const NewGameModal = ({
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const wordle = useWordle();
     const multiWordle = useMultiWordle();
-    const gameOverModal = useSPGameOverModal();
+    const spGameOverModal = useSPGameOverModal();
     const navigate = useNavigate();
 
     async function onCreate() {
@@ -111,7 +111,7 @@ export const NewGameModal = ({
         });
         if (response.ok) {
             newGameModal.close();
-            gameOverModal.close();
+            spGameOverModal.close();
             wordle.reset();
             wordle.setConfig(response.config);
             navigate("/play");

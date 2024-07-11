@@ -26,7 +26,6 @@ import { AvatarSelection } from "./avatar-selection";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
 
@@ -56,7 +55,7 @@ export const JoinGameModal = ({
     const { isConnected } = useSocketStatus();
     const joinModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
-    const { open: openHowToPlayModal } = useHowToPlayModal();
+    const howToPlayModal = useHowToPlayModal();
     const navigate = useNavigate();
 
     const form = useForm<FormSchema>({
@@ -125,7 +124,7 @@ export const JoinGameModal = ({
                                 e.preventDefault();
                                 form.reset();
                                 joinModal.close();
-                                openHowToPlayModal();
+                                howToPlayModal.open();
                             }}
                         >
                             here

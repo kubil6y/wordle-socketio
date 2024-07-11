@@ -55,7 +55,6 @@ export const Lobby = () => {
     return (
         <>
             <LobbyModal hasAlreadyJoined={hasAlreadyJoined} />
-
             {multiWordle.gameState === GameState.GamePlaying && (
                 <p>game playing</p>
             )}

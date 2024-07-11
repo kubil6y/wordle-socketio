@@ -25,13 +25,13 @@ export const LandingPage = () => {
 };
 
 function PlayButton() {
-    const { open } = useNewGameModal();
+    const newGameModal = useNewGameModal();
     return (
         <Button
             size="lg"
             variant="outline"
             className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-            onClick={open}
+            onClick={newGameModal.open}
         >
             PLAY
         </Button>
@@ -39,13 +39,13 @@ function PlayButton() {
 }
 
 function JoinButton() {
-    const { open } = useJoinGameModal();
+    const joinGameModal = useJoinGameModal();
     return (
         <Button
             size="lg"
             variant="outline"
             className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-            onClick={open}
+            onClick={joinGameModal.open}
         >
             JOIN
         </Button>
