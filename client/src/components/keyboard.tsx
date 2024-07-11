@@ -1,10 +1,4 @@
-import {
-    Language,
-    LetterCellColor,
-    LetterColor,
-    useCanBackspace,
-    useCanType,
-} from "@/hooks/use-wordle";
+import { Language, LetterCellColor, LetterColor } from "@/hooks/use-wordle";
 import useSound from "use-sound";
 import { cn } from "@/lib/utils";
 import { useConfig } from "@/hooks/use-config";

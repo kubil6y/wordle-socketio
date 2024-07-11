@@ -1,13 +1,3 @@
-import { Board } from "@/components/board";
-import { socket } from "@/lib/socket";
-import { Keyboard } from "@/components/keyboard";
-import { useEffect } from "react";
-import { FlagIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { useConfirm } from "@/hooks/use-confirm";
-import { SPGameOverModal } from "./sp-game-over-modal";
-import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import { getLanguageIcon } from "@/lib/utils";
 import {
     useCanBackspace,
     useCanSubmit,
@@ -15,6 +5,16 @@ import {
     useHasBackspaced,
     useWordle,
 } from "@/hooks/use-wordle";
+import { Board } from "@/components/board";
+import { socket } from "@/lib/socket";
+import { Keyboard } from "@/components/keyboard";
+import { useEffect, useState } from "react";
+import { FlagIcon } from "lucide-react";
+import { Button } from "./ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
+import { SPGameOverModal } from "./sp-game-over-modal";
+import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
+import { getLanguageIcon } from "@/lib/utils";
 
 export const Wordle = () => {
     const {
@@ -37,6 +37,7 @@ export const Wordle = () => {
     const spGameOverModal = useSPGameOverModal();
     const canBackspace = useCanBackspace();
     const canType = useCanType();
+    const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
         "Are you sure?",
@@ -62,12 +63,22 @@ export const Wordle = () => {
             spGameOverModal.open();
         }
 
+        function onNotValidWord(rowIndex: number) {
+            setShakeRowIndex(rowIndex);
+            setTimeout(() => {
+                setShakeRowIndex(-1);
+            }, 1000);
+        }
+
         socket.on("sp_game_over", onGameOver);
+        socket.on("sp_not_valid_word", onNotValidWord);
 
         return () => {
             socket.off("sp_game_over", onGameOver);
+            socket.off("sp_not_valid_word", onNotValidWord);
         };
     }, []);
+
 
     async function onSubmit() {
         if (letters.length !== width) {
@@ -107,6 +118,7 @@ export const Wordle = () => {
                     pastTryResults={pastTryResults}
                     activeRowIndex={activeRowIndex}
                     hasBackspaced={hasBackspaced}
+                    shakeRowIndex={shakeRowIndex}
                 />
 
                 {active && (

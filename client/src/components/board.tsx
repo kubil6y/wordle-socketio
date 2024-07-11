@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils";
 import { LetterCellColor, LetterColor } from "@/hooks/use-wordle";
-import { useEffect, useState } from "react";
-import { socket } from "@/lib/socket";
 
 type BoardProps = {
     width: number;
@@ -11,6 +9,7 @@ type BoardProps = {
     pastTryResults: LetterColor[][];
     activeRowIndex: number;
     hasBackspaced: boolean;
+    shakeRowIndex: number;
 };
 
 export const Board = ({
@@ -21,30 +20,17 @@ export const Board = ({
     pastTryResults,
     activeRowIndex,
     hasBackspaced,
+    shakeRowIndex,
 }: BoardProps) => {
-    const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
-
-    useEffect(() => {
-        function onNotValidWord(rowIndex: number) {
-            setShakeRowIndex(rowIndex);
-            setTimeout(() => {
-                setShakeRowIndex(-1);
-            }, 1000);
-        }
-
-        socket.on("sp_not_valid_word", onNotValidWord);
-
-        return () => {
-            socket.off("sp_not_valid_word", onNotValidWord);
-        };
-    }, []);
-
     return (
         <div className="flex flex-col items-center gap-2">
             {new Array(height).fill(null).map((_, rowIndex) => {
                 const shake = shakeRowIndex === rowIndex;
                 return (
-                    <div className={cn("flex gap-1.5", shake && "animate-shake")} key={rowIndex}>
+                    <div
+                        className={cn("flex gap-1.5", shake && "animate-shake")}
+                        key={rowIndex}
+                    >
                         {new Array(width).fill(null).map((_, i) => {
                             // Active row
                             if (activeRowIndex === rowIndex) {
@@ -125,11 +111,11 @@ function getBoardCellStyles(active: boolean, color: LetterCellColor) {
     }
     switch (color) {
         case "green":
-            return "bg-emerald-500 text-white dark:bg-emerald-500 border-none";
+            return "border-none bg-emerald-500 text-white dark:bg-emerald-500";
         case "yellow":
-            return "bg-amber-500 text-white dark:bg-amber-500 border-none";
+            return "border-none bg-amber-500 text-white dark:bg-amber-500";
         case "black":
-            return "bg-zinc-600 text-white dark:bg-zinc-600 border-none";
+            return "border-none bg-zinc-600 text-white dark:bg-zinc-600";
         case "none":
             return "";
     }
