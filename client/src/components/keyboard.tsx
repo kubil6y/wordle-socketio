@@ -9,23 +9,20 @@ import useSound from "use-sound";
 import { cn } from "@/lib/utils";
 import { useConfig } from "@/hooks/use-config";
 import { DeleteIcon, SendHorizonalIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const layouts = {
     en: ["qwertyuiop", "asdfghjkl", "zxcvbnm"],
     tr: ["ertyuıopğü", "asdfghjklşi", "zcvbnmöç"],
 };
 
-//const alphabets = {
-    //en: "abcdefghijklmnopqrstuvwxyz",
-    //tr: "abcçdefgğhıijklmnoöprsştuüvyz",
-//};
-
 type KeyboardProps = {
     language: Language;
     canSubmit: boolean;
     pastTries: string[];
     pastTryResults: LetterColor[][];
+    canType: boolean;
+    canBackspace: boolean;
     onEnter: () => void;
     onClick: (ch: string) => void;
     onBackspace: () => void;
@@ -36,13 +33,13 @@ export const Keyboard = ({
     canSubmit,
     pastTries,
     pastTryResults,
+    canType,
+    canBackspace,
     onEnter,
     onClick,
     onBackspace,
 }: KeyboardProps) => {
     const { volume } = useConfig();
-    const canBackspace = useCanBackspace();
-    const canType = useCanType();
 
     const [playKeypressStandard] = useSound("/sounds/keypress_standard.ogg", {
         volume,

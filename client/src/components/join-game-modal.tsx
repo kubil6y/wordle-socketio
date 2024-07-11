@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
+import { useMultiWordle } from "@/hooks/use-multi-wordle";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -53,6 +54,7 @@ export const JoinGameModal = ({
     isClosable = true,
 }: JoinGameModalProps) => {
     const { isConnected } = useSocketStatus();
+    const multiWordle = useMultiWordle();
     const joinModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const howToPlayModal = useHowToPlayModal();
@@ -79,6 +81,7 @@ export const JoinGameModal = ({
         });
 
         if (response.ok) {
+            multiWordle.reset();
             lobbyModal.open();
             navigate(`/lobby/${code}`);
         } else {

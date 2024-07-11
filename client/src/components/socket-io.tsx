@@ -74,33 +74,18 @@ export const SocketIO = () => {
             }
         }
 
-        // TODO move this to lobby!
-        function onStart(data: {
-            width: number;
-            height: number;
-            secretWord: string;
-            gameState: string;
-            isAdmin: boolean;
-            players: Player[];
-        }) {
-            multiWordle.setData(data);
-            lobbyModal.close();
-        }
-
         // General
         socket.on("connect", onConnect);
         socket.on("disconnect", onDisconnect);
         socket.on("user_count", onUserCount);
         socket.on("alert", onAlert);
 
-        socket.on("mp_game_start", onStart);
 
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
             socket.off("user_count", onUserCount);
             socket.off("alert", onAlert);
-            socket.off("mp_game_start", onStart);
         };
     }, []);
 

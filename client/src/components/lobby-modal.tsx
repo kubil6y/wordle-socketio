@@ -48,11 +48,11 @@ export const LobbyModal = ({
 
     function onClose() {
         // TODO
-        console.log("onClose()lmao")
     }
 
     function onClickHome() {
         lobbyModal.close();
+        joinGameModal.close();
         navigate("/");
     }
 

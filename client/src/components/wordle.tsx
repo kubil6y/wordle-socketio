@@ -8,7 +8,13 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { SPGameOverModal } from "./sp-game-over-modal";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 import { getLanguageIcon } from "@/lib/utils";
-import { useCanSubmit, useHasBackspaced, useWordle } from "@/hooks/use-wordle";
+import {
+    useCanBackspace,
+    useCanSubmit,
+    useCanType,
+    useHasBackspaced,
+    useWordle,
+} from "@/hooks/use-wordle";
 
 export const Wordle = () => {
     const {
@@ -29,6 +35,8 @@ export const Wordle = () => {
     const canSubmit = useCanSubmit();
     const hasBackspaced = useHasBackspaced();
     const spGameOverModal = useSPGameOverModal();
+    const canBackspace = useCanBackspace();
+    const canType = useCanType();
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
         "Are you sure?",
@@ -122,6 +130,8 @@ export const Wordle = () => {
                         onEnter={onSubmit}
                         onBackspace={removeLetter}
                         onClick={pushLetter}
+                        canType={canType}
+                        canBackspace={canBackspace}
                     />
                 </div>
             </div>

@@ -15,10 +15,10 @@ interface WordleState {
     success: boolean;
     language: Language;
     secretWord: string;
-    letters: string[];
-    pastTryResults: LetterColor[][];
-    pastTries: string[];
     activeRowIndex: number;
+    letters: string[];
+    pastTries: string[];
+    pastTryResults: LetterColor[][];
     duration: string;
     setActive: (active: boolean) => void;
     reset: () => void;

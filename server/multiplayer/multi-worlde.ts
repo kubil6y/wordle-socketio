@@ -124,13 +124,12 @@ export class MultiWordle {
         };
     }
 
-    public getData(sessionId: string) {
+    public getData() {
         return {
             width: GAME_WIDTH,
             height: GAME_HEIGHT,
             secretWord: this._secretWord, // TODO remove this later!
             gameState: this.gameStateToString(),
-            isAdmin: this.isOwner(sessionId),
             players: this.getPlayersData(),
         };
     }

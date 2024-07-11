@@ -37,6 +37,7 @@ export function handleMultiplayer(
         });
     });
 
+    // IsAdmin is set here!
     socket.on("mp_has_game", (data, ackCb) => {
         const { code } = data;
         const game = mGames.findByInvitationCode(code);
@@ -85,7 +86,7 @@ export function handleMultiplayer(
 
         ackCb({
             ok: true,
-            config: game.getData(req.session.id),
+            config: game.getData(),
         });
 
         // inform others in the room
@@ -102,10 +103,8 @@ export function handleMultiplayer(
         }
         if (game.isOwner(req.session.id) && game.canStart()) {
             game.start();
-            io.to(game.getId()).emit("mp_game_start", {
-                ok: true,
-                data: game.getData(req.session.id),
-            });
+            const data = game.getData();
+            io.to(game.getId()).emit("mp_game_start", data);
         }
     });
 }

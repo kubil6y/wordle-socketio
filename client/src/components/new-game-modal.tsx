@@ -67,7 +67,7 @@ export const NewGameModal = ({
 
     const { isConnected } = useSocketStatus();
     const newGameModal = useNewGameModal();
-    const joinGameModal = useJoinGameModal();
+    const joinModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const { open: openHowToPlayModal } = useHowToPlayModal();
     const wordle = useWordle();
@@ -126,7 +126,8 @@ export const NewGameModal = ({
 
     function onAlreadyHaveAcode() {
         newGameModal.close();
-        joinGameModal.open();
+        joinModal.open();
+        multiWordle.reset();
     }
 
     const isUssernameValid = username.length >= 2 && username.length <= 16;
