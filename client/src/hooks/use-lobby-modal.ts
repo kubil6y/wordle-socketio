@@ -7,7 +7,7 @@ interface LobbyModalState {
 }
 
 export const useLobbyModal = create<LobbyModalState>()((set) => ({
-    isOpen: false,
+    isOpen: true,
     open: () => set(() => ({ isOpen: true })),
     close: () => set(() => ({ isOpen: false })),
 }));

@@ -41,7 +41,7 @@ export const Wordle = () => {
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
         "Are you sure?",
-        "You are about to give up."
+        "You are about to give up.",
     );
 
     useEffect(() => {
@@ -79,7 +79,6 @@ export const Wordle = () => {
         };
     }, []);
 
-
     async function onSubmit() {
         if (letters.length !== width) {
             return;
@@ -109,7 +108,7 @@ export const Wordle = () => {
             <SPGameOverModal />
             <GiveUpConfirmDialog />
 
-            <div className="container mt-4 space-y-4 sm:mt-12 sm:space-y-4">
+            <div className="container mt-4 sm:mt-12">
                 <Board
                     width={width}
                     height={height}
@@ -121,17 +120,17 @@ export const Wordle = () => {
                     shakeRowIndex={shakeRowIndex}
                 />
 
-                {active && (
-                    <div className="mx-auto flex max-w-[600px] items-center justify-end">
-                        <div className="flex items-center gap-2">
-                            <LanguageIcon className="size-5" />
-                            <Button variant="outline" onClick={onGiveUp}>
-                                <FlagIcon className="size-4 mr-2 fill-primary" />
-                                Give up
-                            </Button>
-                        </div>
-                    </div>
-                )}
+               {active && (
+                   <div className="mx-auto flex max-w-[600px] items-center justify-end my-2">
+                       <div className="flex items-center gap-2">
+                           <LanguageIcon className="size-5" />
+                           <Button variant="outline" onClick={onGiveUp} size="sm">
+                               <FlagIcon className="size-4 mr-2 fill-primary" />
+                               Give up
+                           </Button>
+                       </div>
+                   </div>
+               )}
 
                 <div>
                     <Keyboard

@@ -10,7 +10,7 @@ import { io } from "../main";
 export const multiplayerGames: { [sessionId: string]: Wordle } = {};
 
 export function handleMultiplayer(
-    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+    socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
 ) {
     const req = socket.request as Request;
 
@@ -23,7 +23,7 @@ export function handleMultiplayer(
             ownerSessionId,
             game.getId(),
             username,
-            avatar
+            avatar,
         );
         game.addPlayer(player);
         mGames.addPlayer(ownerSessionId, game.getId());
@@ -47,7 +47,7 @@ export function handleMultiplayer(
                 data: game.getLobbyData(req.session.id),
             });
         } else {
-            ackCb({ ok: false });
+            ackCb({ ok: false, data: null });
         }
     });
 
@@ -78,21 +78,23 @@ export function handleMultiplayer(
             req.session.id,
             game.getId(),
             username,
-            avatar
+            avatar,
         );
         socket.join(game.getId());
         game.addPlayer(player);
-        mGames.addPlayer(player.getSessionId(), game.getId());
+        mGames.addPlayer(player.sessionId, game.getId());
 
-        ackCb({
-            ok: true,
-            config: game.getData(),
-        });
+        ackCb({ ok: true });
 
         // inform others in the room
-        socket
-            .to(game.getId())
-            .emit("mp_players_changed", game.getPlayersData());
+        //io.to(game.getId()).emit("mp_players_changed", game.getPlayersData());
+        for (const sessionId of game.getPlayerSessionIds()) {
+            io.to(sessionId).emit("mp_players_changed", {
+                isAdmin: game.isOwner(sessionId),
+                isOwnTurn: game.isOwnTurn(sessionId),
+                players: game.getPlayersData(),
+            });
+        }
     });
 
     socket.on("mp_start_game", (data) => {
@@ -103,7 +105,7 @@ export function handleMultiplayer(
         }
         if (game.isOwner(req.session.id) && game.canStart()) {
             game.start();
-            const data = game.getData();
+            const data = game.getJoinData();
             io.to(game.getId()).emit("mp_game_start", data);
         }
     });

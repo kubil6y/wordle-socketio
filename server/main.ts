@@ -99,9 +99,10 @@ io.on("connection", (socket) => {
     });
 });
 
-setInterval(() => {
-    Logger.debug(`Game count ${mGames.count()}`);
-}, 5000);
+// TODO remove this later
+//setInterval(() => {
+    //Logger.debug(`Game count ${mGames.count()}`);
+//}, 5000);
 
 const PORT = process.env.PORT ?? 5000;
 httpServer.listen(PORT, () => {

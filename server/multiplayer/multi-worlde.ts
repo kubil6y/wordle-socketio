@@ -13,6 +13,11 @@ enum GameState {
     GameEnd,
 }
 
+export type PlayerData = Omit<Player, "gameId"> & {
+    isOwnTurn: boolean;
+    isAdmin: boolean;
+};
+
 export class MultiWordle {
     private _id: string;
     private _ownerSessionId: string;
@@ -23,9 +28,10 @@ export class MultiWordle {
     private _games: MultiGames;
     private _secretWord: string;
 
+    private _serverActiveWord: string;
+
     private _players: Player[];
     private _currentPlayerIndex: number;
-    private _currentPlayerSessionId: string;
 
     private _startTimestamp: number;
     private _endTimestamp: number;
@@ -34,7 +40,7 @@ export class MultiWordle {
         games: MultiGames,
         ownerSessionId: string,
         words: Words,
-        language: Language
+        language: Language,
     ) {
         this._id = createId();
         this._gameState = GameState.WaitingToStart;
@@ -45,24 +51,48 @@ export class MultiWordle {
         this._games = games;
         this._players = [];
         this._currentPlayerIndex = 0;
-        this._currentPlayerSessionId = ownerSessionId;
         this._secretWord = "";
+    }
+
+    public getServerActiveWord(): string {
+        return this._serverActiveWord;
+    }
+
+    public setServerActiveWord(word: string): void {
+        this._serverActiveWord = word;
     }
 
     // TODO convert index to session id player functions
     // TODO rounds and scores
+    public getCurrentPlayerIndex(): number {
+        return this._currentPlayerIndex;
+    }
+
+    public getCurrentPlayerSessionId(): string {
+        const currentPlayer = this._players[this.getCurrentPlayerIndex()];
+        return currentPlayer.sessionId;
+    }
+
+    public nextTurn() {
+        const old = this._currentPlayerIndex;
+        this._currentPlayerIndex =
+            (this._currentPlayerIndex + 1) % this._players.length;
+        Logger.debug(
+            `MultiWordle.nextTurn ${old}->${this._currentPlayerIndex}`,
+        );
+    }
 
     public addPlayer(player: Player): void {
         this._players.push(player);
         Logger.debug(
-            `MultiWordle.addPlayer player session id: "${player.getSessionId()}"`
+            `MultiWordle.addPlayer player session id: "${player.sessionId}"`,
         );
     }
 
     public deletePlayer(sessionId: string): void {
         let index = -1;
         for (let i = 0; i < this._players.length; i++) {
-            if (this._players[i].getSessionId() === sessionId) {
+            if (this._players[i].sessionId === sessionId) {
                 index = i;
                 break;
             }
@@ -74,8 +104,8 @@ export class MultiWordle {
     }
 
     public hasPlayer(sessionId: string): boolean {
-        for (const p of this._players) {
-            if (p.getSessionId() === sessionId) {
+        for (const player of this._players) {
+            if (player.sessionId === sessionId) {
                 return true;
             }
         }
@@ -84,29 +114,23 @@ export class MultiWordle {
 
     public getPlayerSessionIds(): string[] {
         const sessionIds: string[] = [];
-        for (const p of this._players) {
-            sessionIds.push(p.getSessionId());
+        for (const player of this._players) {
+            sessionIds.push(player.sessionId);
         }
         return sessionIds;
     }
 
-    // TODO
-    public getPlayersData() {
-        const playersData: {
-            sessionId: string;
-            username: string;
-            avatarId: string;
-            score: number;
-            isAdmin: boolean;
-        }[] = [];
+    public getPlayers() {
+        return this._players;
+    }
+
+    public getPlayersData(): PlayerData[] {
+        const playersData: PlayerData[] = [];
         for (const player of this._players) {
-            const { sessionId, username, avatarId, score } = player.getData();
             playersData.push({
-                sessionId,
-                username,
-                avatarId,
-                score,
-                isAdmin: this.isOwner(player.getSessionId()),
+                ...player,
+                isAdmin: this.isOwner(player.sessionId),
+                isOwnTurn: this.isOwnTurn(player.sessionId),
             });
         }
         return playersData;
@@ -118,19 +142,21 @@ export class MultiWordle {
             gameState: this.gameStateToString(),
             language: this._language,
             isAdmin: this.isOwner(sessionId),
+            isOwnTurn: this.isOwnTurn(sessionId),
             players: this.getPlayersData(),
             invitationCode: this.getInvitationCode(),
             hasAlreadyJoined: this.hasPlayer(sessionId),
         };
     }
 
-    public getData() {
+    public getJoinData() {
         return {
             width: GAME_WIDTH,
             height: GAME_HEIGHT,
             secretWord: this._secretWord, // TODO remove this later!
             gameState: this.gameStateToString(),
             players: this.getPlayersData(),
+            currentPlayerSessionId: this.getCurrentPlayerSessionId(),
         };
     }
 
@@ -144,6 +170,10 @@ export class MultiWordle {
 
     public isOwner(sessionId: string): boolean {
         return this._ownerSessionId === sessionId;
+    }
+
+    public isOwnTurn(sessionId: string): boolean {
+        return this.getCurrentPlayerSessionId() === sessionId;
     }
 
     public getGameState(): GameState {
@@ -178,7 +208,7 @@ export class MultiWordle {
         this._startTimestamp = Date.now();
         this._gameState = GameState.GamePlaying;
         Logger.debug(
-            `MultiWordle.start gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`
+            `MultiWordle.start gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`,
         );
         this.generateRandomWord();
     }
@@ -186,7 +216,7 @@ export class MultiWordle {
     public end(): void {
         this._gameState = GameState.GameEnd;
         Logger.debug(
-            `MultiWordle.end gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`
+            `MultiWordle.end gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`,
         );
     }
 
@@ -215,7 +245,7 @@ export class MultiWordle {
         const secretWord = this._words.getRandomWord(this._language);
         this._secretWord = secretWord;
         Logger.debug(
-            `MultiWordle.generateRandomWord secretWord:${secretWord} gameId:"${this._ownerSessionId}"`
+            `MultiWordle.generateRandomWord secretWord:${secretWord} gameId:"${this._ownerSessionId}"`,
         );
     }
 }

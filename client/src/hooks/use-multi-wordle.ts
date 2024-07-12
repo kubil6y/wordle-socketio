@@ -1,4 +1,3 @@
-import { usePrevious } from "react-use";
 import {
     DEFAULT_GAME_HEIGHT,
     DEFAULT_GAME_WIDTH,
@@ -7,6 +6,7 @@ import {
     LetterColor,
 } from "./use-wordle";
 import { create } from "zustand";
+import { usePrevious } from "react-use";
 
 export const gameStates = {
     waiting_to_start: "waiting_to_start",
@@ -22,12 +22,13 @@ export enum GameState {
     GameEnd = "GameEnd",
 }
 
-export type Player = {
+export type PlayerData = {
     sessionId: string;
     username: string;
     avatarId: string;
     score: number;
     isAdmin: boolean;
+    isOwnTurn: boolean;
 };
 
 interface MultiWordleState {
@@ -39,7 +40,7 @@ interface MultiWordleState {
     invitationCode: string;
     secretWord: string;
     gameState: GameState;
-    players: Player[];
+    players: PlayerData[];
 
     // new additions
     success: boolean;
@@ -57,21 +58,26 @@ interface MultiWordleState {
     setLobbyData: (data: {
         gameId: string;
         isAdmin: boolean;
+        isOwnTurn: boolean;
         language: Language;
         gameState: string;
         invitationCode: string;
-        players: Player[];
+        players: PlayerData[];
     }) => void;
     setData: (data: {
         width: number;
         height: number;
         secretWord: string;
         gameState: string;
-        players: Player[];
+        players: PlayerData[];
     }) => void;
     setGameId: (gameId: string) => void;
     setGameState: (gameState: GameState) => void;
-    setPlayersData: (players: Player[]) => void;
+    setPlayersData: (data: {
+        players: PlayerData[];
+        isAdmin: boolean;
+        isOwnTurn: boolean;
+    }) => void;
     reset: () => void;
 }
 
@@ -95,10 +101,11 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
     players: [],
     reset: () =>
         set((state) => {
-            // TODO
+            // TODO sessionId and all that this shit is broken as fuck
             return {
                 ...state,
                 gameId: "",
+                gameState: GameState.WaitingToStart,
                 width: DEFAULT_GAME_WIDTH,
                 height: DEFAULT_GAME_HEIGHT,
                 language: DEFAULT_LANGUAGE,
@@ -117,7 +124,12 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
         }),
     setGameId: (gameId: string) => set({ gameId }),
     setGameState: (gameState) => set({ gameState }),
-    setPlayersData: (players) => set({ players }),
+    setPlayersData: (data) =>
+        set({
+            isOwnTurn: data.isOwnTurn,
+            isAdmin: data.isAdmin,
+            players: data.players,
+        }),
     setData: (data) =>
         set((state) => {
             return {
@@ -130,15 +142,18 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
             };
         }),
     setLobbyData: (data) =>
-        set((state) => ({
-            ...state,
-            gameId: data.gameId,
-            gameState: convertGameStateStringToEnum(data.gameState),
-            language: data.language,
-            isAdmin: data.isAdmin,
-            players: data.players,
-            invitationCode: data.invitationCode,
-        })),
+        set((state) => {
+            return {
+                ...state,
+                gameId: data.gameId,
+                gameState: convertGameStateStringToEnum(data.gameState),
+                language: data.language,
+                isAdmin: data.isAdmin,
+                isOwnTurn: data.isOwnTurn,
+                players: data.players,
+                invitationCode: data.invitationCode,
+            };
+        }),
 
     // new additions
     pushLetter: (letter: string) =>
@@ -183,16 +198,12 @@ export const useMPCanSubmit = () => {
 export const useMPCanType = () => {
     const { letters, width, height, activeRowIndex, isOwnTurn } =
         useMultiWordle();
-    // TODO
-    //return letters.length < width && activeRowIndex < height && isOwnTurn;
-    return true;
+    return letters.length < width && activeRowIndex < height && isOwnTurn;
 };
 
 export const useMPCanBackspace = () => {
     const { letters, isOwnTurn } = useMultiWordle();
-    // TODO
-    //return letters.length !== 0 && isOwnTurn;
-    return true;
+    return letters.length !== 0 && isOwnTurn;
 };
 
 export function convertGameStateStringToEnum(gameState: string): GameState {

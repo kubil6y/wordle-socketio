@@ -23,9 +23,7 @@ type LobbyModalProps = {
     hasAlreadyJoined: boolean;
 };
 
-export const LobbyModal = ({
-    hasAlreadyJoined,
-}: LobbyModalProps) => {
+export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
     const { isConnected } = useSocketStatus();
     const { isAdmin, invitationCode, gameState, players, language, gameId } =
         useMultiWordle();
@@ -94,7 +92,7 @@ export const LobbyModal = ({
                 <InvitationCode code={invitationCode} />
 
                 <div className="mt-4 flex w-full flex-col gap-2">
-                    {isAdmin && (
+                    {isAdmin && gameState === GameState.WaitingToStart && (
                         <Button
                             size="lg"
                             variant="outline"
@@ -108,6 +106,18 @@ export const LobbyModal = ({
                             </span>
                         </Button>
                     )}
+
+                    {gameState === GameState.GamePlaying && (
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="select-none rounded-none bg-red-600 text-2xl font-semibold uppercase text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                            onClick={lobbyModal.close}
+                        >
+                            CONTINUE
+                        </Button>
+                    )}
+
                     {!hasAlreadyJoined && (
                         <Button
                             size="lg"

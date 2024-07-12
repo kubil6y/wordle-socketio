@@ -99,7 +99,7 @@ export const Keyboard = ({
                                     "box",
                                     "w-[42px] transition sm:w-[58px] duration-200",
                                     !canSubmit &&
-                                    "pointer-events-none text-zinc-400 dark:text-zinc-600"
+                                    "pointer-events-none text-zinc-400 dark:text-zinc-600",
                                 )}
                             >
                                 <SendHorizonalIcon className="size-5 sm:size-6" />
@@ -112,6 +112,7 @@ export const Keyboard = ({
                                     key={j}
                                     ch={ch}
                                     hiColor={hiColor}
+                                    disabled={!canType}
                                     onClick={(ch: string) => {
                                         if (canType) {
                                             playKeypressStandard();
@@ -132,7 +133,7 @@ export const Keyboard = ({
                                 className={cn(
                                     "box",
                                     "w-[42px] sm:w-[58px]",
-                                    !canBackspace && "pointer-events-none"
+                                    !canBackspace && "pointer-events-none",
                                 )}
                             >
                                 <DeleteIcon className="size-5 sm:size-6" />
@@ -151,7 +152,11 @@ type KeyboardButtonProps = {
     onClick: (ch: string) => void;
 };
 
-const KeyboardButton = ({ ch, onClick, hiColor }: KeyboardButtonProps) => {
+const KeyboardButton = ({
+    ch,
+    hiColor,
+    onClick,
+}: KeyboardButtonProps) => {
     return (
         <div
             className={cn("box", getBoxColorStyles(hiColor))}
