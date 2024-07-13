@@ -43,6 +43,7 @@ interface MultiWordleState {
     players: PlayerData[];
 
     // new additions
+    serverActiveLetters: string[];
     success: boolean;
     isOwnTurn: boolean;
     activeRowIndex: number;
@@ -54,7 +55,7 @@ interface MultiWordleState {
     pushLetter: (letter: string) => void;
     clearLetters: () => void;
     removeLetter: () => void;
-
+    setServerActiveLetters : (activeLetters: string[]) => void;
     setLobbyData: (data: {
         gameId: string;
         isAdmin: boolean;
@@ -86,6 +87,7 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
     isOwnTurn: false, // must be calculated!
     activeRowIndex: 0,
     letters: [],
+    serverActiveLetters: [],
     pastTries: [],
     pastTryResults: [],
     duration: "",
@@ -117,6 +119,7 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 isOwnTurn: false,
                 activeRowIndex: 0,
                 letters: [],
+                serverActiveLetters: [],
                 pastTries: [],
                 pastTryResults: [],
                 duration: "",
@@ -141,6 +144,8 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 players: data.players,
             };
         }),
+
+    setServerActiveLetters: (activeLetters: string[]) => set({ serverActiveLetters: activeLetters}),
     setLobbyData: (data) =>
         set((state) => {
             return {

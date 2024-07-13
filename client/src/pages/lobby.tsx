@@ -40,6 +40,7 @@ export const Lobby = () => {
     const [hasAlreadyJoined, setHasAlreadyJoined] = useState<boolean>(false);
     const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
 
+    // Handle general game
     useEffect(() => {
         function onPlayersChanged(data: {
             players: PlayerData[];
@@ -68,17 +69,28 @@ export const Lobby = () => {
             }, 1000);
         }
 
+        function onActiveWord(data: { serverActiveWord: string }) {
+            let newActiveLetters = [];
+            if (data.serverActiveWord) {
+                newActiveLetters = data.serverActiveWord.split("");
+            }
+            multiWordle.setServerActiveLetters(newActiveLetters);
+        }
+
         socket.on("mp_game_start", onStart);
         socket.on("mp_players_changed", onPlayersChanged);
         socket.on("mp_not_valid_word", onNotValidWord);
+        socket.on("mp_active_word", onActiveWord);
 
         return () => {
             socket.off("mp_game_start", onStart);
             socket.off("mp_players_changed", onPlayersChanged);
             socket.off("mp_not_valid_word", onNotValidWord);
+            socket.off("mp_active_word", onActiveWord);
         };
     }, []);
 
+    // Handle initial game information
     useEffect(() => {
         async function checkHasGame() {
             const response = await socket.emitWithAck("mp_has_game", {
@@ -102,19 +114,36 @@ export const Lobby = () => {
         checkHasGame();
     }, [params]);
 
-    async function onSubmit() {
-        if (multiWordle.letters.length !== multiWordle.width) {
-            return;
+    // Handle server active word
+    useEffect(() => {
+        function onLettersChange() {
+            if (multiWordle.isOwnTurn) {
+                socket.emit("mp_active_word", {
+                    gameId: multiWordle.gameId,
+                    word: multiWordle.letters.join(""),
+                });
+            }
         }
-        const word = multiWordle.letters.join("");
-        console.log(word);
-        //const response = await socket.emitWithAck("mp_try_word", {
-        //word,
-        //});
-        //if (response.ok) {
-        //multiWordle.setData(response.data);
-        //multiWordle.clearLetters();
-        //}
+        onLettersChange();
+    }, [multiWordle.letters, multiWordle.isOwnTurn]);
+
+    function onKeyboardClick(ch: string) {
+        if (mpCanType) {
+            multiWordle.pushLetter(ch);
+        }
+    }
+
+    function onKeyboardBackspace() {
+        if (mpCanBackspace) {
+        }
+        multiWordle.removeLetter();
+    }
+
+    function onKeyboardSubmit() {
+        if (mpCanSubmit) {
+            const word = multiWordle.letters.join("");
+            console.log(word);
+        }
     }
 
     function onGiveUp() {
@@ -122,6 +151,11 @@ export const Lobby = () => {
     }
 
     const LanguageIcon = getLanguageIcon(multiWordle.language);
+
+    // TODO on turn change reset serverActiveLetters
+    const letters = multiWordle.isOwnTurn
+        ? multiWordle.letters
+        : multiWordle.serverActiveLetters;
 
     return (
         <>
@@ -131,7 +165,7 @@ export const Lobby = () => {
                 <Board
                     width={multiWordle.width}
                     height={multiWordle.height}
-                    letters={multiWordle.letters}
+                    letters={letters}
                     pastTries={multiWordle.pastTries}
                     pastTryResults={multiWordle.pastTryResults}
                     activeRowIndex={multiWordle.activeRowIndex}
@@ -179,9 +213,9 @@ export const Lobby = () => {
                     pastTries={multiWordle.pastTries}
                     pastTryResults={multiWordle.pastTryResults}
                     canSubmit={mpCanSubmit} // TODO
-                    onEnter={onSubmit}
-                    onBackspace={multiWordle.removeLetter}
-                    onClick={multiWordle.pushLetter}
+                    onEnter={onKeyboardSubmit}
+                    onBackspace={onKeyboardBackspace}
+                    onClick={onKeyboardClick}
                     canType={mpCanType}
                     canBackspace={mpCanBackspace}
                 />

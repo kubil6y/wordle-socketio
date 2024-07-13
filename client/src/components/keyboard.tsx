@@ -112,7 +112,8 @@ export const Keyboard = ({
                                     key={j}
                                     ch={ch}
                                     hiColor={hiColor}
-                                    disabled={!canType}
+                                        // TODO check
+                                    //disabled={!canType}
                                     onClick={(ch: string) => {
                                         if (canType) {
                                             playKeypressStandard();

@@ -97,6 +97,18 @@ export function handleMultiplayer(
         }
     });
 
+    socket.on("mp_active_word", (data: { gameId: string, word: string }) => {
+        const game = mGames.findById(data.gameId);
+        if (!game) {
+            return;
+        }
+        game.setServerActiveWord(data.word);
+        console.log("mp_active_word", data.word);
+        socket.to(game.getId()).emit("mp_active_word", {
+            serverActiveWord: game.getServerActiveWord(),
+        });
+    });
+
     socket.on("mp_start_game", (data) => {
         const { gameId } = data;
         const game = mGames.findById(gameId);
