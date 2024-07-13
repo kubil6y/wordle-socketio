@@ -9,7 +9,7 @@ import {
 } from "@/hooks/use-multi-wordle";
 import { toast } from "sonner";
 import { socket } from "@/lib/socket";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { LobbyModal } from "@/components/lobby-modal";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { FlagIcon } from "lucide-react";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { PlayerCard } from "@/components/player-card";
+import { Language, LetterColor } from "@/hooks/use-wordle";
 
 type LobbyParams = {
     code: string;
@@ -77,16 +78,42 @@ export const Lobby = () => {
             multiWordle.setServerActiveLetters(newActiveLetters);
         }
 
+        function onTryWord(data: {
+            gameId: string;
+            language: Language;
+            gameState: string;
+            serverActiveWord: string;
+            isAdmin: boolean;
+            isOwnTurn: boolean;
+            activeRowIndex: number;
+            players: PlayerData[];
+            pastTries: string[];
+            pastTryResults: LetterColor[][];
+            invitationCode: string;
+            hasAlreadyJoined: boolean;
+        }) {
+            multiWordle.setGameData(data);
+        }
+
+        function onGameOver() {
+            // TODO
+            console.log("game over!");
+        }
+
         socket.on("mp_game_start", onStart);
         socket.on("mp_players_changed", onPlayersChanged);
-        socket.on("mp_not_valid_word", onNotValidWord);
         socket.on("mp_active_word", onActiveWord);
+        socket.on("mp_not_valid_word", onNotValidWord);
+        socket.on("mp_try_word", onTryWord);
+        socket.on("mp_game_over", onGameOver);
 
         return () => {
             socket.off("mp_game_start", onStart);
             socket.off("mp_players_changed", onPlayersChanged);
-            socket.off("mp_not_valid_word", onNotValidWord);
             socket.off("mp_active_word", onActiveWord);
+            socket.off("mp_not_valid_word", onNotValidWord);
+            socket.off("mp_try_word", onTryWord);
+            socket.off("mp_game_over", onGameOver);
         };
     }, []);
 
@@ -104,7 +131,7 @@ export const Lobby = () => {
                 // on refresh some data will be lost
                 // i should be sending the whole game state from server
                 if (multiWordle.gameState !== GameState.GamePlaying) {
-                    multiWordle.setLobbyData(response.data);
+                    multiWordle.setGameData(response.data);
                     setHasAlreadyJoined(
                         response.data.hasAlreadyJoined ?? false,
                     );
@@ -141,8 +168,10 @@ export const Lobby = () => {
 
     function onKeyboardSubmit() {
         if (mpCanSubmit) {
-            const word = multiWordle.letters.join("");
-            console.log(word);
+            socket.emit("mp_try_word", {
+                gameId: multiWordle.gameId,
+                word: multiWordle.letters.join(""),
+            });
         }
     }
 
@@ -156,6 +185,9 @@ export const Lobby = () => {
     const letters = multiWordle.isOwnTurn
         ? multiWordle.letters
         : multiWordle.serverActiveLetters;
+
+    // TODO remvoe
+    console.log(multiWordle);
 
     return (
         <>

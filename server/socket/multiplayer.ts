@@ -44,7 +44,7 @@ export function handleMultiplayer(
         if (game) {
             ackCb({
                 ok: true,
-                data: game.getLobbyData(req.session.id),
+                data: game.getGameData(req.session.id),
             });
         } else {
             ackCb({ ok: false, data: null });
@@ -97,13 +97,12 @@ export function handleMultiplayer(
         }
     });
 
-    socket.on("mp_active_word", (data: { gameId: string, word: string }) => {
+    socket.on("mp_active_word", (data: { gameId: string; word: string }) => {
         const game = mGames.findById(data.gameId);
         if (!game) {
             return;
         }
         game.setServerActiveWord(data.word);
-        console.log("mp_active_word", data.word);
         socket.to(game.getId()).emit("mp_active_word", {
             serverActiveWord: game.getServerActiveWord(),
         });
@@ -119,6 +118,49 @@ export function handleMultiplayer(
             game.start();
             const data = game.getJoinData();
             io.to(game.getId()).emit("mp_game_start", data);
+        }
+    });
+
+    socket.on("mp_try_word", (data) => {
+        const { word, gameId } = data;
+
+        const game = mGames.findById(gameId);
+        if (!game) {
+            socket.emit("alert", {
+                message: "Game not found!",
+                type: "error",
+                code: socket_errors.game_not_found,
+            });
+            return;
+        }
+
+        if (!game.isPlaying()) {
+            socket.emit("alert", {
+                message: "Game is not playing",
+                type: "error",
+                code: socket_errors.game_not_found,
+            });
+            return;
+        }
+
+        if (game.isValidWord(word)) {
+            game.processWord(word);
+
+            for (const sessionId of game.getPlayerSessionIds()) {
+                const gameData = game.getGameData(sessionId);
+                io.to(sessionId).emit("mp_try_word", gameData);
+            }
+        } else {
+            io.to(game.getId()).emit(
+                "mp_not_valid_word",
+                game.getActiveRowIndex(),
+            );
+        }
+
+        // TODO
+        if (game.isOver()) {
+            //const summary = game.getSummary();
+            socket.emit("mp_game_over");
         }
     });
 }

@@ -3,7 +3,7 @@ import { MultiGames } from "../socket/games";
 import { Words } from "../words";
 import { Player } from "./player";
 import { Logger } from "../logger";
-import { Language, GAME_WIDTH, GAME_HEIGHT } from "../wordle";
+import { Language, GAME_WIDTH, GAME_HEIGHT, LetterColor } from "../wordle";
 
 export const TURN_DURATION = 1000; // 1m
 
@@ -29,9 +29,13 @@ export class MultiWordle {
     private _secretWord: string;
 
     private _serverActiveWord: string;
+    private _activeRowIndex: number;
 
     private _players: Player[];
     private _currentPlayerIndex: number;
+
+    private _pastTries: string[];
+    private _pastTryResults: LetterColor[][];
 
     private _startTimestamp: number;
     private _endTimestamp: number;
@@ -52,6 +56,9 @@ export class MultiWordle {
         this._players = [];
         this._currentPlayerIndex = 0;
         this._secretWord = "";
+        this._activeRowIndex = 0;
+        this._pastTries = [];
+        this._pastTryResults = [];
     }
 
     public getServerActiveWord(): string {
@@ -62,15 +69,33 @@ export class MultiWordle {
         this._serverActiveWord = word;
     }
 
-    // TODO convert index to session id player functions
-    // TODO rounds and scores
+    public getActiveRowIndex(): number {
+        return this._activeRowIndex;
+    }
+
     public getCurrentPlayerIndex(): number {
         return this._currentPlayerIndex;
     }
 
     public getCurrentPlayerSessionId(): string {
         const currentPlayer = this._players[this.getCurrentPlayerIndex()];
-        return currentPlayer.sessionId;
+        if (currentPlayer) {
+            return currentPlayer.sessionId;
+        } else {
+            return "";
+        }
+    }
+
+    public getCurrentPlayer(): Player | null {
+        return this._players[this.getCurrentPlayerIndex()] ?? null;
+    }
+
+    public getPastTries() {
+        return this._pastTries;
+    }
+
+    public getPastTryResults() {
+        return this._pastTryResults;
     }
 
     public nextTurn() {
@@ -136,14 +161,18 @@ export class MultiWordle {
         return playersData;
     }
 
-    public getLobbyData(sessionId: string) {
+    public getGameData(sessionId: string) {
         return {
             gameId: this.getId(),
-            gameState: this.gameStateToString(),
             language: this._language,
+            gameState: this.gameStateToString(),
+            serverActiveWord: this._serverActiveWord,
             isAdmin: this.isOwner(sessionId),
             isOwnTurn: this.isOwnTurn(sessionId),
+            activeRowIndex: this.getActiveRowIndex(),
             players: this.getPlayersData(),
+            pastTries: this.getPastTries(),
+            pastTryResults: this.getPastTryResults(),
             invitationCode: this.getInvitationCode(),
             hasAlreadyJoined: this.hasPlayer(sessionId),
         };
@@ -230,15 +259,11 @@ export class MultiWordle {
     public isPlaying(): boolean {
         return this._gameState === GameState.GamePlaying;
     }
-    public isEnded(): boolean {
+    public isOver(): boolean {
         return this._gameState === GameState.GameEnd;
     }
     public isWaitingToStart(): boolean {
         return this._gameState === GameState.WaitingToStart;
-    }
-
-    public tick(): void {
-        // TODO!
     }
 
     public generateRandomWord() {
@@ -247,5 +272,71 @@ export class MultiWordle {
         Logger.debug(
             `MultiWordle.generateRandomWord secretWord:${secretWord} gameId:"${this._ownerSessionId}"`,
         );
+    }
+
+    public isValidWord(word: string): boolean {
+        return this._words.includes(word, this._language);
+    }
+
+    public processWord(word: string) {
+        const result: LetterColor[] = new Array(this._secretWord.length).fill(
+            "",
+        );
+        const chMap = new Map<string, number>();
+        for (const letter of this._secretWord) {
+            const letterCount = chMap.get(letter) ?? 0;
+            chMap.set(letter, letterCount + 1);
+        }
+        // greens
+        for (let i = 0; i < word.length; i++) {
+            const ch = word[i];
+            if (this._secretWord[i] === ch) {
+                result[i] = "green";
+                chMap.set(ch, chMap.get(ch)! - 1);
+            }
+        }
+        // yellows and blacks
+        for (let i = 0; i < word.length; i++) {
+            const ch = word[i];
+            const letterCount = chMap.get(ch) ?? 0;
+            if (this._secretWord[i] !== ch && this._secretWord.includes(ch)) {
+                if (letterCount > 0) {
+                    result[i] = "yellow";
+                } else {
+                    result[i] = "black";
+                }
+            }
+        }
+        // blacks
+        for (let i = 0; i < word.length; i++) {
+            const ch = word[i];
+            if (!this._secretWord.includes(ch)) {
+                result[i] = "black";
+            }
+        }
+
+        this._pastTryResults.push(result);
+        this._pastTries.push(word);
+        this._activeRowIndex++;
+        this._serverActiveWord = "";
+
+        if (this._secretWord === word) {
+            this._gameState = GameState.GameEnd;
+            this._endTimestamp = Date.now();
+            const currentPlayer = this.getCurrentPlayer();
+            if (!currentPlayer) {
+                Logger.error(
+                    `Current player is missing gameId:${this.getId()}`,
+                );
+                return;
+            }
+            currentPlayer.score++;
+        } else if (this._pastTries.length === GAME_HEIGHT) {
+            this._gameState = GameState.GameEnd;
+            this._endTimestamp = Date.now();
+            this._gameState = GameState.GameEnd;
+        }
+
+        this.nextTurn();
     }
 }

@@ -120,8 +120,16 @@ export const NewGameModal = ({
 
     function onClose() {
         if (isClosable) {
+            formReset();
             newGameModal.close();
         }
+    }
+
+    function formReset() {
+        setGameType(GameType.Multiplayer);
+        setAvatar(DEFAULT_AVATAR);
+        setLanguage(DEFAULT_LANGUAGE);
+        setUsername("");
     }
 
     function onAlreadyHaveAcode() {

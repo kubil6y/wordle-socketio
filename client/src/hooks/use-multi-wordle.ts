@@ -55,16 +55,7 @@ interface MultiWordleState {
     pushLetter: (letter: string) => void;
     clearLetters: () => void;
     removeLetter: () => void;
-    setServerActiveLetters : (activeLetters: string[]) => void;
-    setLobbyData: (data: {
-        gameId: string;
-        isAdmin: boolean;
-        isOwnTurn: boolean;
-        language: Language;
-        gameState: string;
-        invitationCode: string;
-        players: PlayerData[];
-    }) => void;
+    setServerActiveLetters: (activeLetters: string[]) => void;
     setData: (data: {
         width: number;
         height: number;
@@ -78,6 +69,20 @@ interface MultiWordleState {
         players: PlayerData[];
         isAdmin: boolean;
         isOwnTurn: boolean;
+    }) => void;
+    setGameData: (data: {
+        gameId: string;
+        language: Language;
+        gameState: string;
+        serverActiveWord: string;
+        isAdmin: boolean;
+        isOwnTurn: boolean;
+        activeRowIndex: number;
+        players: PlayerData[];
+        pastTries: string[];
+        pastTryResults: LetterColor[][];
+        invitationCode: string;
+        hasAlreadyJoined: boolean;
     }) => void;
     reset: () => void;
 }
@@ -144,23 +149,8 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 players: data.players,
             };
         }),
-
-    setServerActiveLetters: (activeLetters: string[]) => set({ serverActiveLetters: activeLetters}),
-    setLobbyData: (data) =>
-        set((state) => {
-            return {
-                ...state,
-                gameId: data.gameId,
-                gameState: convertGameStateStringToEnum(data.gameState),
-                language: data.language,
-                isAdmin: data.isAdmin,
-                isOwnTurn: data.isOwnTurn,
-                players: data.players,
-                invitationCode: data.invitationCode,
-            };
-        }),
-
-    // new additions
+    setServerActiveLetters: (activeLetters: string[]) =>
+        set({ serverActiveLetters: activeLetters }),
     pushLetter: (letter: string) =>
         set((state) => {
             if (state.letters.length >= state.width) {
@@ -179,6 +169,30 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
             const copiedLetters = [...state.letters];
             copiedLetters.pop();
             return { ...state, letters: copiedLetters };
+        }),
+
+    setGameData: (data) =>
+        set((state) => {
+            const serverActiveLetters = data.serverActiveWord
+                ? data.serverActiveWord.split("")
+                : [];
+
+            return {
+                ...state,
+                letters: [],
+                gameId: data.gameId,
+                language: data.language,
+                gameState: convertGameStateStringToEnum(data.gameState),
+                serverActiveLetters: serverActiveLetters,
+                isAdmin: data.isAdmin,
+                isOwnTurn: data.isOwnTurn,
+                activeRowIndex: data.activeRowIndex,
+                players: data.players,
+                pastTries: data.pastTries,
+                pastTryResults: data.pastTryResults,
+                invitationCode: data.invitationCode,
+                hasAlreadyJoined: data.hasAlreadyJoined,
+            };
         }),
 }));
 
