@@ -125,8 +125,10 @@ export function handleMultiplayer(
         }
         if (game.isOwner(req.session.id) && game.canStart()) {
             game.start();
-            const data = game.getJoinData();
-            io.to(game.getId()).emit("mp_game_start", data);
+            for (const sessionId of game.getPlayerSessionIds()) {
+                const gameData = game.getGameData(sessionId);
+                io.to(sessionId).emit("mp_game_start", gameData);
+            }
         }
     });
 
@@ -169,8 +171,9 @@ export function handleMultiplayer(
         }
 
         if (game.isOver()) {
+            const withSecret = true;
             for (const sessionId of game.getPlayerSessionIds()) {
-                const gameData = game.getGameData(sessionId);
+                const gameData = game.getGameData(sessionId, withSecret);
                 io.to(sessionId).emit("mp_game_over", gameData);
             }
         }
@@ -187,9 +190,26 @@ export function handleMultiplayer(
 
         game.giveUp();
 
+        const withSecret = true;
+        for (const sessionId of game.getPlayerSessionIds()) {
+            const gameData = game.getGameData(sessionId, withSecret);
+            io.to(sessionId).emit("mp_game_over", gameData);
+        }
+    });
+
+    socket.on("mp_replay", (data: { gameId: string }) => {
+        const game = mGames.findById(data.gameId);
+        if (!game) {
+            return;
+        }
+        if (!game.isOwner(req.session.id)) {
+            return;
+        }
+
+        game.replay();
         for (const sessionId of game.getPlayerSessionIds()) {
             const gameData = game.getGameData(sessionId);
-            io.to(sessionId).emit("mp_game_over", gameData);
+            io.to(sessionId).emit("mp_replay", gameData);
         }
     });
 }

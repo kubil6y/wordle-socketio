@@ -99,12 +99,8 @@ export class MultiWordle {
     }
 
     public nextTurn() {
-        const old = this._currentPlayerIndex;
         this._currentPlayerIndex =
             (this._currentPlayerIndex + 1) % this._players.length;
-        Logger.debug(
-            `MultiWordle.nextTurn ${old}->${this._currentPlayerIndex}`,
-        );
     }
 
     public addPlayer(player: Player): void {
@@ -165,11 +161,13 @@ export class MultiWordle {
         return playersData;
     }
 
-    public getGameData(sessionId: string) {
+    public getGameData(sessionId: string, withSecret: boolean = false) {
         let duration: string = "";
         let secretWord: string = "";
         if (this.isOver()) {
-            secretWord = this._secretWord;
+            if (withSecret) {
+                secretWord = this._secretWord;
+            }
             duration = formatTimestamps(
                 this._startTimestamp,
                 this._endTimestamp,
@@ -191,17 +189,6 @@ export class MultiWordle {
             pastTryResults: this.getPastTryResults(),
             invitationCode: this.getInvitationCode(),
             hasAlreadyJoined: this.hasPlayer(sessionId),
-        };
-    }
-
-    public getJoinData() {
-        return {
-            width: GAME_WIDTH,
-            height: GAME_HEIGHT,
-            secretWord: this._secretWord, // TODO remove this later!
-            gameState: this.gameStateToString(),
-            players: this.getPlayersData(),
-            currentPlayerSessionId: this.getCurrentPlayerSessionId(),
         };
     }
 
@@ -293,6 +280,9 @@ export class MultiWordle {
     }
 
     public isValidWord(word: string): boolean {
+        if (word.length !== GAME_WIDTH) {
+            return false;
+        }
         return this._words.includes(word, this._language);
     }
 
@@ -369,5 +359,17 @@ export class MultiWordle {
         this._success = false;
         this.endGame();
         Logger.debug(`MultiWordle.giveUp gameId:${this.getId()}`);
+    }
+
+    public replay() {
+        this._serverActiveWord = "";
+        this._activeRowIndex = 0;
+        this._currentPlayerIndex = 0;
+        this._pastTries = [];
+        this._pastTryResults = [];
+        this._gameState = GameState.GamePlaying;
+        this._startTimestamp = Date.now();
+        this.generateRandomWord();
+        Logger.debug(`MultiWordle.replay gameId:${this.getId()}`);
     }
 }

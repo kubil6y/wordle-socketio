@@ -24,12 +24,10 @@ export const MPGameOverModal = () => {
     const mpGameOverModal = useMPGameOverModal();
     const navigate = useNavigate();
 
-    async function onReplay() {
-        const response = await socket.emitWithAck("mp_replay", {
+    function onReplay() {
+        socket.emit("mp_replay", {
             gameId: multiWordle.gameId,
         });
-        if (response.ok) {
-        }
     }
 
     const LanguageIcon = getLanguageIcon(multiWordle.language);

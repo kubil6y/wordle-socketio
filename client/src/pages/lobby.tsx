@@ -69,7 +69,6 @@ export const Lobby = () => {
         "You are about to give up.",
     );
 
-
     function onGameData(data: OnGameData) {
         multiWordle.setGameData(data);
 
@@ -81,7 +80,7 @@ export const Lobby = () => {
                 break;
             default:
             case GameState.Unknown:
-                console.log("unknown game state!");
+                break;
         }
     }
 
@@ -95,14 +94,8 @@ export const Lobby = () => {
             multiWordle.setPlayersData(data);
         }
 
-        function onStart(data: {
-            width: number;
-            height: number;
-            secretWord: string;
-            gameState: string;
-            players: PlayerData[];
-        }) {
-            multiWordle.setData(data);
+        function onStart(data: OnGameData) {
+            onGameData(data);
             lobbyModal.close();
         }
 
@@ -129,12 +122,19 @@ export const Lobby = () => {
             onGameData(data);
         }
 
+        function onReplay(data: OnGameData) {
+            multiWordle.reset();
+            onGameData(data);
+            mpGameOverModal.close();
+        }
+
         socket.on("mp_game_start", onStart);
         socket.on("mp_players_changed", onPlayersChanged);
         socket.on("mp_active_word", onActiveWord);
         socket.on("mp_not_valid_word", onNotValidWord);
         socket.on("mp_try_word", onTryWord);
         socket.on("mp_game_over", onGameOver);
+        socket.on("mp_replay", onReplay);
 
         return () => {
             socket.off("mp_game_start", onStart);
@@ -143,6 +143,7 @@ export const Lobby = () => {
             socket.off("mp_not_valid_word", onNotValidWord);
             socket.off("mp_try_word", onTryWord);
             socket.off("mp_game_over", onGameOver);
+            socket.off("mp_replay", onReplay);
         };
     }, []);
 

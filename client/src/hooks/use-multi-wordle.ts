@@ -56,13 +56,6 @@ interface MultiWordleState {
     clearLetters: () => void;
     removeLetter: () => void;
     setServerActiveLetters: (activeLetters: string[]) => void;
-    setData: (data: {
-        width: number;
-        height: number;
-        secretWord: string;
-        gameState: string;
-        players: PlayerData[];
-    }) => void;
     setGameId: (gameId: string) => void;
     setGameState: (gameState: GameState) => void;
     setPlayersData: (data: {
@@ -140,17 +133,6 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
             isOwnTurn: data.isOwnTurn,
             isAdmin: data.isAdmin,
             players: data.players,
-        }),
-    setData: (data) =>
-        set((state) => {
-            return {
-                ...state,
-                width: data.width,
-                height: data.height,
-                secretWord: data.secretWord,
-                gameState: convertGameStateStringToEnum(data.gameState),
-                players: data.players,
-            };
         }),
     setServerActiveLetters: (activeLetters: string[]) =>
         set({ serverActiveLetters: activeLetters }),
