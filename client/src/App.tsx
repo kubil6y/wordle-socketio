@@ -5,7 +5,6 @@ import { Lobby } from "./pages/lobby";
 import { Navbar } from "./components/navbar";
 import { SocketIO } from "@/components/socket-io";
 import { HtmlLanguageMatcher } from "./components/html-language-matcher";
-import { NotFoundPage } from "./pages/not-found-page";
 import { TestPage } from "./pages/test-page";
 
 export function App() {

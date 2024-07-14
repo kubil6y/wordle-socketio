@@ -70,7 +70,16 @@ export function handleMultiplayer(
                 type: "error",
                 code: socket_errors.join_twice,
             });
-            ackCb({ ok: false, error: "join_twice" });
+            ackCb({ ok: false, error: socket_errors.join_twice });
+            return;
+        }
+        if (!game.canAddNewPlayer()) {
+            socket.emit("alert", {
+                message: "The maximum player count (3) has been reached.",
+                type: "error",
+                code: socket_errors.max_player_count,
+            });
+            ackCb({ ok: false, error: socket_errors.max_player_count });
             return;
         }
 
@@ -152,7 +161,10 @@ export function handleMultiplayer(
             }
         } else {
             for (const sessionId of game.getPlayerSessionIds()) {
-                io.to(sessionId).emit("mp_not_valid_word", game.getActiveRowIndex());
+                io.to(sessionId).emit(
+                    "mp_not_valid_word",
+                    game.getActiveRowIndex(),
+                );
             }
         }
 

@@ -87,6 +87,11 @@ export const JoinGameModal = ({
         } else {
             if (response.error === "join_twice") {
                 navigate(`/lobby/${code}`);
+                return;
+            } else if (response.error === "max_player_count") {
+                joinModal.close();
+                navigate("/");
+                return;
             }
         }
     }

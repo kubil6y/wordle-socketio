@@ -7,6 +7,7 @@ import { Language, GAME_WIDTH, GAME_HEIGHT, LetterColor } from "../wordle";
 import { formatTimestamps } from "../utils";
 
 export const TURN_DURATION = 1000; // 1m
+export const MAX_PLAYER_COUNT = 3;
 
 enum GameState {
     WaitingToStart,
@@ -18,7 +19,6 @@ export type PlayerData = Omit<Player, "gameId"> & {
     isOwnTurn: boolean;
     isAdmin: boolean;
 };
-
 export class MultiWordle {
     private _id: string;
     private _ownerSessionId: string;
@@ -41,6 +41,7 @@ export class MultiWordle {
     private _startTimestamp: number;
     private _endTimestamp: number;
     private _success: boolean;
+
 
     public constructor(
         games: MultiGames,
@@ -140,6 +141,10 @@ export class MultiWordle {
         return false;
     }
 
+    public canAddNewPlayer(): boolean {
+        return this._players.length < MAX_PLAYER_COUNT;
+    }
+
     public getPlayerSessionIds(): string[] {
         const sessionIds: string[] = [];
         for (const player of this._players) {
@@ -174,7 +179,6 @@ export class MultiWordle {
                 this._endTimestamp
             );
         }
-        console.log("game state -> ", this._gameState);
         return {
             gameId: this.getId(),
             success: this._success,
