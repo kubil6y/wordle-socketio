@@ -21,27 +21,23 @@ export type PlayerData = Omit<Player, "gameId"> & {
 };
 export class MultiWordle {
     private _id: string;
+    private _success: boolean;
     private _ownerSessionId: string;
     private _language: Language;
-    private _words: Words;
     private _gameState: GameState;
     private _invitationCode: string;
-    private _games: MultiGames;
     private _secretWord: string;
-
     private _serverActiveWord: string;
     private _activeRowIndex: number;
-
-    private _players: Player[];
     private _currentPlayerIndex: number;
-
     private _pastTries: string[];
     private _pastTryResults: LetterColor[][];
-
     private _startTimestamp: number;
     private _endTimestamp: number;
-    private _success: boolean;
 
+    private _players: Player[];
+    private _words: Words;
+    private _games: MultiGames;
 
     public constructor(
         games: MultiGames,
@@ -176,7 +172,7 @@ export class MultiWordle {
             secretWord = this._secretWord;
             duration = formatTimestamps(
                 this._startTimestamp,
-                this._endTimestamp
+                this._endTimestamp,
             );
         }
         return {
@@ -366,8 +362,12 @@ export class MultiWordle {
         this._endTimestamp = Date.now();
         this._serverActiveWord = "";
         this._currentPlayerIndex = 0;
-        Logger.debug(
-            `MultiWordle.endGame gameId${this.getId()}`,
-        );
+        Logger.debug(`MultiWordle.endGame gameId:${this.getId()}`);
+    }
+
+    public giveUp() {
+        this._success = false;
+        this.endGame();
+        Logger.debug(`MultiWordle.giveUp gameId:${this.getId()}`);
     }
 }

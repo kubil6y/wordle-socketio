@@ -24,6 +24,7 @@ import { PlayerCard } from "@/components/player-card";
 import { Language, LetterColor } from "@/hooks/use-wordle";
 import { MPGameOverModal } from "@/components/mp-game-over-modal";
 import { useMPGameOverModal } from "@/hooks/use-mp-game-over-modal";
+import { useConfirm } from "@/hooks/use-confirm";
 
 type OnGameData = {
     gameId: string;
@@ -62,6 +63,12 @@ export const Lobby = () => {
 
     const [hasAlreadyJoined, setHasAlreadyJoined] = useState<boolean>(false);
     const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
+
+    const [GiveUpConfirmDialog, confirm] = useConfirm(
+        "Are you sure?",
+        "You are about to give up.",
+    );
+
 
     function onGameData(data: OnGameData) {
         multiWordle.setGameData(data);
@@ -212,8 +219,13 @@ export const Lobby = () => {
         }
     }
 
-    function onGiveUp() {
-        console.log("onGiveUp()");
+    async function onGiveUp() {
+        const ok = await confirm();
+        if (ok) {
+            socket.emit("mp_give_up", {
+                gameId: multiWordle.gameId,
+            });
+        }
     }
 
     const LanguageIcon = getLanguageIcon(multiWordle.language);
@@ -224,6 +236,7 @@ export const Lobby = () => {
 
     return (
         <>
+            <GiveUpConfirmDialog />
             <MPGameOverModal />
             <LobbyModal hasAlreadyJoined={hasAlreadyJoined} />
 

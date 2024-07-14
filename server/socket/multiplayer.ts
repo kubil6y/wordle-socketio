@@ -175,4 +175,21 @@ export function handleMultiplayer(
             }
         }
     });
+
+    socket.on("mp_give_up", (data: { gameId: string }) => {
+        const game = mGames.findById(data.gameId);
+        if (!game) {
+            return;
+        }
+        if (!game.isOwner(req.session.id)) {
+            return;
+        }
+
+        game.giveUp();
+
+        for (const sessionId of game.getPlayerSessionIds()) {
+            const gameData = game.getGameData(sessionId);
+            io.to(sessionId).emit("mp_game_over", gameData);
+        }
+    });
 }
