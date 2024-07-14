@@ -151,16 +151,16 @@ export function handleMultiplayer(
                 io.to(sessionId).emit("mp_try_word", gameData);
             }
         } else {
-            io.to(game.getId()).emit(
-                "mp_not_valid_word",
-                game.getActiveRowIndex(),
-            );
+            for (const sessionId of game.getPlayerSessionIds()) {
+                io.to(sessionId).emit("mp_not_valid_word", game.getActiveRowIndex());
+            }
         }
 
-        // TODO
         if (game.isOver()) {
-            //const summary = game.getSummary();
-            socket.emit("mp_game_over");
+            for (const sessionId of game.getPlayerSessionIds()) {
+                const gameData = game.getGameData(sessionId);
+                io.to(sessionId).emit("mp_game_over", gameData);
+            }
         }
     });
 }

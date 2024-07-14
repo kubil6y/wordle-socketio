@@ -143,6 +143,7 @@ export const Wordle = () => {
                         onClick={pushLetter}
                         canType={canType}
                         canBackspace={canBackspace}
+                        isOwnTurn
                     />
                 </div>
             </div>

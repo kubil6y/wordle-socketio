@@ -17,6 +17,7 @@ type KeyboardProps = {
     pastTryResults: LetterColor[][];
     canType: boolean;
     canBackspace: boolean;
+    isOwnTurn?: boolean;
     onEnter: () => void;
     onClick: (ch: string) => void;
     onBackspace: () => void;
@@ -29,6 +30,7 @@ export const Keyboard = ({
     pastTryResults,
     canType,
     canBackspace,
+    isOwnTurn = false,
     onEnter,
     onClick,
     onBackspace,
@@ -100,6 +102,7 @@ export const Keyboard = ({
                                     "w-[42px] transition sm:w-[58px] duration-200",
                                     !canSubmit &&
                                     "pointer-events-none text-zinc-400 dark:text-zinc-600",
+                                    !isOwnTurn && "opacity-60"
                                 )}
                             >
                                 <SendHorizonalIcon className="size-5 sm:size-6" />
@@ -111,9 +114,8 @@ export const Keyboard = ({
                                 <KeyboardButton
                                     key={j}
                                     ch={ch}
+                                    hiOpacity={!isOwnTurn}
                                     hiColor={hiColor}
-                                        // TODO check
-                                    //disabled={!canType}
                                     onClick={(ch: string) => {
                                         if (canType) {
                                             playKeypressStandard();
@@ -135,6 +137,7 @@ export const Keyboard = ({
                                     "box",
                                     "w-[42px] sm:w-[58px]",
                                     !canBackspace && "pointer-events-none",
+                                    !isOwnTurn && "opacity-60"
                                 )}
                             >
                                 <DeleteIcon className="size-5 sm:size-6" />
@@ -150,17 +153,23 @@ export const Keyboard = ({
 type KeyboardButtonProps = {
     ch: string;
     hiColor: LetterCellColor;
+    hiOpacity?: boolean;
     onClick: (ch: string) => void;
 };
 
 const KeyboardButton = ({
     ch,
     hiColor,
+    hiOpacity = false,
     onClick,
 }: KeyboardButtonProps) => {
     return (
         <div
-            className={cn("box", getBoxColorStyles(hiColor))}
+            className={cn(
+                "box",
+                getBoxColorStyles(hiColor),
+                hiOpacity && "opacity-60",
+            )}
             onClick={() => onClick(ch)}
         >
             {ch}

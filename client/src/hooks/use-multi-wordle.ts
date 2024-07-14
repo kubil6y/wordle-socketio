@@ -72,8 +72,11 @@ interface MultiWordleState {
     }) => void;
     setGameData: (data: {
         gameId: string;
+        success: boolean;
         language: Language;
         gameState: string;
+        duration: string;
+        secretWord: string;
         serverActiveWord: string;
         isAdmin: boolean;
         isOwnTurn: boolean;
@@ -106,9 +109,9 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
     secretWord: "",
     gameState: GameState.WaitingToStart,
     players: [],
+    // TODO never used this
     reset: () =>
         set((state) => {
-            // TODO sessionId and all that this shit is broken as fuck
             return {
                 ...state,
                 gameId: "",
@@ -181,8 +184,11 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
                 ...state,
                 letters: [],
                 gameId: data.gameId,
+                success: data.success,
                 language: data.language,
                 gameState: convertGameStateStringToEnum(data.gameState),
+                duration: data.duration,
+                secretWord: data.secretWord,
                 serverActiveLetters: serverActiveLetters,
                 isAdmin: data.isAdmin,
                 isOwnTurn: data.isOwnTurn,

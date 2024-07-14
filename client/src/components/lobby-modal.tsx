@@ -32,7 +32,6 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
     const navigate = useNavigate();
 
     function onStart() {
-        // TODO
         socket.emit("mp_start_game", {
             gameId,
         });
@@ -77,7 +76,11 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
                     </DialogDescription>
                 </DialogHeader>
 
-                {isAdmin && <div className="flex items-center">admin!!!</div>}
+                {isAdmin && (
+                    <p className="text-sm text-muted-foreground">
+                        You are the owner of this lobby.
+                    </p>
+                )}
 
                 <div className="flex items-center gap-6">
                     {players?.map((player) => (
@@ -149,13 +152,13 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
 function getGameStateMessage(gameState: GameState): string {
     switch (gameState) {
         case GameState.WaitingToStart:
-            return "WaitingToStart !!!";
+            return "The game is about to start. Please wait.";
         case GameState.GamePlaying:
-            return "GamePlaying";
+            return "The game is currently in progress. Please stay tuned.";
         case GameState.GameEnd:
-            return "GameEnd";
+            return "The round has ended. Check out the summary.";
         default:
         case GameState.Unknown:
-            return "Unknown";
+            return "The game state is unknown. Something went wrong.";
     }
 }

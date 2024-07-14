@@ -4,6 +4,7 @@ import { Words } from "../words";
 import { Player } from "./player";
 import { Logger } from "../logger";
 import { Language, GAME_WIDTH, GAME_HEIGHT, LetterColor } from "../wordle";
+import { formatTimestamps } from "../utils";
 
 export const TURN_DURATION = 1000; // 1m
 
@@ -39,6 +40,7 @@ export class MultiWordle {
 
     private _startTimestamp: number;
     private _endTimestamp: number;
+    private _success: boolean;
 
     public constructor(
         games: MultiGames,
@@ -54,6 +56,7 @@ export class MultiWordle {
         this._words = words;
         this._games = games;
         this._players = [];
+        this._success = false;
         this._currentPlayerIndex = 0;
         this._secretWord = "";
         this._activeRowIndex = 0;
@@ -162,8 +165,21 @@ export class MultiWordle {
     }
 
     public getGameData(sessionId: string) {
+        let duration: string = "";
+        let secretWord: string = "";
+        if (this.isOver()) {
+            secretWord = this._secretWord;
+            duration = formatTimestamps(
+                this._startTimestamp,
+                this._endTimestamp
+            );
+        }
+        console.log("game state -> ", this._gameState);
         return {
             gameId: this.getId(),
+            success: this._success,
+            duration,
+            secretWord,
             language: this._language,
             gameState: this.gameStateToString(),
             serverActiveWord: this._serverActiveWord,
@@ -259,9 +275,11 @@ export class MultiWordle {
     public isPlaying(): boolean {
         return this._gameState === GameState.GamePlaying;
     }
+
     public isOver(): boolean {
         return this._gameState === GameState.GameEnd;
     }
+
     public isWaitingToStart(): boolean {
         return this._gameState === GameState.WaitingToStart;
     }
@@ -321,8 +339,7 @@ export class MultiWordle {
         this._serverActiveWord = "";
 
         if (this._secretWord === word) {
-            this._gameState = GameState.GameEnd;
-            this._endTimestamp = Date.now();
+            this._success = true;
             const currentPlayer = this.getCurrentPlayer();
             if (!currentPlayer) {
                 Logger.error(
@@ -331,12 +348,22 @@ export class MultiWordle {
                 return;
             }
             currentPlayer.score++;
+            this.endGame();
         } else if (this._pastTries.length === GAME_HEIGHT) {
-            this._gameState = GameState.GameEnd;
-            this._endTimestamp = Date.now();
-            this._gameState = GameState.GameEnd;
+            this._success = false;
+            this.endGame();
+        } else {
+            this.nextTurn();
         }
+    }
 
-        this.nextTurn();
+    public endGame() {
+        this._gameState = GameState.GameEnd;
+        this._endTimestamp = Date.now();
+        this._serverActiveWord = "";
+        this._currentPlayerIndex = 0;
+        Logger.debug(
+            `MultiWordle.endGame gameId${this.getId()}`,
+        );
     }
 }

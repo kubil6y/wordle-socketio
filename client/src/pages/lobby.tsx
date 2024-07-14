@@ -1,4 +1,5 @@
 import {
+    convertGameStateStringToEnum,
     GameState,
     PlayerData,
     useMPCanBackspace,
@@ -9,7 +10,7 @@ import {
 } from "@/hooks/use-multi-wordle";
 import { toast } from "sonner";
 import { socket } from "@/lib/socket";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { LobbyModal } from "@/components/lobby-modal";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
@@ -21,6 +22,26 @@ import { FlagIcon } from "lucide-react";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { PlayerCard } from "@/components/player-card";
 import { Language, LetterColor } from "@/hooks/use-wordle";
+import { MPGameOverModal } from "@/components/mp-game-over-modal";
+import { useMPGameOverModal } from "@/hooks/use-mp-game-over-modal";
+
+type OnGameData = {
+    gameId: string;
+    success: boolean;
+    language: Language;
+    gameState: string;
+    duration: string;
+    secretWord: string;
+    serverActiveWord: string;
+    isAdmin: boolean;
+    isOwnTurn: boolean;
+    activeRowIndex: number;
+    players: PlayerData[];
+    pastTries: string[];
+    pastTryResults: LetterColor[][];
+    invitationCode: string;
+    hasAlreadyJoined: boolean;
+};
 
 type LobbyParams = {
     code: string;
@@ -30,6 +51,7 @@ export const Lobby = () => {
     const navigate = useNavigate();
     const params = useParams<LobbyParams>();
     const lobbyModal = useLobbyModal();
+    const mpGameOverModal = useMPGameOverModal();
     const multiWordle = useMultiWordle();
 
     const { isConnected } = useSocketStatus();
@@ -40,6 +62,21 @@ export const Lobby = () => {
 
     const [hasAlreadyJoined, setHasAlreadyJoined] = useState<boolean>(false);
     const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
+
+    function onGameData(data: OnGameData) {
+        multiWordle.setGameData(data);
+
+        const serverGameState = convertGameStateStringToEnum(data.gameState);
+        switch (serverGameState) {
+            case GameState.GameEnd:
+                lobbyModal.close();
+                mpGameOverModal.open();
+                break;
+            default:
+            case GameState.Unknown:
+                console.log("unknown game state!");
+        }
+    }
 
     // Handle general game
     useEffect(() => {
@@ -62,7 +99,6 @@ export const Lobby = () => {
             lobbyModal.close();
         }
 
-        // TODO check later
         function onNotValidWord(rowIndex: number) {
             setShakeRowIndex(rowIndex);
             setTimeout(() => {
@@ -78,26 +114,12 @@ export const Lobby = () => {
             multiWordle.setServerActiveLetters(newActiveLetters);
         }
 
-        function onTryWord(data: {
-            gameId: string;
-            language: Language;
-            gameState: string;
-            serverActiveWord: string;
-            isAdmin: boolean;
-            isOwnTurn: boolean;
-            activeRowIndex: number;
-            players: PlayerData[];
-            pastTries: string[];
-            pastTryResults: LetterColor[][];
-            invitationCode: string;
-            hasAlreadyJoined: boolean;
-        }) {
-            multiWordle.setGameData(data);
+        function onTryWord(data: OnGameData) {
+            onGameData(data);
         }
 
-        function onGameOver() {
-            // TODO
-            console.log("game over!");
+        function onGameOver(data: OnGameData) {
+            onGameData(data);
         }
 
         socket.on("mp_game_start", onStart);
@@ -127,15 +149,30 @@ export const Lobby = () => {
                 navigate("/");
                 toast.error("Game not found!");
             } else {
-                // TODO this will cause issues!
-                // on refresh some data will be lost
-                // i should be sending the whole game state from server
-                if (multiWordle.gameState !== GameState.GamePlaying) {
-                    multiWordle.setGameData(response.data);
-                    setHasAlreadyJoined(
-                        response.data.hasAlreadyJoined ?? false,
-                    );
+                onGameData(response.data);
+                const serverGameState = convertGameStateStringToEnum(
+                    response.data.gameState,
+                );
+                switch (serverGameState) {
+                    case GameState.WaitingToStart:
+                    case GameState.GamePlaying:
+                        if (!lobbyModal.isOpen) {
+                            lobbyModal.open();
+                        }
+                        if (mpGameOverModal.isOpen) {
+                            mpGameOverModal.close();
+                        }
+                        break;
+                    case GameState.GameEnd:
+                        lobbyModal.close();
+                        mpGameOverModal.open();
+                        break;
+                    default:
+                    case GameState.Unknown:
+                        console.log("unknown game state!");
                 }
+                multiWordle.setGameData(response.data);
+                setHasAlreadyJoined(response.data.hasAlreadyJoined ?? false);
             }
         }
         checkHasGame();
@@ -181,16 +218,13 @@ export const Lobby = () => {
 
     const LanguageIcon = getLanguageIcon(multiWordle.language);
 
-    // TODO on turn change reset serverActiveLetters
     const letters = multiWordle.isOwnTurn
         ? multiWordle.letters
         : multiWordle.serverActiveLetters;
 
-    // TODO remvoe
-    console.log(multiWordle);
-
     return (
         <>
+            <MPGameOverModal />
             <LobbyModal hasAlreadyJoined={hasAlreadyJoined} />
 
             <div className="container mt-4 space-y-4 sm:mt-12 sm:space-y-4">
@@ -244,11 +278,12 @@ export const Lobby = () => {
                     language={multiWordle.language}
                     pastTries={multiWordle.pastTries}
                     pastTryResults={multiWordle.pastTryResults}
-                    canSubmit={mpCanSubmit} // TODO
+                    canSubmit={mpCanSubmit}
                     onEnter={onKeyboardSubmit}
                     onBackspace={onKeyboardBackspace}
                     onClick={onKeyboardClick}
                     canType={mpCanType}
+                    isOwnTurn={multiWordle.isOwnTurn}
                     canBackspace={mpCanBackspace}
                 />
             </div>
