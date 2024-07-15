@@ -102,7 +102,6 @@ export const useMultiWordle = create<MultiWordleState>()((set) => ({
     secretWord: "",
     gameState: GameState.WaitingToStart,
     players: [],
-    // TODO never used this
     reset: () =>
         set((state) => {
             return {
