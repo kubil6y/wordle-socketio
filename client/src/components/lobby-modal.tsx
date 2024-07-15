@@ -27,7 +27,7 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
     const { isConnected } = useSocketStatus();
     const { isAdmin, invitationCode, gameState, players, language, gameId } =
         useMultiWordle();
-    const joinGameModal = useJoinGameModal();
+    const joinModal = useJoinGameModal();
     const lobbyModal = useLobbyModal();
     const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
     function onClickJoin() {
         lobbyModal.close();
         navigate("/");
-        joinGameModal.open();
+        joinModal.open();
     }
 
     function onClose() {
@@ -49,7 +49,7 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
 
     function onClickHome() {
         lobbyModal.close();
-        joinGameModal.close();
+        joinModal.close();
         navigate("/");
     }
 

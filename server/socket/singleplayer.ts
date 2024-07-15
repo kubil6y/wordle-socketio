@@ -2,7 +2,9 @@ import { Socket } from "socket.io";
 import { Request } from "express";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { socket_errors } from "./errors";
-import { createSingleplayer, sGames } from "./games";
+import { cleanupGames , sGames } from "./games";
+import { Wordle } from "../wordle";
+import { words } from "../words";
 
 export function handleSingleplayer(
     socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
@@ -10,7 +12,10 @@ export function handleSingleplayer(
     const req = socket.request as Request;
 
     socket.on("sp_create_game", (data, cb) => {
-        const game = createSingleplayer(req.session.id, data.language);
+        const sessionId = req.session.id;
+        cleanupGames(req);
+        const game = new Wordle(sessionId, words, data.language);
+        sGames.register(sessionId, game);
         cb({
             ok: true,
             config: game.getConfig(),

@@ -1,12 +1,19 @@
 import { usePrevious } from "react-use";
 import { create } from "zustand";
 
-export const DEFAULT_GAME_WIDTH = 5;
-export const DEFAULT_GAME_HEIGHT = 6;
-export const DEFAULT_LANGUAGE: Language = "tr";
+export enum GameType {
+    Singleplayer,
+    Multiplayer,
+}
+
 export type Language = "en" | "tr";
 export type LetterColor = "green" | "yellow" | "black";
 export type LetterCellColor = LetterColor | "none";
+
+export const DEFAULT_GAME_WIDTH = 5;
+export const DEFAULT_GAME_HEIGHT = 6;
+export const DEFAULT_LANGUAGE: Language = "tr";
+export const DEFAULT_GAME_TYPE = GameType.Singleplayer;
 
 interface WordleState {
     width: number;
@@ -40,7 +47,7 @@ interface WordleState {
     setData: (data: {
         active: boolean;
         pastTries: string[];
-        pastTryResults: LetterColor[][],
+        pastTryResults: LetterColor[][];
         activeRowIndex: number;
     }) => void;
 }
@@ -110,7 +117,7 @@ export const useWordle = create<WordleState>()((set) => ({
                 pastTries: [...state.pastTries, state.letters.join("")],
             };
         }),
-    setData: ({ active, activeRowIndex, pastTries, pastTryResults}) =>
+    setData: ({ active, activeRowIndex, pastTries, pastTryResults }) =>
         set((state) => ({
             ...state,
             active,

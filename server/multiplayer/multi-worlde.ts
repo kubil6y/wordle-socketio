@@ -120,6 +120,8 @@ export class MultiWordle {
                 `MultiWordle.deletePlayer gameId:${this.getId()} sessionId:${sessionId}`,
             );
         }
+        // Readjust index
+        this._currentPlayerIndex %= this._players.length;
     }
 
     public hasPlayer(sessionId: string): boolean {

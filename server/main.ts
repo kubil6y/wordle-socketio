@@ -67,35 +67,6 @@ io.on("connection", (socket) => {
         if (sGames.has(req.session.id)) {
             sGames.delete(req.session.id);
         }
-
-        // Cleanup multiplayer
-        /*
-        const gameId = mGames.getGameIdByPlayerSessionId(req.session.id);
-        const game = mGames.findById(gameId ?? "");
-        if (game && gameId) {
-            if (game.isOwner(req.session.id)) {
-                 mGames.delete(gameId);
-
-                const socketsInRoom = io.sockets.adapter.rooms.get(gameId);
-                if (socketsInRoom) {
-                    // Disconnect all sockets in the room
-                    socketsInRoom.forEach((socketId) => {
-                        io.sockets.sockets.get(socketId)?.leave(gameId);
-                        io.sockets.sockets.get(socketId)?.disconnect(true);
-                    });
-
-                    // Delete the room
-                    delete io.sockets.adapter.rooms[gameId];
-                }
-            } else {
-                game.deletePlayer(req.session.id);
-                mGames.deletePlayer(req.session.id);
-                socket
-                    .to(game.getId())
-                    .emit("mp_players_changed", game.getPlayersData());
-            }
-        }
-        */
     });
 });
 

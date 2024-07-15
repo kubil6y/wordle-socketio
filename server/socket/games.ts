@@ -1,7 +1,9 @@
 import { Logger } from "../logger";
+import { io } from "../main";
 import { MultiWordle } from "../multiplayer/multi-worlde";
 import { Language, Wordle } from "../wordle";
 import { words } from "../words";
+import { Request } from "express";
 
 export class MultiGames {
     private _games: { [id: string]: MultiWordle } = {};
@@ -30,7 +32,7 @@ export class MultiGames {
         if (!gameId) {
             return null;
         }
-        return this.findById(gameId)
+        return this.findById(gameId);
     }
 
     public addPlayer(sessionId: string, gameId: string): void {
@@ -47,7 +49,7 @@ export class MultiGames {
         this._players[game.getOwnerSessionId()] = game.getId(); // add owner also as player!
         this._codes[game.getInvitationCode()] = game.getId();
         Logger.debug(
-            `MultiGames.register game:${game.getId()} for session: ${game.getOwnerSessionId()}`
+            `MultiGames.register game:${game.getId()} for session: ${game.getOwnerSessionId()}`,
         );
     }
 
@@ -65,7 +67,7 @@ export class MultiGames {
         for (const playerSessionId of game.getPlayerSessionIds()) {
             delete this._players[playerSessionId];
             Logger.debug(
-                `MultiGames.delete gameId:${id} playerSessionId:${playerSessionId}`
+                `MultiGames.delete gameId:${id} playerSessionId:${playerSessionId}`,
             );
         }
     }
@@ -83,7 +85,7 @@ export class MultiGames {
         delete this._codes[oldCode];
         this._codes[newCode] = game.getId();
         Logger.debug(
-            `MultiGames.updateInvitationCode for gameId:${gameId} newCode:${newCode}`
+            `MultiGames.updateInvitationCode for gameId:${gameId} newCode:${newCode}`,
         );
     }
 }
@@ -117,35 +119,45 @@ class SingleplayerGames {
 export const sGames = new SingleplayerGames();
 export const mGames = new MultiGames();
 
-export function createSingleplayer(sessionId: string, language: Language) {
-    const game = new Wordle(sessionId, words, language);
-    if (sGames.has(sessionId)) {
+export function cleanupGames(req: Request) {
+    const sessionId = req.session.id;
+
+    const existingSPGameId = sGames.findById(sessionId);
+    if (existingSPGameId) {
         sGames.delete(sessionId);
     }
-    sGames.register(sessionId, game);
-
-    const existingMultiGame = mGames.findByOwnerSessionId(sessionId);
-    if (existingMultiGame) {
-        mGames.delete(existingMultiGame.getId());
+    const existingMPGameId = mGames.getGameIdByPlayerSessionId(sessionId);
+    if (existingMPGameId) {
+        const existingGame = mGames.findById(existingMPGameId);
+        if (existingGame) {
+            if (existingGame.isOwner(sessionId)) {
+                for (const sessionId of existingGame.getPlayerSessionIds()) {
+                    io.to(sessionId).emit("mp_game_deleted");
+                }
+                const roomName = existingGame.getId();
+                const room = io.sockets.adapter.rooms.get(roomName);
+                if (room) {
+                    for (const socketId of room) {
+                        const socket = io.sockets.sockets.get(socketId);
+                        if (socket) {
+                            socket.leave(roomName);
+                        }
+                    }
+                    delete io.sockets.adapter.rooms[roomName];
+                }
+                mGames.delete(existingGame.getId());
+            } else {
+                existingGame.deletePlayer(sessionId);
+                mGames.deletePlayer(sessionId);
+                // Notify lobby for updated players
+                for (const sessionId of existingGame.getPlayerSessionIds()) {
+                    io.to(sessionId).emit("mp_players_changed", {
+                        isAdmin: existingGame.isOwner(sessionId),
+                        isOwnTurn: existingGame.isOwnTurn(sessionId),
+                        players: existingGame.getPlayersData(),
+                    });
+                }
+            }
+        }
     }
-
-    return game;
-}
-
-export function createMultiplayer(
-    ownerSessionId: string,
-    language: Language
-): MultiWordle {
-    const game = new MultiWordle(mGames, ownerSessionId, words, language);
-
-    //const existingMultiGame = mGames.findByOwnerSessionId(ownerSessionId);
-    //if (existingMultiGame) {
-        //mGames.delete(existingMultiGame.getId());
-    //}
-    //mGames.register(game);
-
-    //if (sGames.has(ownerSessionId)) {
-        //sGames.delete(ownerSessionId);
-    //}
-    return game;
 }

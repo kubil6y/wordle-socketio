@@ -85,13 +85,15 @@ export const JoinGameModal = ({
             lobbyModal.open();
             navigate(`/lobby/${code}`);
         } else {
-            if (response.error === "join_twice") {
-                navigate(`/lobby/${code}`);
-                return;
-            } else if (response.error === "max_player_count") {
-                joinModal.close();
-                navigate("/");
-                return;
+            switch (response.error) {
+                case "join_twice":
+                case "max_player_count":
+                case "game_has_already_started":
+                default:
+                    navigate("/");
+                    joinModal.close();
+                    lobbyModal.close();
+                    break;
             }
         }
     }

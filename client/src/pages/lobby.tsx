@@ -18,7 +18,7 @@ import { Board } from "@/components/board";
 import { Keyboard } from "@/components/keyboard";
 import { getLanguageIcon } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FlagIcon } from "lucide-react";
+import { CopyIcon, FlagIcon, KeySquareIcon } from "lucide-react";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { PlayerCard } from "@/components/player-card";
 import { Language, LetterColor } from "@/hooks/use-wordle";
@@ -127,8 +127,9 @@ export const Lobby = () => {
             onGameData(data);
             mpGameOverModal.close();
         }
-    
+
         function onGameDeleted() {
+            multiWordle.reset();
             navigate("/");
             toast.error("Game is deleted!");
         }
@@ -277,18 +278,32 @@ export const Lobby = () => {
                         })}
                     </div>
 
-                    <div className="flex min-w-[120px] items-center gap-2">
+                    <div className="flex min-w-[120px] items-start gap-2 justify-center">
                         <LanguageIcon className="size-5 inline" />
 
                         {multiWordle.isAdmin && (
-                            <div className="flex items-center gap-2">
+                            <div className="flex w-[120px] flex-col items-center gap-2">
                                 <Button
                                     variant="outline"
+                                    className="w-full"
                                     onClick={onGiveUp}
                                     disabled={!isConnected}
                                 >
                                     <FlagIcon className="size-4 mr-2 fill-primary" />
                                     Give up
+                                </Button>
+
+                                <Button
+                                    variant="outline"
+                                    className="w-full text-xs"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(
+                                            multiWordle.invitationCode,
+                                        );
+                                    }}
+                                >
+                                    <CopyIcon className="size-4 mr-2" />
+                                    Copy Code
                                 </Button>
                             </div>
                         )}

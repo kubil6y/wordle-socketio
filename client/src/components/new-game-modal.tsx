@@ -14,6 +14,17 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
+import {
+    DEFAULT_GAME_TYPE,
+    DEFAULT_LANGUAGE,
+    GameType,
+    Language,
+    useWordle,
+} from "@/hooks/use-wordle";
+import {
+    convertGameStateStringToEnum,
+    useMultiWordle,
+} from "@/hooks/use-multi-wordle";
 import { cn, getLanguageIcon } from "@/lib/utils";
 import { socket } from "@/lib/socket";
 import { Logo } from "./logo";
@@ -26,18 +37,13 @@ import { ModalFooter } from "./modal-footer";
 import { ConnectionStatus } from "./connection-status";
 import { useSocketStatus } from "@/hooks/use-socket-connection";
 import { useNavigate } from "react-router-dom";
-import { DEFAULT_LANGUAGE, Language, useWordle } from "@/hooks/use-wordle";
-import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
-import {
-    convertGameStateStringToEnum,
-    useMultiWordle,
-} from "@/hooks/use-multi-wordle";
 import { FormTitle } from "./form-title";
 import { useJoinGameModal } from "@/hooks/use-join-game-modal";
 import { AvatarSelection } from "./avatar-selection";
 import { Input } from "./ui/input";
 import { Icons } from "./icons";
 import { useLobbyModal } from "@/hooks/use-lobby-modal";
+import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 
 const DEFAULT_AVATAR = "avatar3";
 
@@ -45,11 +51,6 @@ const languages = [
     { label: "Turkish", value: "tr", icon: Icons.flag.tr },
     { label: "English", value: "en", icon: Icons.flag.en },
 ];
-
-enum GameType {
-    Singleplayer,
-    Multiplayer,
-}
 
 type NewGameModalProps = {
     isClosable?: boolean;
@@ -60,7 +61,7 @@ export const NewGameModal = ({
     showHomeButton = true,
     isClosable = true,
 }: NewGameModalProps) => {
-    const [gameType, setGameType] = useState<GameType>(GameType.Singleplayer);
+    const [gameType, setGameType] = useState<GameType>(DEFAULT_GAME_TYPE);
     const [language, setLanguage] = useState<Language>(DEFAULT_LANGUAGE);
     const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
     const [username, setUsername] = useState<string>("");
@@ -98,7 +99,7 @@ export const NewGameModal = ({
             newGameModal.close();
             multiWordle.reset();
             multiWordle.setGameState(
-                convertGameStateStringToEnum(response.gameState)
+                convertGameStateStringToEnum(response.gameState),
             );
             lobbyModal.open();
             navigate(`/lobby/${response.invitationCode}`);
@@ -126,7 +127,7 @@ export const NewGameModal = ({
     }
 
     function formReset() {
-        setGameType(GameType.Multiplayer);
+        setGameType(DEFAULT_GAME_TYPE);
         setAvatar(DEFAULT_AVATAR);
         setLanguage(DEFAULT_LANGUAGE);
         setUsername("");
@@ -200,7 +201,7 @@ export const NewGameModal = ({
                                     <SelectLabel>Languages</SelectLabel>
                                     {languages.map((language, index) => {
                                         const LanguageIcon = getLanguageIcon(
-                                            language.value as Language
+                                            language.value as Language,
                                         );
                                         return (
                                             <SelectItem
@@ -325,7 +326,7 @@ const SelectGameTypeButton = ({
             className={cn(
                 "flex w-full items-center justify-center text-[15px]",
                 isSelected &&
-                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
             )}
             variant="outline"
             onClick={() => {

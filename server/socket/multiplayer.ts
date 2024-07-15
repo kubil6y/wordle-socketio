@@ -3,7 +3,7 @@ import { Request } from "express";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Wordle } from "../wordle";
 import { Player } from "../multiplayer/player";
-import { createMultiplayer, mGames, sGames } from "./games";
+import { cleanupGames, mGames } from "./games";
 import { socket_errors } from "./errors";
 import { io } from "../main";
 import { words } from "../words";
@@ -20,47 +20,7 @@ export function handleMultiplayer(
         const { language, avatar, username } = data;
         const sessionId = req.session.id;
 
-        //------ CLEANUP ------
-        const existingSPGameId = sGames.findById(sessionId);
-        if (existingSPGameId) {
-            sGames.delete(sessionId);
-        }
-        const existingMPGameId = mGames.getGameIdByPlayerSessionId(sessionId);
-        if (existingMPGameId) {
-            const existingGame = mGames.findById(existingMPGameId);
-            if (existingGame) {
-                if (existingGame.isOwner(sessionId)) {
-                    for (const sessionId of existingGame.getPlayerSessionIds()) {
-                        io.to(sessionId).emit("mp_game_deleted");
-                    }
-                    const roomName = existingGame.getId();
-                    const room = io.sockets.adapter.rooms.get(roomName);
-                    if (room) {
-                        for (const socketId of room) {
-                            const socket = io.sockets.sockets.get(socketId);
-                            if (socket) {
-                                socket.leave(roomName);
-                            }
-                        }
-                        delete io.sockets.adapter.rooms[roomName];
-                    }
-                    mGames.delete(existingGame.getId());
-                } else {
-                    existingGame.deletePlayer(sessionId);
-                    mGames.deletePlayer(sessionId);
-                    // Notify lobby for updated players
-                    for (const sessionId of existingGame.getPlayerSessionIds()) {
-                        io.to(sessionId).emit("mp_players_changed", {
-                            isAdmin: existingGame.isOwner(sessionId),
-                            isOwnTurn: existingGame.isOwnTurn(sessionId),
-                            players: existingGame.getPlayersData(),
-                        });
-                    }
-                }
-            }
-        }
-        //---------------------
-
+        cleanupGames(req);
         const game = new MultiWordle(mGames, sessionId, words, language);
         mGames.register(game);
 
@@ -93,6 +53,7 @@ export function handleMultiplayer(
 
     socket.on("mp_join_game", (data, ackCb) => {
         const { avatar, username, code } = data;
+        cleanupGames(req);
         const game = mGames.findByInvitationCode(code);
         if (!game) {
             socket.emit("alert", {
@@ -103,7 +64,15 @@ export function handleMultiplayer(
             ackCb({ ok: false });
             return;
         }
-
+        if (game.isPlaying()) {
+            socket.emit("alert", {
+                message: "Game has already started!",
+                type: "error",
+                code: socket_errors.game_has_already_started,
+            });
+            ackCb({ ok: false, error: socket_errors.join_twice });
+            return;
+        }
         if (game.hasPlayer(req.session.id)) {
             socket.emit("alert", {
                 message: "You can not join twice!",
@@ -122,6 +91,7 @@ export function handleMultiplayer(
             ackCb({ ok: false, error: socket_errors.max_player_count });
             return;
         }
+
 
         const player = new Player(
             req.session.id,
