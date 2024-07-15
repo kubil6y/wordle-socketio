@@ -51,7 +51,7 @@ export class MultiGames {
         this._players[game.getOwnerSessionId()] = game.getId(); // add owner also as player!
         this._codes[game.getInvitationCode()] = game.getId();
         Logger.debug(
-            `MultiGames.register game:${game.getId()} for session: ${game.getOwnerSessionId()}}`
+            `MultiGames.register game:${game.getId()} for session: ${game.getOwnerSessionId()}`
         );
     }
 
@@ -111,6 +111,10 @@ class SingleplayerGames {
     public delete(sessionId: string): void {
         delete this._games[sessionId];
         Logger.debug(`SingleplayerGames.delete for sessionId:${sessionId}`);
+    }
+
+    public count(): number {
+        return Object.keys(this._games).length;
     }
 }
 

@@ -100,9 +100,9 @@ io.on("connection", (socket) => {
 });
 
 // TODO remove this later
-//setInterval(() => {
-    //Logger.debug(`Game count ${mGames.count()}`);
-//}, 5000);
+setInterval(() => {
+    Logger.debug(`Game count multiplayer:[${mGames.count()}], singleplayer:[${sGames.count()}]`);
+}, 3000);
 
 const PORT = process.env.PORT ?? 5000;
 httpServer.listen(PORT, () => {

@@ -106,7 +106,7 @@ export class MultiWordle {
     public addPlayer(player: Player): void {
         this._players.push(player);
         Logger.debug(
-            `MultiWordle.addPlayer player session id: "${player.sessionId}"`,
+            `MultiWordle.addPlayer gameId:${this.getId()} sessionId:${player.sessionId}`,
         );
     }
 
@@ -120,7 +120,7 @@ export class MultiWordle {
         }
         if (index !== -1) {
             this._players.splice(index, 1);
-            Logger.debug(`MultiWordle.deletePlayer sessionId: ${sessionId}`);
+            Logger.debug(`MultiWordle.deletePlayer gameId:${this.getId()} sessionId:${sessionId}`);
         }
     }
 
@@ -233,7 +233,7 @@ export class MultiWordle {
         const newCode = createId();
         this._games.updateInvitationCode(this.getId(), newCode);
         this._invitationCode = newCode;
-        Logger.debug(`MultiWordle.generateNewInvitationCode: "${newCode}"`);
+        Logger.debug(`MultiWordle.generateNewInvitationCode gameId:${this.getId()} code:${newCode}`);
     }
 
     public start(): void {
@@ -275,7 +275,7 @@ export class MultiWordle {
         const secretWord = this._words.getRandomWord(this._language);
         this._secretWord = secretWord;
         Logger.debug(
-            `MultiWordle.generateRandomWord secretWord:${secretWord} gameId:"${this._ownerSessionId}"`,
+            `MultiWordle.generateRandomWord gameId:${this.getId()} secretWord:${secretWord}`,
         );
     }
 

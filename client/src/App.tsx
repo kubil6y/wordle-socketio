@@ -6,6 +6,7 @@ import { Navbar } from "./components/navbar";
 import { SocketIO } from "@/components/socket-io";
 import { HtmlLanguageMatcher } from "./components/html-language-matcher";
 import { TestPage } from "./pages/test-page";
+import { NotFoundPage } from "./pages/not-found-page";
 
 export function App() {
     return (
@@ -15,10 +16,7 @@ export function App() {
                 <Route path="play" element={<PlayPage />} />
                 <Route path="lobby/:code" element={<Lobby />} />
                 <Route path="test" element={<TestPage />} />
-                {/*
-                 * TODO remove this
-                 *<Route path="*" element={<NotFoundPage />} />
-                 */}
+               <Route path="*" element={<NotFoundPage />} />
             </Route>
         </Routes>
     );

@@ -96,7 +96,6 @@ export function handleMultiplayer(
         ackCb({ ok: true });
 
         // inform others in the room
-        //io.to(game.getId()).emit("mp_players_changed", game.getPlayersData());
         for (const sessionId of game.getPlayerSessionIds()) {
             io.to(sessionId).emit("mp_players_changed", {
                 isAdmin: game.isOwner(sessionId),
@@ -112,9 +111,11 @@ export function handleMultiplayer(
             return;
         }
         game.setServerActiveWord(data.word);
-        socket.to(game.getId()).emit("mp_active_word", {
-            serverActiveWord: game.getServerActiveWord(),
-        });
+        for (const sessionId of game.getPlayerSessionIds()) {
+            io.to(sessionId).emit("mp_active_word", {
+                serverActiveWord: game.getServerActiveWord(),
+            });
+        }
     });
 
     socket.on("mp_start_game", (data) => {
