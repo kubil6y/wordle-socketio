@@ -111,16 +111,14 @@ export class MultiWordle {
     }
 
     public deletePlayer(sessionId: string): void {
-        let index = -1;
-        for (let i = 0; i < this._players.length; i++) {
-            if (this._players[i].sessionId === sessionId) {
-                index = i;
-                break;
-            }
-        }
-        if (index !== -1) {
-            this._players.splice(index, 1);
-            Logger.debug(`MultiWordle.deletePlayer gameId:${this.getId()} sessionId:${sessionId}`);
+        const playerIndex = this._players.findIndex(
+            (player) => player.sessionId === sessionId,
+        );
+        if (playerIndex !== -1) {
+            this._players.splice(playerIndex, 1);
+            Logger.debug(
+                `MultiWordle.deletePlayer gameId:${this.getId()} sessionId:${sessionId}`,
+            );
         }
     }
 
@@ -233,7 +231,9 @@ export class MultiWordle {
         const newCode = createId();
         this._games.updateInvitationCode(this.getId(), newCode);
         this._invitationCode = newCode;
-        Logger.debug(`MultiWordle.generateNewInvitationCode gameId:${this.getId()} code:${newCode}`);
+        Logger.debug(
+            `MultiWordle.generateNewInvitationCode gameId:${this.getId()} code:${newCode}`,
+        );
     }
 
     public start(): void {

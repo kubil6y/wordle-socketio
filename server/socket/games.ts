@@ -37,10 +37,6 @@ export class MultiGames {
         this._players[sessionId] = gameId;
     }
 
-    public getPlayerGameId(playerSessionId: string): string | null {
-        return this._players[playerSessionId] ?? null;
-    }
-
     public getGameIdByPlayerSessionId(sessionId: string): string | null {
         return this._players[sessionId] ?? null;
     }
@@ -142,14 +138,14 @@ export function createMultiplayer(
 ): MultiWordle {
     const game = new MultiWordle(mGames, ownerSessionId, words, language);
 
-    const existingMultiGame = mGames.findByOwnerSessionId(ownerSessionId);
-    if (existingMultiGame) {
-        mGames.delete(existingMultiGame.getId());
-    }
-    mGames.register(game);
+    //const existingMultiGame = mGames.findByOwnerSessionId(ownerSessionId);
+    //if (existingMultiGame) {
+        //mGames.delete(existingMultiGame.getId());
+    //}
+    //mGames.register(game);
 
-    if (sGames.has(ownerSessionId)) {
-        sGames.delete(ownerSessionId);
-    }
+    //if (sGames.has(ownerSessionId)) {
+        //sGames.delete(ownerSessionId);
+    //}
     return game;
 }

@@ -127,6 +127,11 @@ export const Lobby = () => {
             onGameData(data);
             mpGameOverModal.close();
         }
+    
+        function onGameDeleted() {
+            navigate("/");
+            toast.error("Game is deleted!");
+        }
 
         socket.on("mp_game_start", onStart);
         socket.on("mp_players_changed", onPlayersChanged);
@@ -135,6 +140,7 @@ export const Lobby = () => {
         socket.on("mp_try_word", onTryWord);
         socket.on("mp_game_over", onGameOver);
         socket.on("mp_replay", onReplay);
+        socket.on("mp_game_deleted", onGameDeleted);
 
         return () => {
             socket.off("mp_game_start", onStart);
@@ -144,6 +150,7 @@ export const Lobby = () => {
             socket.off("mp_try_word", onTryWord);
             socket.off("mp_game_over", onGameOver);
             socket.off("mp_replay", onReplay);
+            socket.off("mp_game_deleted", onGameDeleted);
         };
     }, []);
 

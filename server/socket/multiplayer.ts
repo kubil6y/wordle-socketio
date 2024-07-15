@@ -3,9 +3,11 @@ import { Request } from "express";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { Wordle } from "../wordle";
 import { Player } from "../multiplayer/player";
-import { createMultiplayer, mGames } from "./games";
+import { createMultiplayer, mGames, sGames } from "./games";
 import { socket_errors } from "./errors";
 import { io } from "../main";
+import { words } from "../words";
+import { MultiWordle } from "../multiplayer/multi-worlde";
 
 export const multiplayerGames: { [sessionId: string]: Wordle } = {};
 
@@ -16,17 +18,55 @@ export function handleMultiplayer(
 
     socket.on("mp_create_game", (data, ackCb) => {
         const { language, avatar, username } = data;
-        const ownerSessionId = req.session.id;
-        const game = createMultiplayer(ownerSessionId, language);
+        const sessionId = req.session.id;
 
-        const player = new Player(
-            ownerSessionId,
-            game.getId(),
-            username,
-            avatar,
-        );
+        //------ CLEANUP ------
+        const existingSPGameId = sGames.findById(sessionId);
+        if (existingSPGameId) {
+            sGames.delete(sessionId);
+        }
+        const existingMPGameId = mGames.getGameIdByPlayerSessionId(sessionId);
+        if (existingMPGameId) {
+            const existingGame = mGames.findById(existingMPGameId);
+            if (existingGame) {
+                if (existingGame.isOwner(sessionId)) {
+                    for (const sessionId of existingGame.getPlayerSessionIds()) {
+                        io.to(sessionId).emit("mp_game_deleted");
+                    }
+                    const roomName = existingGame.getId();
+                    const room = io.sockets.adapter.rooms.get(roomName);
+                    if (room) {
+                        for (const socketId of room) {
+                            const socket = io.sockets.sockets.get(socketId);
+                            if (socket) {
+                                socket.leave(roomName);
+                            }
+                        }
+                        delete io.sockets.adapter.rooms[roomName];
+                    }
+                    mGames.delete(existingGame.getId());
+                } else {
+                    existingGame.deletePlayer(sessionId);
+                    mGames.deletePlayer(sessionId);
+                    // Notify lobby for updated players
+                    for (const sessionId of existingGame.getPlayerSessionIds()) {
+                        io.to(sessionId).emit("mp_players_changed", {
+                            isAdmin: existingGame.isOwner(sessionId),
+                            isOwnTurn: existingGame.isOwnTurn(sessionId),
+                            players: existingGame.getPlayersData(),
+                        });
+                    }
+                }
+            }
+        }
+        //---------------------
+
+        const game = new MultiWordle(mGames, sessionId, words, language);
+        mGames.register(game);
+
+        const player = new Player(sessionId, game.getId(), username, avatar);
         game.addPlayer(player);
-        mGames.addPlayer(ownerSessionId, game.getId());
+        mGames.addPlayer(sessionId, game.getId());
         socket.join(game.getId()); // admin joins game room
 
         ackCb({
