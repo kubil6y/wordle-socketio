@@ -18,12 +18,11 @@ export class Wordle {
     private _secretWord: string;
     private _activeRowIndex: number;
     private _language: Language;
-
     private _pastTries: string[];
     private _pastTryResults: LetterColor[][];
-
     private _startTimestamp: number;
     private _endTimestamp: number;
+    private _lastActivityTimestamp: number;
 
     public constructor(
         ownerSessionId: string,
@@ -37,16 +36,26 @@ export class Wordle {
         this._pastTries = [];
         this._pastTryResults = [];
         this._startTimestamp = Date.now();
+        this._lastActivityTimestamp = Date.now();
         this._endTimestamp = 0;
         this._active = true;
         this._success = false;
         this.generateRandomWord();
     }
 
+    public getOwnerSessionId(): string {
+        return this._ownerSessionId;
+    }
+
+    public getLastActivityTimestamp(): number {
+        return this._lastActivityTimestamp;
+    }
+
     public processWord(word: string) {
         if (!this._active) {
             return;
         }
+        this._lastActivityTimestamp = Date.now();
 
         const result: LetterColor[] = new Array(this._secretWord.length).fill("");
         const chMap = new Map<string, number>();
@@ -168,5 +177,6 @@ export class Wordle {
         this._pastTries = [];
         this._pastTryResults = [];
         this._startTimestamp = Date.now();
+        this._lastActivityTimestamp = Date.now();
     }
 }

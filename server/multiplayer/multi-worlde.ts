@@ -34,6 +34,7 @@ export class MultiWordle {
     private _pastTryResults: LetterColor[][];
     private _startTimestamp: number;
     private _endTimestamp: number;
+    private _lastActivityTimestamp: number;
 
     private _players: Player[];
     private _words: Words;
@@ -59,6 +60,11 @@ export class MultiWordle {
         this._activeRowIndex = 0;
         this._pastTries = [];
         this._pastTryResults = [];
+        this._lastActivityTimestamp = Date.now();
+    }
+
+    public getLastActivityTimestamp(): number {
+        return this._lastActivityTimestamp;
     }
 
     public getServerActiveWord(): string {
@@ -240,6 +246,7 @@ export class MultiWordle {
 
     public start(): void {
         this._startTimestamp = Date.now();
+        this._lastActivityTimestamp = Date.now();
         this._gameState = GameState.GamePlaying;
         Logger.debug(
             `MultiWordle.start gameId:${this.getId()} ownerSessionId:${this.getOwnerSessionId()}`,
@@ -289,6 +296,8 @@ export class MultiWordle {
     }
 
     public processWord(word: string) {
+        this._lastActivityTimestamp = Date.now();
+
         const result: LetterColor[] = new Array(this._secretWord.length).fill(
             "",
         );
@@ -352,6 +361,7 @@ export class MultiWordle {
     public endGame() {
         this._gameState = GameState.GameEnd;
         this._endTimestamp = Date.now();
+        this._lastActivityTimestamp = Date.now();
         this._serverActiveWord = "";
         this._currentPlayerIndex = 0;
         Logger.debug(`MultiWordle.endGame gameId:${this.getId()}`);
@@ -371,6 +381,7 @@ export class MultiWordle {
         this._pastTryResults = [];
         this._gameState = GameState.GamePlaying;
         this._startTimestamp = Date.now();
+        this._lastActivityTimestamp = Date.now();
         this.generateRandomWord();
         Logger.debug(`MultiWordle.replay gameId:${this.getId()}`);
     }

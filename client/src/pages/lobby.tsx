@@ -130,8 +130,15 @@ export const Lobby = () => {
 
         function onGameDeleted() {
             multiWordle.reset();
-            navigate("/");
             toast.error("Game is deleted!");
+            navigate("/");
+        }
+
+        function onGameInactive() {
+            multiWordle.reset();
+            lobbyModal.close();
+            toast.error("Game is inactive!");
+            navigate("/");
         }
 
         socket.on("mp_game_start", onStart);
@@ -142,6 +149,7 @@ export const Lobby = () => {
         socket.on("mp_game_over", onGameOver);
         socket.on("mp_replay", onReplay);
         socket.on("mp_game_deleted", onGameDeleted);
+        socket.on("mp_game_inactive", onGameInactive);
 
         return () => {
             socket.off("mp_game_start", onStart);
@@ -152,6 +160,7 @@ export const Lobby = () => {
             socket.off("mp_game_over", onGameOver);
             socket.off("mp_replay", onReplay);
             socket.off("mp_game_deleted", onGameDeleted);
+            socket.off("mp_game_inactive", onGameInactive);
         };
     }, []);
 

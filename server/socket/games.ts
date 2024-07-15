@@ -1,15 +1,18 @@
 import { Logger } from "../logger";
-import { io } from "../main";
 import { MultiWordle } from "../multiplayer/multi-worlde";
-import { Language, Wordle } from "../wordle";
-import { words } from "../words";
+import { Wordle } from "../wordle";
 import { Request } from "express";
+import { io } from "../main";
 
 export class MultiGames {
     private _games: { [id: string]: MultiWordle } = {};
     private _owners: { [ownerSessionId: string]: string } = {}; // ownerSessionId,gameId
     private _codes: { [invitationCode: string]: string } = {}; // code,gameId
     private _players: { [playerSessionId: string]: string } = {}; // playerSessionId,gameId
+
+    public getAllGames(): MultiWordle[] {
+        return Object.values(this._games);
+    }
 
     public findById(id: string): MultiWordle | null {
         return this._games[id] ?? null;
@@ -92,6 +95,10 @@ export class MultiGames {
 
 class SingleplayerGames {
     private _games: { [sessionId: string]: Wordle } = {};
+
+    public getAllGames(): Wordle[] {
+        return Object.values(this._games);
+    }
 
     public findById(sessionId: string): Wordle | null {
         return this._games[sessionId] ?? null;

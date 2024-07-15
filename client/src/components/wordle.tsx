@@ -15,6 +15,8 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { SPGameOverModal } from "./sp-game-over-modal";
 import { useSPGameOverModal } from "@/hooks/use-sp-game-over-modal";
 import { getLanguageIcon } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 export const Wordle = () => {
     const {
@@ -37,6 +39,7 @@ export const Wordle = () => {
     const spGameOverModal = useSPGameOverModal();
     const canBackspace = useCanBackspace();
     const canType = useCanType();
+    const navigate = useNavigate();
     const [shakeRowIndex, setShakeRowIndex] = useState<number>(-1);
 
     const [GiveUpConfirmDialog, confirm] = useConfirm(
@@ -70,12 +73,19 @@ export const Wordle = () => {
             }, 1000);
         }
 
+        function onGameInactive() {
+            toast.error("Game is inactive!");
+            navigate("/");
+        }
+
         socket.on("sp_game_over", onGameOver);
         socket.on("sp_not_valid_word", onNotValidWord);
+        socket.on("sp_game_inactive", onGameInactive);
 
         return () => {
             socket.off("sp_game_over", onGameOver);
             socket.off("sp_not_valid_word", onNotValidWord);
+            socket.off("sp_game_inactive", onGameInactive);
         };
     }, []);
 
