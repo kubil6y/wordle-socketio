@@ -44,7 +44,6 @@ export const LobbyModal = ({ hasAlreadyJoined }: LobbyModalProps) => {
     }
 
     function onClose() {
-        // TODO
     }
 
     function onClickHome() {

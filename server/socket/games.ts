@@ -56,7 +56,6 @@ export class MultiGames {
         );
     }
 
-    // TODO disconnected users from the room and delete the room!
     public delete(id: string): void {
         const game = this.findById(id);
         if (!game) {
@@ -167,4 +166,50 @@ export function cleanupGames(req: Request) {
             }
         }
     }
+}
+
+export function inactivityRunner() {
+    const INACTIVITY_DURATION = 1000 * 60 * 10; // 10 mins
+    const INACTIVITY_CHECK_INTERVAL = 1000 * 60; // 1 min
+    setInterval(() => {
+        const now = Date.now();
+
+        // Singleplayer games
+        for (const sp of sGames.getAllGames()) {
+            const isInactive =
+                now - sp.getLastActivityTimestamp() > INACTIVITY_DURATION;
+            if (isInactive) {
+                const ownerSessionId = sp.getOwnerSessionId();
+                io.to(ownerSessionId).emit("sp_game_inactive");
+                sGames.delete(ownerSessionId);
+            }
+        }
+
+        // Multiplayer games
+        for (const mp of mGames.getAllGames()) {
+            const isInactive =
+                now - mp.getLastActivityTimestamp() > INACTIVITY_DURATION;
+            if (isInactive) {
+                // notify and delete
+                for (const sessionId of mp.getPlayerSessionIds()) {
+                    io.to(sessionId).emit("mp_game_inactive");
+                }
+                const roomName = mp.getId();
+                const room = io.sockets.adapter.rooms.get(roomName);
+                if (room) {
+                    for (const socketId of room) {
+                        const socket = io.sockets.sockets.get(socketId);
+                        if (socket) {
+                            socket.leave(roomName);
+                        }
+                    }
+                    delete io.sockets.adapter.rooms[roomName];
+                }
+                mGames.delete(mp.getId());
+            }
+        }
+        Logger.debug(
+            `Game count multiplayer:[${mGames.count()}], singleplayer:[${sGames.count()}]`,
+        );
+    }, INACTIVITY_CHECK_INTERVAL);
 }

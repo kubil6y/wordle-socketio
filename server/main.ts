@@ -7,15 +7,9 @@ import { Server } from "socket.io";
 import { handleSingleplayer } from "./socket/singleplayer";
 import { handleMultiplayer } from "./socket/multiplayer";
 import { Logger } from "./logger";
-import { mGames, sGames } from "./socket/games";
+import { inactivityRunner, sGames } from "./socket/games";
 
 config();
-
-declare module "express-session" {
-    interface SessionData {
-        count: number;
-    }
-}
 
 const app = express();
 const httpServer = createServer(app);
@@ -42,6 +36,7 @@ app.use(
         credentials: true,
     }),
 );
+
 app.use(sessionMiddleware);
 io.engine.use(sessionMiddleware);
 
@@ -70,49 +65,7 @@ io.on("connection", (socket) => {
     });
 });
 
-// TODO remove this later
-const INACTIVITY_DURATION = 1000 * 60 * 10; // 10 mins
-setInterval(() => {
-    const now = Date.now();
-
-    // Singleplayer games
-    for (const sp of sGames.getAllGames()) {
-        const isInactive =
-            now - sp.getLastActivityTimestamp() > INACTIVITY_DURATION;
-        if (isInactive) {
-            const ownerSessionId = sp.getOwnerSessionId();
-            io.to(ownerSessionId).emit("sp_game_inactive");
-            sGames.delete(ownerSessionId);
-        }
-    }
-
-    // Multiplayer games
-    for (const mp of mGames.getAllGames()) {
-        const isInactive =
-            now - mp.getLastActivityTimestamp() > INACTIVITY_DURATION;
-        if (isInactive) {
-            // notify and delete
-            for (const sessionId of mp.getPlayerSessionIds()) {
-                io.to(sessionId).emit("mp_game_inactive");
-            }
-            const roomName = mp.getId();
-            const room = io.sockets.adapter.rooms.get(roomName);
-            if (room) {
-                for (const socketId of room) {
-                    const socket = io.sockets.sockets.get(socketId);
-                    if (socket) {
-                        socket.leave(roomName);
-                    }
-                }
-                delete io.sockets.adapter.rooms[roomName];
-            }
-            mGames.delete(mp.getId());
-        }
-    }
-    Logger.debug(
-        `Game count multiplayer:[${mGames.count()}], singleplayer:[${sGames.count()}]`,
-    );
-}, 5000);
+inactivityRunner();
 
 const PORT = process.env.PORT ?? 5000;
 httpServer.listen(PORT, () => {
